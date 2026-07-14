@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo-dark.png" alt="CGVIS logo" width="120">
+</p>
+
 # From PDF to Playable: Interactive Graphics Lab Examples
 
 This repository contains the example webpages accompanying the paper
@@ -7,13 +11,15 @@ The pages show how C++ graphics exercises can be published as lightweight web pa
 
 The examples in this repository are the web-facing artifacts from the paper. They demonstrate how existing C++/OpenGL teaching code can be compiled to WebAssembly with Emscripten and embedded into exercise pages with little to no source-level changes to the reference solution.
 
-## Paper Context
+## Three Ideas
 
-The paper argues that static reference material is useful but incomplete for graphics programming labs. Screenshots and videos show only selected viewpoints and parameter settings, while many graphics bugs appear only during interaction, unusual camera configurations, or edge cases.
+The paper is built around three ideas, and instructors can adopt them at different levels:
 
-The workflow demonstrated here publishes full instructor reference solutions as browser-executable programs. A small framework layer hides the main differences between native desktop execution and WebAssembly/WebGL deployment, including windowing, input, timing, asset handling, build configuration, and WebGL restrictions compared to desktop OpenGL. Students still work with native C++ scaffolding, while instructors can publish the corresponding reference behavior as an interactive webpage.
+1. **Use WebAssembly for graphics exercises.** Even without using our code, the paper raises awareness that WebAssembly and WebGL make it practical to publish interactive C++/OpenGL reference behavior directly in the browser.
+2. **Reuse the framework and scaffolding.** Instructors who already have their own assignments can use the framework layer to bridge native C++/OpenGL code and browser-based WebAssembly deployments.
+3. **Reuse complete exercises.** Instructors who want ready-made material can copy, adapt, or remix the example exercises and webpages in this repository and the related course repositories.
 
-The paper reports an in-course comparison between static reference pages and interactive browser-executable references. Students preferred the interactive references and rated them as more useful for debugging and comparison, which is the central motivation behind this repository.
+All of these use cases are welcome. You might only be interested in WebAssembly as a deployment technology, you might want to use the framework for your own exercises, or you might want to take entire exercises as a starting point for a course.
 
 ## What Is In This Repository?
 
