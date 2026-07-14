@@ -1,0 +1,65 @@
+<!--#set var="pagetitle" value="Exercise 02 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+    @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+    <div class="section-inner exercise-page-layout">        
+    <h1>Sheet 2: Intersections</h1>
+    
+    <div class="task-container">
+        <h2>General Reminder</h2>
+        <p>
+            Upload your exercises to Moodle before the deadline. Late submissions, non-compiling submissions, and submissions that fail the provided sample cases receive few or no points. Submit one zip file named according to the assignment instructions. For this sheet, include your written answer for the first exercise and the modified <code>main.cpp</code> for the second exercise.
+        </p>
+    </div>
+    <div class="task-container">
+        <h3 class="assignment">Exercise: Barycentric Interpolation (10 points)</h3>
+        <p>
+            Barycentric coordinates can describe the position of a point relative to a triangle.
+            The three vertices V0, V1, and V2 form a triangle in two-dimensional space. Their positions and RGB colors are:
+        </p>
+        <pre><code>P₀ = (−3, 4)  C₀ = (1.0, 0.15, 0.15)
+P₁ = (5, 2)   C₁ = (0.15, 1.0, 0.15)
+P₂ = (1, 0)   C₂ = (0.15, 0.15, 1.0)</code></pre>
+        <p>
+            Compute the barycentric coordinates &alpha;0, &alpha;1, and &alpha;2 of point Q and explain whether Q lies inside triangle P0P1P2.
+            If it does, also give the interpolated color. Round your results to two decimal places.
+        </p>
+        <pre><code>a) Q = (0, 0)   b) Q = (2, 1)</code></pre>
+    </div>
+    
+    <div class="task-container">
+        <h3 class="assignment">Exercise: Ray-Sphere Intersection (10 points)</h3>
+        <p>
+            Download the starter code for this sheet from Moodle.
+            The code in <code>init</code> in <code>main.cpp</code> defines a sphere in three-dimensional space by its radius and center.
+        </p>
+        <p>
+            The program iterates over a virtual screen grid and colors each pixel according to the intersection test.
+            Implement the ray-sphere intersection in <code>raySphereIntersect</code>.
+            Use <code>rayOrigin</code> and <code>pixelPos</code> to define a ray and test that ray against the sphere.
+        </p>
+        <p>
+            If the ray hits the sphere, return the intersection point. With a correct implementation, a shiny red sphere lit from the upper front should appear.
+        </p>
+        <div class="canvas-container">
+            <canvas id="canvas"></canvas>
+            <div class="loading-text" id="loading">Loading</div>
+        </div>
+    </div>
+    
+    
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="../01" class="nav-link nav-arrow">⬅</a>
+            <a href=".." class="nav-link">Back to Overview</a>
+            <a href="../03" class="nav-link nav-arrow">➡</a>
+        </div>
+            <script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+            
+            <!--#include virtual="/_bottom.shtml" -->

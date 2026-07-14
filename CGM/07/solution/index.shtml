@@ -1,0 +1,119 @@
+<!--#set var="pagetitle" value="Exercise 7 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 7: Volume Rendering 2 Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The provided shader contains the completed shadow-ray computation. To compare it with
+        your own work, replace <code>Shader/cubeFS.glsl</code> in the exercise folder with the
+        provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="cubeFS.glsl">Open <code>cubeFS.glsl</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Shadow-Ray Transmittance</h3>
+
+    <p>
+        The shadow ray starts at the current primary-ray sample and marches toward the light.
+        Its length is clamped to the volume boundary with <code>distanceToVolumeExit</code>.
+        At each shadow sample, the shader applies the transfer function and uses the resulting
+        alpha as the local density for shadowing.
+    </p>
+
+    <p>
+        The shader accumulates these local densities first and applies the exponential only
+        once at the end. This follows the Beer-Lambert law. If
+        <code>sigma_t</code> is the extinction coefficient along a light ray of length
+        <code>L</code>, the transmittance is
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/beer_lambert.png"
+             alt="T equals the exponential of minus the integral from zero to L of sigma_t of s ds." />
+    </p>
+
+    <p>
+        For a discrete ray march, each small segment attenuates the light by an exponential
+        factor. The factors multiply along the ray. Since products of exponentials can be
+        written as one exponential of a sum, multiplying per-sample transmittances is
+        equivalent to summing optical depth first and exponentiating once:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/discrete_transmittance.png"
+             alt="The product over i of exp minus sigma_i delta s equals exp of minus the sum over i of sigma_i delta s." />
+    </p>
+
+    <p>
+        In this exercise we use the transfer-function alpha as a simple density-like
+        extinction value for shadowing. The code therefore approximates the optical depth by
+        summing alpha times the shadow-ray step length. The uniform
+        <code>shadowDensityScale</code> is the scale factor <code>k</code> in the formula:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/optical_depth_sum.png"
+             alt="Tau is approximately the sum over i of alpha_i times delta s, and T equals exp minus k tau." />
+    </p>
+
+    <p>
+        This also explains why a fixed number of shadow samples is not automatically wrong
+        with respect to path length. Longer paths have a larger <code>stepLength</code>, so
+        constant density still produces a larger optical depth. The fixed
+        <code>shadowStepCount</code> mainly affects sampling quality, not the basic length
+        scaling of the absorption.
+    </p>
+
+    <pre class="code-snippet" data-src="cubeFS.glsl" data-start="float traceShadowRay" data-end="vec3 estimateLighting">Loading cubeFS.glsl...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Lighting Estimate</h3>
+
+    <p>
+        The accumulated optical depth is converted into a transmittance with an exponential.
+        A value near one means that most light reaches the sample; a value near zero means
+        that the volume between the sample and the light absorbs most of the light. Very
+        transparent primary samples skip the shadow ray and receive full direct light.
+    </p>
+
+    <pre class="code-snippet" data-src="cubeFS.glsl" data-start="vec3 estimateLighting" data-end="void main">Loading cubeFS.glsl...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Primary Ray</h3>
+
+    <p>
+        The primary ray still performs front-to-back emission-absorption raycasting. The new
+        step is the lighting multiplication before opacity correction and compositing. This
+        keeps the transfer function responsible for visible opacity while the shadow ray
+        determines how much direct light reaches the sample.
+    </p>
+
+    <pre class="code-snippet" data-src="cubeFS.glsl" data-start="void main" data-end="__END_OF_FILE__">Loading cubeFS.glsl...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

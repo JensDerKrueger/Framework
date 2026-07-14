@@ -1,0 +1,77 @@
+<!--#set var="pagetitle" value="Exercise 06 Solution - Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 06: Deferred Shadows Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed deferred shadow mapping implementation. To
+        compare them with your own work, replace the exercise versions of
+        <code>main.cpp</code> and <code>Shader/deferred.frag</code> with these files and
+        rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="deferred.frag">Open <code>deferred.frag</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Shadow Matrices and Render Pass</h3>
+
+    <p>
+        The light uses its own projection and view matrices. The product with the
+        clip-to-texture transform maps positions into shadow texture coordinates. Since the
+        G-buffer stores positions in camera view space, the deferred shader receives
+        <code>viewToShadowMatrix</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void updateState" data-end="void ensureGBufferSize">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void renderSceneToShadowMap" data-end="void renderDeferredImage">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Deferred Shadow Lookup</h3>
+
+    <p>
+        The deferred shader transforms the visible point into shadow-map coordinates and
+        evaluates visibility with a <code>3 x 3</code> percentage-closer filter. The nine
+        samples soften the shadow edge. Because this work happens in the full-screen
+        deferred pass, it is paid once per visible pixel rather than during every geometry
+        shader invocation.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="../pcf_filter.svg" alt="Percentage closer filtering with nine shadow map samples" />
+        <figcaption>
+            Each sampled texel performs one depth comparison. The average of the nine
+            comparison results becomes the shadow visibility.
+        </figcaption>
+    </figure>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void renderDeferredImage" data-end="virtual void draw">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="deferred.frag" data-start="float shadowVisibility" data-end="vec3 shadePixel">Loading deferred.frag...</pre>
+    <pre class="code-snippet" data-src="deferred.frag" data-start="vec3 shadePixel" data-end="vec3 showBuffer">Loading deferred.frag...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

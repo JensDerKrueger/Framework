@@ -1,0 +1,48 @@
+<!--#set var="pagetitle" value="Exercise 07 – Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 07: Environment Mapping</h1>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Sky (30 Points)</h3>
+            <p>
+                Reuse your submission for assignment 5 as your codebase for this assignment or start from the sixth project from GitHub.
+            </p><p>
+                Add a visible sky-box to the scene. Use your favorite environment map for the sky. You
+                can also use the provided environment map in <a href="envmap.zip">here</a>. The environment should be reflected
+                on the teapot, making the teapot’s color 50% blue and 50% of the reflected environment. As
+                in the previous assignments: Do not change the initial viewing angle and light
+                source position of the scene for your submission.
+            </p>
+                
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div class="loading-text" id="loading">Loading</div>
+            </div>
+            <p style="text-align:center;">
+                <em>Solution.<br>
+                    Use the mouse to interact with the scene.
+                    <code>Spacebar</code>: Toggles animation on/off
+                    <code>R</code> key: Resets the animation and the view
+                </em>
+            </p>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="../06" class="nav-link nav-arrow">⬅</a>
+            <a href=".." class="nav-link">Back to Overview</a>
+        </div>
+  </div>
+</section>
+<script src="/assets/exercise.js"></script>
+<script src="solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,85 @@
+<!--#set var="pagetitle" value="Solution Sheet 11 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 11: Solution for Texture Coordinates and Sampling</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the complete implementation for this sheet. To compare them with your own solution or with the starter code, replace the assignment versions of <code>Sphere.cpp</code> and <code>Texture.cpp</code> with these files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="Sphere.cpp">Open <code>Sphere.cpp</code></a>
+        <a class="source-link" href="Texture.cpp">Open <code>Texture.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Sphere Texture Coordinates</h3>
+
+    <p>
+        The sphere first computes the normal at the hit point. For textured spheres, this normal is used as the radial direction from the sphere center. That direction is rotated with the Euler angles described in the assignment and then converted to polar coordinates.
+    </p>
+
+    <p>
+        The angle from <code>atan2</code> provides <code>u</code>, and the angle from <code>acos</code> provides <code>v</code>. Both values are normalized to <code>[0, 1]</code>. They are then scaled by the sphere's texture parameters and shifted by the bias.
+    </p>
+
+    <pre class="code-snippet" data-src="Sphere.cpp" data-start="std::optional&lt;Intersection&gt; Sphere::intersect" data-end="Tessellation Sphere::getMesh">Loading Sphere.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Procedural Checkerboard Texture</h3>
+
+    <p>
+        The checkerboard texture alternates between black and white texels in both directions. The first texel is black, each column inverts the current value, and each new row starts with the opposite value from the previous row. This creates the checkerboard pattern required by the assignment.
+    </p>
+
+    <pre class="code-snippet" data-src="Texture.cpp" data-start="Texture Texture::genCheckerboardTexture" data-end="static uint32_t handleBorderCoordinate">Loading Texture.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 3: Border Modes</h3>
+
+    <p>
+        Texture coordinates may lie outside the image. The border mode defines how such coordinates are mapped back to texels. <code>REPEAT</code> continues the texture periodically, <code>CLAMP_TO_EDGE</code> clamps to the nearest valid texel, and <code>MIRRORED_REPEAT</code> repeats the texture while mirroring every second repetition.
+    </p>
+
+    <pre class="code-snippet" data-src="Texture.cpp" data-start="static uint32_t handleBorderCoordinate" data-end="Vec3 Texture::sample(int">Loading Texture.cpp...</pre>
+
+    <p>
+        <code>CLAMP_TO_BORDER</code> is handled before the coordinate is converted to a valid texel index. If a coordinate lies outside the image range and <code>CLAMP_TO_BORDER</code> is active for that direction, sampling directly returns the configured border color.
+    </p>
+
+    <pre class="code-snippet" data-src="Texture.cpp" data-start="Vec3 Texture::sample(int" data-end="Vec3 Texture::sample(const TextureCoordinates">Loading Texture.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 4: Texture Filtering</h3>
+
+    <p>
+        Nearest-neighbor filtering chooses the texel closest to the continuous texture coordinate. Bilinear filtering reads the four surrounding texels and interpolates first along <code>u</code> and then along <code>v</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="Texture.cpp" data-start="Vec3 Texture::sample(const TextureCoordinates" data-end="void Texture::setBorderMode">Loading Texture.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

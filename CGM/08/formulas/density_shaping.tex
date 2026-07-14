@@ -1,0 +1,16 @@
+\documentclass[border=6pt]{standalone}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\begin{document}
+\color{white}
+\(\displaystyle
+\begin{aligned}
+e_{\mathrm{detail}} &= 1-\mathrm{detailErosion}\,(1-d),\\
+s &= H(x,y,z)\,\bigl(0.20+0.80\,E(x,y,z)\bigr)\,e_{\mathrm{detail}},\\
+c &= \operatorname{smoothStep}(\mathrm{coverage},1,s),\\
+\rho &= E(x,y,z)\,
+\operatorname{clamp}\!\left(c^{\mathrm{densityExponent}}\,
+\mathrm{densityScale}+\mathrm{densityOffset},0,1\right)
+\end{aligned}
+\)
+\end{document}

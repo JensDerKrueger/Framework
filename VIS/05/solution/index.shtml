@@ -1,0 +1,88 @@
+<!--#set var="pagetitle" value="Exercise 5 Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 5: Marching Cubes Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided file contains the completed marching-cubes implementation. To compare
+        it with your own work, replace the exercise version of <code>MC.cpp</code> with the
+        provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="MC.cpp">Open <code>MC.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Volume Traversal</h3>
+
+    <p>
+        The constructor allocates temporary storage for the interpolated vertices on the
+        twelve cube edges, then visits every voxel cell in the volume. Each loop stops one
+        sample before the end of the corresponding dimension because a cube needs eight
+        corner samples.
+    </p>
+
+    <pre class="code-snippet" data-src="MC.cpp" data-start="std::array&lt;Vertex, 12&gt; verticesOnEdges" data-end="// fetch data">Loading MC.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Corner Classification</h3>
+
+    <p>
+        For each cube, the solution reads the eight scalar values and the precomputed
+        normals from the volume. Every corner above the isovalue sets one bit in
+        <code>mcCase</code>. This case index selects the active cube edges from
+        <code>edgeTable</code>; empty cells are skipped.
+    </p>
+
+    <pre class="code-snippet" data-src="MC.cpp" data-start="// fetch data" data-end="// compute offset">Loading MC.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Position and Normal Interpolation</h3>
+
+    <p>
+        The cube offset places the current voxel in the normalized volume coordinate system.
+        For every active edge, the solution looks up the two edge endpoints, computes the
+        interpolation parameter from the scalar values, and interpolates both the position
+        and the normal. The normal is normalized before it is stored in the temporary edge
+        vertex array.
+    </p>
+
+    <pre class="code-snippet" data-src="MC.cpp" data-start="// compute offset" data-end="// add triangles">Loading MC.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Triangle Generation</h3>
+
+    <p>
+        Once the edge vertices are available, <code>trisTable</code> provides the edge
+        indices for the triangles of the current case. Appending the referenced edge vertices
+        to <code>vertices</code> builds the final triangle list used for rendering.
+    </p>
+
+    <pre class="code-snippet" data-src="MC.cpp" data-start="// add triangles" data-end="__END_OF_FILE__">Loading MC.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

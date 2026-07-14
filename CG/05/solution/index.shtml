@@ -1,0 +1,109 @@
+<!--#set var="pagetitle" value="Solution Sheet 5 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 5: Solution for Shading and Interpolation</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the complete implementation for this sheet. To compare them with your own solution or with the starter code, replace the assignment versions of the following files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="Vertex.h">Open <code>Vertex.h</code></a>
+        <a class="source-link" href="Triangle.h">Open <code>Triangle.h</code></a>
+        <a class="source-link" href="Triangle.cpp">Open <code>Triangle.cpp</code></a>
+        <a class="source-link" href="AmbientShader.cpp">Open <code>AmbientShader.cpp</code></a>
+        <a class="source-link" href="DiffuseShader.h">Open <code>DiffuseShader.h</code></a>
+        <a class="source-link" href="DiffuseShader.cpp">Open <code>DiffuseShader.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Store Vertex Attributes</h3>
+
+    <p>
+        To make it possible to interpolate all attributes across a triangle, a <code>Vertex</code> stores not only its position but also material data and a normal. The constructors set useful defaults so the simple test cases in <code>main.cpp</code> can stay concise.
+    </p>
+
+    <pre class="code-snippet" data-src="Vertex.h" data-start="class Vertex" data-end="__END_OF_FILE__">Loading Vertex.h...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Triangle and Helper Functions</h3>
+
+    <p>
+        <code>Triangle</code> stores its three vertices and a reference to the shader being used. It also provides helper functions for linear interpolation and signed area computation. That area is later used to compute barycentric coordinates.
+    </p>
+
+    <pre class="code-snippet" data-src="Triangle.h" data-start="class Triangle" data-end="__END_OF_FILE__">Loading Triangle.h...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Rasterization and Interpolation</h3>
+
+    <p>
+        <code>Triangle::draw</code> first computes the total area of the triangle and then a simple bounding box in pixel coordinates. For each pixel in that box, the three barycentric weights are computed from subareas. If all weights are in the valid range, the pixel lies inside the triangle.
+    </p>
+
+    <p>
+        For valid pixels, a new surface vertex is assembled. Position, normal, and material colors are interpolated with the same barycentric weights. After that, only the associated shader decides which color is written to the image.
+    </p>
+
+    <pre class="code-snippet" data-src="Triangle.cpp" data-start="void Triangle::draw" data-end="Vec3 Triangle::interpolate">Loading Triangle.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Area and Attribute Blending</h3>
+
+    <p>
+        Interpolation is identical for all <code>Vec3</code> attributes:
+        <code>a0 * val0 + a1 * val1 + a2 * val2</code>. The area function uses only the x- and y-coordinates of the vertices because the triangles in this exercise lie in the image plane.
+    </p>
+
+    <pre class="code-snippet" data-src="Triangle.cpp" data-start="Vec3 Triangle::interpolate" data-end="__END_OF_FILE__">Loading Triangle.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Ambient Shader</h3>
+
+    <p>
+        The ambient shader is a pass-through shader: it directly returns the interpolated ambient material color of the current surface point. This makes the first triangle show that vertex colors are blended correctly across the surface.
+    </p>
+
+    <pre class="code-snippet" data-src="AmbientShader.cpp" data-start="Vec3 AmbientShader::shade" data-end="__END_OF_FILE__">Loading AmbientShader.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Diffuse Lighting</h3>
+
+    <p>
+        <code>DiffuseShader</code> stores the position of the point light and its diffuse light color. For every rasterized surface point, the normal and light direction are normalized. The diffuse factor is the clamped dot product <code>max(0, dot(N, L))</code>.
+    </p>
+
+    <p>
+        The final color is formed from the material diffuse color, the light diffuse color, and this diffuse factor. Because the shader works per pixel on the already interpolated surface vertex, it produces the per-pixel diffuse lighting requested by the assignment.
+    </p>
+
+    <pre class="code-snippet" data-src="DiffuseShader.h" data-start="class DiffuseShader" data-end="__END_OF_FILE__">Loading DiffuseShader.h...</pre>
+    <pre class="code-snippet" data-src="DiffuseShader.cpp" data-start="DiffuseShader::DiffuseShader" data-end="__END_OF_FILE__">Loading DiffuseShader.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

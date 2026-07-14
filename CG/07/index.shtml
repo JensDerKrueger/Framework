@@ -1,0 +1,71 @@
+<!--#set var="pagetitle" value="Exercise 07 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 7: Ray Casting & Shadows</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Ray casting (10 points)</h3>
+    <p>
+        The provided classes form the basic structure of the implementation.
+        Familiarize yourself with that structure and pay attention to <code>TODO</code> markers that indicate missing code.
+    </p>
+    <p>
+        Implement <code>Raytracer.render</code> in the <code>Raytracer</code> class so that the given image is filled with color values and the scene becomes visible.
+    </p>
+    <p>
+        Use <code>Raytracer.computeRay</code> to compute a ray from the origin through the desired screen coordinates.
+        Use <code>Raytracer::traceRay</code> to trace that ray through the scene and compute its color.
+    </p>
+    <p>
+        Your implementation must support supersampling.
+        Use a regular distribution of samples within each pixel.
+        The number of samples in x- and y-direction is stored as a member variable of <code>Raytracer</code>.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Rendering spheres and shadows (10 points)</h3>
+    <p>
+        Implement <code>Sphere</code> so the colored spheres become visible. Then extend the ray tracer with shadows by completing the missing parts of <code>Scene.traceRay</code>.
+    </p>
+    <p>
+        Shadows are computed by shooting an additional shadow ray from the hit point toward each light source.
+        Your implementation must support multiple point lights.
+    </p>
+    <p>
+        A key detail is avoiding repeated self-intersections caused by limited floating-point precision.
+        To avoid numerical artifacts at the hit point, offset the computed point by a small epsilon along the normal.
+        This tolerance should be scaled sensibly for the scene.
+    </p>
+    
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <p style="text-align: center;">
+        <em>Complete scene with shadows. Click and drag to interact.</em>
+    </p>
+    
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../06" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../08" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

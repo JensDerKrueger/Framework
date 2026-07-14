@@ -1,0 +1,112 @@
+<!--#set var="pagetitle" value="Solution Exercise 12 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Solution for Sheet 12: Transformations</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The solution consists of <code>main.cpp</code>. The triangles are rendered through the simple drawing functions of the <code>GLApp</code> framework, so the solution code focuses only on triangle data, projection, animation, and model matrices.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Triangle Data</h3>
+
+    <p>
+        Each triangle is stored as a list of three vertices. A vertex consists of position and color, seven floats in the format <code>x y z r g b a</code>. The triangle positions are centered around the local origin, making the local origin the pivot point as well.
+    </p>
+
+    <p>
+        This matters for the second subtask: when a triangle rotates around the origin of its own local coordinate system, it automatically rotates around its center. The vertex data does not need to change. All differences between the top, right, and left triangles are created by the model matrices.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="const std::vector&lt;float&gt; upperTriangle" data-end="float angle">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Animation</h3>
+
+    <p>
+        The animation angle is computed directly from elapsed time in <code>animate</code>. At 45 degrees per second, this gives smooth rotation without integrating separate state between frames.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void animate" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">From the Assignment to the Model Matrix</h3>
+
+    <p>
+        The first subtask only requires arranging the three local triangles. A translation is enough for each one: the top triangle is moved upward, and the other two are moved down-left and down-right. The second subtask then adds a rotation around a different axis for each triangle.
+    </p>
+
+    <p>
+        Before each draw call, a separate model matrix is set with <code>setDrawTransform</code>. This matrix describes how the local coordinates of the triangle currently being drawn are transformed into world coordinates. <code>drawTriangles</code> then always draws the same kind of local triangle data, but with a different model matrix.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Order of Transformations</h3>
+
+    <p>
+        In this code, a point is transformed as <code>matrix * vector</code>. Therefore, in a composed matrix, the right-hand matrix acts first:
+    </p>
+
+    <pre><code>p_world = (T * R) * p_local
+=  T * (R * p_local)</code></pre>
+
+    <p>
+        The matrix farther to the right in the code therefore acts closer to the local object. The matrix farther to the left acts later and describes placement in the scene. You can think of <code>T * R</code> as "rotate the local triangle, then place the result at the Triforce position."
+    </p>
+
+    <p>
+        This is why the code uses <code>Mat4::translation(...) * Mat4::rotationX(...)</code>. The local point is rotated first. Because the triangle vertices are centered around the local origin, this rotation happens around the triangle center. Only afterward does the translation move the already rotated triangle to its Triforce position.
+    </p>
+
+    <p>
+        If the order were reversed and <code>R * T</code> were used, the result would be:
+    </p>
+
+    <pre><code>p_world = (R * T) * p_local
+=  R * (T * p_local)</code></pre>
+
+    <p>
+        Then the triangle would first be moved away from its local origin and afterward rotated around the scene origin together with that offset. It would no longer stay in its Triforce position, but orbit around the world origin. This is exactly the difference between rotating around an object's own center and rotating around the origin of the whole scene.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Projection and Controls</h3>
+
+    <p>
+        The orthographic projection is reset when the window size changes. The solution also supports <code>Escape</code> to close, Spacebar to pause and resume the animation, and <code>R</code> to reset animation time.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void resize" data-end="} myApp;">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

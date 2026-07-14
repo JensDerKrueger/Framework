@@ -1,0 +1,197 @@
+#include <array>
+#include <cmath>
+
+#include <GLApp.h>
+#include <bmp.h>
+
+#include "Flowfield.h"
+
+class LICApp : public GLApp {
+public:
+  Flowfield flow = Flowfield::genDemo(256, DemoType::SATTLE);
+  //this field may be a better start for debugging
+  //Flowfield flow = Flowfield::fromFile("four_sector_128.txt");
+  Image noiseImage = BMP::load("noise.bmp");
+  Image inputImage = noiseImage;
+  Image licImage{uint32_t(flow.getSizeX()),uint32_t(flow.getSizeY()),3};
+  uint32_t steps{50};
+
+  LICApp(const std::vector<std::string>& args) :
+  GLApp{800,800,1,"LIC demo", true, false, false, args} {}
+
+  virtual void init() override {
+    GL(glDisable(GL_CULL_FACE));
+    GL(glDisable(GL_DEPTH_TEST));
+    computeLIC(noiseImage);
+    setBackground(0,0,0,1);
+  }
+  
+  std::vector<Vec2> computeCurve(float x, float y, float z) {
+    std::vector<Vec2> r;
+    
+    Vec2 pos{x,y};
+    r.push_back(pos);
+    
+    const Vec2 delta{0.5f/flow.getSizeX(),0.5f/flow.getSizeY()};
+    
+    for (size_t i = 0;i<steps;++i) {
+      const Vec3 v = flow.interpolate(Vec3(pos.x, pos.y, z));
+      pos = pos + Vec2::normalize(Vec2{v.x,v.y}) * delta;
+      if (pos.x < 0.0 || pos.x > 1.0 || pos.y < 0.0 || pos.y > 1.0) break;
+      r.push_back(pos);
+    }
+
+    pos = Vec2{x,y};
+    for (size_t i = 0;i<steps;++i) {
+      const Vec3 v = flow.interpolate(Vec3(pos.x, pos.y, z));
+      pos = pos - Vec2::normalize(Vec2{v.x,v.y}) * delta;
+      if (pos.x < 0.0 || pos.x > 1.0 || pos.y < 0.0 || pos.y > 1.0) break;
+      r.push_back(pos);
+    }
+
+    return r;
+  }
+
+  void licStep(const Image& inputImage, Image& outputImage) {
+    for (uint32_t y = 0; y < outputImage.height;++y) {
+      for (uint32_t x = 0; x < outputImage.width;++x) {
+        std::vector<Vec2> trace = computeCurve(float(x)/outputImage.width,
+                                               float(y)/outputImage.height,
+                                               0.5f);
+        float value=0.0f;
+        for (size_t i = 0;i<trace.size();++i) {
+          const uint32_t u = uint32_t(trace[i].x * inputImage.width + 0.5f) % outputImage.width;
+          const uint32_t v = uint32_t(trace[i].y * inputImage.height + 0.5f) % outputImage.height;
+          value += inputImage.getValue(u,v,0);
+        }
+        
+        const uint8_t output = uint8_t(value/trace.size());
+        outputImage.setValue(x,y,0,output);
+        outputImage.setValue(x,y,1,output);
+        outputImage.setValue(x,y,2,output);
+      }
+    }
+  }
+
+  void equalizeStep(Image& image) {
+    const size_t pixelCount = image.data.size()/image.componentCount;
+    std::array<size_t, 256> histogram;
+    histogram.fill(0);
+    
+    for (size_t i = 0; i < pixelCount;++i) {
+      histogram[image.data[i*image.componentCount]]++;
+    }
+    std::array<size_t, 256> cdf;
+    cdf[0] = histogram[0];
+    size_t cdf_min = cdf[0];
+    for (size_t i = 1; i < 256;++i) {
+      cdf[i]  = cdf[i-1] + histogram[i];
+      if (cdf[i] != 0 && cdf_min == 0) {
+        cdf_min = cdf[i];
+      }
+    }
+    std::array<uint8_t, 256> remap;
+    for (size_t i = 0; i < 256;++i) {
+      remap[i] = uint8_t(round(float(cdf[i] - cdf_min)/float(pixelCount-cdf_min) * 255) );
+    }
+    for (size_t i = 0;i<pixelCount;++i) {
+      uint8_t remapped = remap[image.data[i*image.componentCount]];
+      image.data[i*image.componentCount+0] = remapped;
+      image.data[i*image.componentCount+1] = remapped;
+      image.data[i*image.componentCount+2] = remapped;
+    }
+  }
+  
+  void computeLIC(Image inputImage) {
+    for (size_t i = 0;i<3;++i) {
+      licStep(inputImage, licImage);
+      equalizeStep(licImage);
+      inputImage = licImage;
+    }
+  }
+  
+  virtual void draw() override {
+    drawImage(licImage);
+  }
+  
+  virtual void keyboard(int key, int scancode, int action, int mods) override {
+    if (action == GLENV_PRESS) {
+      switch (key) {
+        case GLENV_KEY_ESCAPE:
+          closeWindow();
+          break;
+        case GLENV_KEY_H:
+          computeLIC(licImage);
+          break;
+        case GLENV_KEY_D:
+          licImage = Image(uint32_t(flow.getSizeX()),uint32_t(flow.getSizeY()),3 );
+          flow = Flowfield::genDemo(256, DemoType::DRAIN);          
+          computeLIC(noiseImage);
+          break;
+        case GLENV_KEY_S:
+          licImage = Image(uint32_t(flow.getSizeX()), uint32_t(flow.getSizeY()), 3);
+          flow = Flowfield::genDemo(256, DemoType::SATTLE);
+          computeLIC(noiseImage);
+          break;
+        case GLENV_KEY_C:
+          licImage = Image(uint32_t(flow.getSizeX()), uint32_t(flow.getSizeY()), 3);
+          flow = Flowfield::genDemo(256, DemoType::CRITICAL);
+          computeLIC(noiseImage);
+          break;
+        case GLENV_KEY_1:
+          noiseImage = BMP::load("noise.bmp");
+          steps = 50;
+          computeLIC(noiseImage);
+          break;
+        case GLENV_KEY_2:
+          noiseImage = BMP::load("dots.bmp");
+          steps = 10;
+          computeLIC(noiseImage);
+          break;
+        case GLENV_KEY_8:
+          steps *= 2;
+          computeLIC(noiseImage);
+          std::cout << "steps set to: "<<steps << "\n";
+          break;
+        case GLENV_KEY_9:
+          steps /= 2;
+          computeLIC(noiseImage);
+          std::cout << "steps set to: "<<steps << "\n";
+          break;
+
+      }
+    }
+  }
+};
+
+#ifdef _WIN32
+#include <Windows.h>
+
+INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nCmdShow) {
+  std::vector<std::string> args = getArgsWindows();
+#else
+  int main(int argc, char** argv) {
+    std::vector<std::string> args{argv + 1, argv + argc};
+#endif
+    try {
+      LICApp app{args};
+      app.run();
+    }
+    catch (const GLException& e) {
+      std::stringstream ss;
+      ss << "Insufficient OpenGL Support " << e.what();
+#ifndef _WIN32
+      std::cerr << ss.str().c_str() << std::endl;
+#else
+      MessageBoxA(
+                  NULL,
+                  ss.str().c_str(),
+                  "OpenGL Error",
+                  MB_ICONERROR | MB_OK
+                  );
+#endif
+      return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+  }
+

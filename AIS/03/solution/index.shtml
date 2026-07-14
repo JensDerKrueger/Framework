@@ -1,0 +1,103 @@
+<!--#set var="pagetitle" value="Exercise 3 Solution - Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 3: Rasterization and Shading Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+    <p>
+        The provided files contain the completed implementation for the depth-tested teapot
+        scene, the animated light source, and the three required shading modes. Replace the
+        exercise version of <code>main.cpp</code> and the shader files with these files to
+        compare the result with your own solution.
+    </p>
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="flat.vert">Open <code>flat.vert</code></a>
+        <a class="source-link" href="gouraud.vert">Open <code>gouraud.vert</code></a>
+        <a class="source-link" href="phong.frag">Open <code>phong.frag</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Scene State and Render Resources</h3>
+    <p>
+        The solution keeps separate shader programs for flat, Gouraud, Phong, and light
+        rendering. It also stores one VAO for the plane, one for the teapot, and one for the
+        light cube. Depth testing and back-face culling are enabled during initialization so
+        the teapot is rendered with correct occlusion.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="class LightProperties" data-end="void selectShading">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Selecting the Shading Mode</h3>
+    <p>
+        The active shading mode determines both the shader program and the diffuse material
+        color. Flat shading is red, Gouraud shading is green, and Phong shading is blue, so
+        the selected technique is visible immediately.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void selectShading" data-end="virtual void draw">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Flat and Gouraud Shading</h3>
+    <p>
+        The flat and Gouraud variants both compute the Phong illumination model in the
+        vertex shader. The difference is the interpolation qualifier: flat shading passes one
+        color per primitive, while Gouraud shading interpolates the vertex colors across the
+        triangle.
+    </p>
+    <pre class="code-snippet" data-src="flat.vert">Loading flat.vert...</pre>
+    <pre class="code-snippet" data-src="gouraud.vert">Loading gouraud.vert...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Phong Shading</h3>
+    <p>
+        For Phong shading, the vertex shader forwards view-space positions and normals. The
+        fragment shader normalizes the interpolated normal and evaluates the ambient,
+        diffuse, and specular terms per fragment, which produces smoother highlights.
+    </p>
+    <pre class="code-snippet" data-src="phong.vert">Loading phong.vert...</pre>
+    <pre class="code-snippet" data-src="phong.frag">Loading phong.frag...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Drawing the Plane, Teapot, and Light</h3>
+    <p>
+        Each frame updates the light animation, builds the view matrix, draws the white
+        light cube, and then renders the plane and teapot with the selected shading program.
+        The normal matrix is the transpose of the inverse model-view matrix, which keeps
+        normals correct under transformations.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Input Controls</h3>
+    <p>
+        The keyboard controls switch between shading modes, toggle the light animation, and
+        reset the view. Mouse input is used for orbiting, panning, and zooming, matching the
+        interaction behavior from the assignment page.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void keyboard" data-end="int main">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

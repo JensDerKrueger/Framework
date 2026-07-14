@@ -1,0 +1,227 @@
+<!--#set var="pagetitle" value="Exercise 3 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 3: Path Tracing</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: From Ray Tracing to Path Tracing (25 points)</h3>
+
+    <p>
+        In the previous assignments you implemented a recursive raytracer with textured
+        materials, reflection, refraction, explicit light sources, and shadow rays. In this
+        exercise you will keep much of that ray traversal logic, but replace local Phong
+        illumination with a simple path tracer.
+    </p>
+
+    <p>
+        The application already accumulates multiple paths per pixel over time. While you do
+        not interact with the scene, each frame adds more paths to the current image. When you
+        rotate the scene, the accumulation is reset. Your task is to complete the missing code
+        in <code>Scene.cpp</code>, specifically <code>sampleDiffuseDirection</code> and
+        <code>Scene::traceLocalPath</code>.
+    </p>
+
+    <p>
+        The important conceptual change is that a path tracer does not evaluate all lights at
+        every visible surface point. Instead, it follows one randomly chosen path through the
+        scene. If the path eventually reaches the environment or hits emissive geometry, that
+        light contributes to the pixel. Averaging many such paths approximates the rendering
+        integral.
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/path_integral.png"
+             alt="Lecture notation of the rendering equation with outgoing radiance, emitted radiance, BRDF, incoming radiance, and cosine term." />
+    </p>
+
+    <p>
+        The rendering equation presented in the lecture looks like this. The yellow term
+        <code>L_O</code> is the outgoing radiance that we want to estimate for a ray. The blue
+        term <code>L_e</code> is light emitted directly by the surface. The red part describes
+        incoming radiance <code>L_i</code> from direction <code>&omega;'</code> and the cosine
+        factor <code>&omega;' &middot; N</code>. The remaining factor <code>f_r</code> is the
+        BRDF, which describes how the surface reflects incoming light.
+    </p>
+
+    <p>
+        In this exercise we simplify the equation in several ways. Each material plays one of
+        two roles in our code: it either emits light, or it scatters the path so that the path
+        may gather light later. If a material has a non-zero blue emission term, it is treated
+        as light-source geometry and the path stops there. Otherwise, the material is one of
+        three idealized scattering types: perfectly diffuse, perfect mirror, or transparent
+        refractive glass. A path can gather light by leaving the scene and sampling
+        <code>environmentColor</code>, or by hitting emissive geometry and collecting
+        <code>material.getEmission()</code>. The path contribution is the gathered light
+        multiplied by the path throughput accumulated at previous bounces.
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/throughput.png"
+             alt="The next throughput is the current throughput multiplied by the albedo; the path radiance is throughput times environment radiance on a miss or throughput times emitted radiance on a light hit." />
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Diffuse Bounce Sampling (8 points)</h3>
+
+    <p>
+        Complete <code>sampleDiffuseDirection</code>. A perfectly diffuse surface scatters
+        light over the hemisphere above the surface. For this introductory path tracer, use
+        the simple sampling construction prepared in the comments:
+    </p>
+
+    <ol>
+        <li>Generate a random unit vector with <code>Vec3::randomUnitVector()</code>.</li>
+        <li>Add the surface normal to shift the vector into the hemisphere above the surface.</li>
+        <li>If the result is almost zero, use the normal itself as a fallback.</li>
+        <li>Normalize the resulting direction and return it.</li>
+    </ol>
+
+    <p class="formula">
+        <img src="formulas_black/diffuse_sample.png"
+             alt="The diffuse direction is the normalized sum of the normal and a random unit vector." />
+    </p>
+
+    <p>
+        This produces a cosine-weighted distribution: directions near the normal are sampled
+        more often than grazing directions. That matches the cosine term in Lambertian
+        reflection well enough for this exercise and keeps the implementation compact. In the
+        formula above, the letter <code>&xi;</code> (xi) denotes the random unit vector returned
+        by <code>Vec3::randomUnitVector()</code>.
+    </p>
+
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Trace One Path (17 points)</h3>
+
+    <p>
+        Complete the body of the loop in <code>Scene::traceLocalPath</code>. The comments in
+        the code describe the required steps. The setup is already present:
+    </p>
+
+    <ul>
+        <li><code>ray</code> stores the current ray of the path.</li>
+        <li><code>throughput</code> stores the accumulated material attenuation.</li>
+        <li>The loop limits the path length to <code>maxDepth</code>.</li>
+        <li>The final return value after the loop represents a path that was terminated before it reached a light source.</li>
+    </ul>
+
+    <p>
+        Start by intersecting the current ray with the scene, exactly as in the previous
+        raytracer. If there is no hit, the path has reached the environment light and should
+        return:
+    </p>
+
+    <pre><code>throughput * environmentColor(transformDirection(model, ray.getDirection()))</code></pre>
+
+    <p>
+        If there is a hit, extract the intersection position, normal, and material. In this
+        simplified renderer, an emissive material is not also handled as a scattering
+        material. Therefore, before choosing a new bounce direction, check whether the
+        material emits light. If <code>material.emits()</code> is true, the path has reached
+        light-source geometry and should return:
+    </p>
+
+    <pre><code>throughput * material.getEmission()</code></pre>
+
+    <p>
+        Only if the material does not emit light do we choose a continuation direction:
+    </p>
+
+    <ul>
+        <li>
+            <strong>Glass:</strong> reuse the refraction code from the texturing raytracer.
+            Compute Fresnel reflectivity and a potential refracted direction. Instead of
+            tracing both reflection and refraction recursively, use the Fresnel value as a
+            probability to choose one of them for this path.
+        </li>
+        <li>
+            <strong>Mirror:</strong> reuse <code>Vec3::reflect</code>. This part is almost
+            identical to the old recursive reflection ray.
+        </li>
+        <li>
+            <strong>Diffuse:</strong> call <code>sampleDiffuseDirection</code>. This replaces
+            the old direct-light loop with a random bounce.
+        </li>
+    </ul>
+
+    <p class="formula">
+        <img src="formulas_black/fresnel_choice.png"
+             alt="The probability of reflection is the Fresnel term and the probability of refraction is one minus the Fresnel term." />
+    </p>
+
+    <p>
+        After selecting the direction, update <code>throughput</code>. Diffuse surfaces should
+        multiply by <code>getAlbedo(inter)</code>. Mirror and glass surfaces should multiply by
+        <code>material.getSpecular()</code>. Finally, normalize the direction
+        and create the next ray from <code>offsetRayOrigin</code> so the ray does not intersect
+        the same surface again.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 3: Understand the Behavior (5 points)</h3>
+
+    <p>
+        Use the reference solution to compare the two scenes. Press <code>S</code> to switch
+        between them and watch both the runtime behavior and the noise over multiple samples.
+        Answer the following questions in a few sentences:
+    </p>
+
+    <ol>
+        <li>
+            Why is the first scene faster per ray than the Cornell box scene? Think about the
+            number of objects, the typical number of bounces, and how often a ray quickly
+            leaves the scene.
+        </li>
+        <li>
+            Why does the first scene converge faster? After about 200 samples per pixel the
+            noise is almost gone, while the Cornell box still needs many more samples. Think
+            about environment lighting, closed geometry, indirect bounces, and the probability
+            that a random path actually reaches a light source.
+        </li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <p>
+        The reference solution below shows the expected behavior: a progressively refined path
+        traced image with environment lighting or emissive light geometry, mirror/glass
+        paths, diffuse bounces, texture sampling, and visible color bleeding.
+    </p>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        Drag with the left mouse button to rotate the scene. Press <code>S</code> to switch
+        between the two scenes. The path accumulation restarts whenever the scene changes.
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../02" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../04" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

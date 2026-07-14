@@ -1,0 +1,74 @@
+<!--#set var="pagetitle" value="Solution Exercise 13 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Solution for Exercise 13: Line Rasterization</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The provided file contains the finished DDA and Bresenham implementations. To
+        compare the solution with your own implementation, replace the assignment version
+        of <code>main.cpp</code> with this file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp"><code>main.cpp</code> Open</a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">DDA</h3>
+
+    <p>
+        DDA follows the continuous line with floating-point increments. The dominant axis
+        determines how many steps are needed. Each floating-point position is rounded to the
+        nearest pixel.
+    </p>
+
+    <p>
+        The implementation computes <code>steps = max(abs(dx), abs(dy))</code>. This advances
+        the dominant axis by exactly one pixel per iteration, while the other axis changes by
+        a fraction. The algorithm is short and readable, but it requires floating-point
+        arithmetic and rounding in the loop.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void drawLineDDA" data-end="void drawLineBresenham">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Bresenham</h3>
+
+    <p>
+        Bresenham replaces floating-point steps with an integer error term. This error term
+        decides whether the next pixel advances horizontally, vertically, or diagonally.
+    </p>
+
+    <p>
+        The all-octants variant stores the positive distances <code>dx</code> and
+        <code>dy</code> as well as the signs <code>sx</code> and <code>sy</code>. The doubled
+        error value is used to make the next pixel decision with integer comparisons. A step
+        in <code>x</code> subtracts <code>dy</code> from the error; a step in <code>y</code>
+        adds <code>dx</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void drawLineBresenham" data-end="PixelPoint leftPoint">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

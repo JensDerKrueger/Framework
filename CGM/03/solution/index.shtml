@@ -1,0 +1,97 @@
+<!--#set var="pagetitle" value="Exercise 3 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 3: Path Tracing Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The provided <code>Scene.cpp</code> contains the completed implementation for this
+        exercise. To compare it with your own work, replace the exercise version of
+        <code>Scene.cpp</code> with this file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="Scene.cpp">Open the complete <code>Scene.cpp</code> solution</a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Diffuse Sampling</h3>
+
+    <p>
+        The diffuse bounce uses the same cosine-weighted construction described in the
+        exercise text: add a random unit vector to the surface normal and normalize the
+        result. This creates more samples near the normal than near grazing directions, which
+        matches the cosine factor of Lambertian reflection.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="Vec3 sampleDiffuseDirection" data-end="Vec3 offsetRayOrigin">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Trace One Path</h3>
+
+    <p>
+        The path tracer carries a ray and a throughput value. A miss means the path reached
+        the environment light. An emissive material terminates the path immediately; in this
+        simplified renderer a material either emits light or scatters the path, but not both.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="Vec3 Scene::traceLocalPath" data-end="if (material.refracts())">Loading Scene.cpp...</pre>
+
+    <p>
+        Refractive and mirror materials reuse the raytracer's deterministic reflection and
+        refraction operations. The difference is that the path tracer chooses only one
+        continuation direction. For glass, the Fresnel term is used as the probability of
+        reflection; otherwise the path refracts.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="if (material.refracts())" data-end="nextDirection = Vec3::normalize(nextDirection);">Loading Scene.cpp...</pre>
+
+    <p>
+        After choosing the next direction, the new ray starts slightly away from the surface
+        to avoid self-intersection. If the loop reaches <code>maxDepth</code> before finding
+        environment or emissive light, this simple implementation returns black.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="nextDirection = Vec3::normalize(nextDirection);" data-end="Scene Scene::genPathTracingScene">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Behavior Questions</h3>
+
+    <p>
+        The first scene is faster per ray because many paths leave the scene quickly and hit
+        the environment after only a few intersections. The Cornell box is closed, so paths
+        tend to bounce more often before they terminate. More bounces mean more intersection
+        tests and more material decisions per pixel sample.
+    </p>
+
+    <p>
+        The first scene also converges faster because the environment light is easy to find:
+        many randomly chosen paths collect useful light. In the Cornell box, the important
+        light source is harder for random paths to hit, and indirect lighting depends on more
+        bounces. That increases variance, so the image needs many more samples before the
+        noise disappears.
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

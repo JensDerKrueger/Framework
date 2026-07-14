@@ -1,0 +1,65 @@
+<!--#set var="pagetitle" value="Solution Exercise 09 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Solution for Exercise 09: Bounding Volume Hierarchies</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the finished BVH implementation. To compare the solution with your own implementation, replace the assignment versions of <code>AABB.h</code> and <code>Scene.cpp</code> with these files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="AABB.h">Open <code>AABB.h</code></a>
+        <a class="source-link" href="Scene.cpp">Open <code>Scene.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Ray-Box Intersection</h3>
+
+    <p>
+        The AABB intersection uses the slab method. Each axis produces an interval of valid ray parameters. The ray hits the box only if the three axis intervals overlap. The input values <code>tMin</code> and <code>tMax</code> let the traversal limit the box test to the closest hit found so far. The BVH uses the boolean wrapper <code>intersect</code>, while <code>intersectInterval</code> computes the actual entry and exit distances, just as in the octree exercise.
+    </p>
+
+    <pre class="code-snippet" data-src="AABB.h" data-start="bool intersectInterval" data-end="void expand">Loading AABB.h...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: BVH Construction</h3>
+
+    <p>
+        The builder leaves the scene objects in their original vector and only reorders <code>bvhObjectIndices</code>. Each node stores the bounding box of its object range. Small ranges become leaves. Larger ranges are split at the median of the centers along the axis with the largest center extent.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="void Scene::buildBVH" data-end="std::optional<Intersection> Scene::intersectBruteForce">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 3: BVH Traversal</h3>
+
+    <p>
+        Traversal first tests the node's box. If that box is missed, the entire subtree can be skipped. Leaf nodes test their small primitive range directly. Inner nodes traverse both children and shrink <code>maxT</code> as soon as a nearer intersection is found.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="std::optional<Intersection> Scene::intersectBVHNode" data-end="std::optional<Intersection> Scene::intersectBVH">Loading Scene.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

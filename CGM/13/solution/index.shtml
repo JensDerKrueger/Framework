@@ -1,0 +1,82 @@
+<!--#set var="pagetitle" value="Exercise 13 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 13: Image Compression Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        Replace the exercise version of <code>JPEGCodec.cpp</code> with the completed file
+        below and rebuild the project. The rest of the encoder already contains the JPEG
+        container, Huffman coding, bitstream writing, and the interactive display.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="JPEGCodec.cpp">Open <code>JPEGCodec.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">RGB to YCbCr</h3>
+
+    <p>
+        The first step separates luminance from chrominance. The padded pixels repeat the
+        border of the input image so every JPEG macroblock is complete.
+    </p>
+
+    <pre class="code-snippet" data-src="JPEGCodec.cpp" data-start="YCbCrImage convertToYCbCr" data-end="Channel downsampleChroma420">Loading JPEGCodec.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Chroma Subsampling</h3>
+
+    <p>
+        <code>4:2:0</code> averages a <code>2 x 2</code> chroma block. <code>4:2:2</code>
+        averages only pairs in the horizontal direction. In both cases the luminance channel
+        stays full resolution.
+    </p>
+
+    <pre class="code-snippet" data-src="JPEGCodec.cpp" data-start="Channel downsampleChroma420" data-end="Channel upsampleHorizontal2x">Loading JPEGCodec.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Forward DCT</h3>
+
+    <p>
+        The DCT converts one <code>8 x 8</code> block into frequency coefficients. The input
+        samples are centered around zero before projection onto the cosine basis.
+    </p>
+
+    <pre class="code-snippet" data-src="JPEGCodec.cpp" data-start="std::array<float, 64> computeDCTBlock" data-end="std::array<int16_t, 64> quantizeBlock">Loading JPEGCodec.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Quantization</h3>
+
+    <p>
+        Quantization divides every frequency coefficient by a table entry and rounds the
+        result. This creates many zeros in high frequencies, which the provided run-length
+        and Huffman encoder can store compactly.
+    </p>
+
+    <pre class="code-snippet" data-src="JPEGCodec.cpp" data-start="std::array<int16_t, 64> quantizeBlock" data-end="std::array<int16_t, 64> zigZagBlock">Loading JPEGCodec.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

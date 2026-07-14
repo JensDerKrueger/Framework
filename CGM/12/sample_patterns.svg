@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 280" role="img" aria-labelledby="title desc">
+  <title id="title">Regular and jittered supersampling patterns</title>
+  <desc id="desc">Two pixel grids comparing regular sub-pixel samples with jittered stratified samples.</desc>
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .pixel { fill: #f7f8fa; stroke: #2f363d; stroke-width: 2; }
+      .grid { stroke: #8a949e; stroke-width: 1.5; }
+      .regular { fill: #8a6d00; stroke: #3f3300; stroke-width: 1; }
+      .jitter { fill: #006d8f; stroke: #003e52; stroke-width: 1; }
+      .label { fill: #111111; font-family: Arial, Helvetica, sans-serif; font-size: 24px; font-weight: 700; }
+      .caption { fill: #333333; font-family: Arial, Helvetica, sans-serif; font-size: 16px; }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="800" height="280" rx="8"/>
+
+  <text class="label" x="200" y="36" text-anchor="middle">Regular 4x4</text>
+  <text class="label" x="600" y="36" text-anchor="middle">Jittered 4x4</text>
+
+  <g transform="translate(92 58)">
+    <rect class="pixel" x="0" y="0" width="216" height="168"/>
+    <path class="grid" d="M54 0v168M108 0v168M162 0v168M0 42h216M0 84h216M0 126h216"/>
+    <g class="regular">
+      <circle cx="27" cy="21" r="5"/><circle cx="81" cy="21" r="5"/><circle cx="135" cy="21" r="5"/><circle cx="189" cy="21" r="5"/>
+      <circle cx="27" cy="63" r="5"/><circle cx="81" cy="63" r="5"/><circle cx="135" cy="63" r="5"/><circle cx="189" cy="63" r="5"/>
+      <circle cx="27" cy="105" r="5"/><circle cx="81" cy="105" r="5"/><circle cx="135" cy="105" r="5"/><circle cx="189" cy="105" r="5"/>
+      <circle cx="27" cy="147" r="5"/><circle cx="81" cy="147" r="5"/><circle cx="135" cy="147" r="5"/><circle cx="189" cy="147" r="5"/>
+    </g>
+  </g>
+
+  <g transform="translate(492 58)">
+    <rect class="pixel" x="0" y="0" width="216" height="168"/>
+    <path class="grid" d="M54 0v168M108 0v168M162 0v168M0 42h216M0 84h216M0 126h216"/>
+    <g class="jitter">
+      <circle cx="18" cy="29" r="5"/><circle cx="94" cy="11" r="5"/><circle cx="121" cy="34" r="5"/><circle cx="205" cy="22" r="5"/>
+      <circle cx="39" cy="49" r="5"/><circle cx="72" cy="77" r="5"/><circle cx="152" cy="55" r="5"/><circle cx="178" cy="79" r="5"/>
+      <circle cx="12" cy="115" r="5"/><circle cx="96" cy="91" r="5"/><circle cx="118" cy="123" r="5"/><circle cx="201" cy="96" r="5"/>
+      <circle cx="44" cy="146" r="5"/><circle cx="69" cy="132" r="5"/><circle cx="149" cy="158" r="5"/><circle cx="175" cy="136" r="5"/>
+    </g>
+  </g>
+
+  <text class="caption" x="200" y="250" text-anchor="middle">Same pattern in every pixel: aliases remain structured.</text>
+  <text class="caption" x="600" y="250" text-anchor="middle">One random sample per stratum: aliases turn into noise.</text>
+</svg>

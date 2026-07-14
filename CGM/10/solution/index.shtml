@@ -1,0 +1,79 @@
+<!--#set var="pagetitle" value="Exercise 10 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 10: Deferred Shading Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed deferred shading pipeline. To compare them
+        with your own work, replace the exercise versions of <code>main.cpp</code>,
+        <code>Shader/gbuffer.frag</code>, and <code>Shader/deferred.frag</code> with these
+        files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="gbuffer.frag">Open <code>gbuffer.frag</code></a>
+        <a class="source-link" href="deferred.frag">Open <code>deferred.frag</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">G-buffer Setup</h3>
+
+    <p>
+        The first pass renders the scene into four floating point textures and a depth
+        renderbuffer. The color clear uses alpha <code>0</code>, while covered fragments write
+        position alpha <code>1</code>. This gives the deferred shader a simple way to
+        distinguish geometry pixels from the background.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void ensureGBufferSize" data-end="void setGBufferMatrices">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">G-buffer Shader</h3>
+
+    <p>
+        The G-buffer fragment shader stores material and geometry information instead of
+        computing lighting. Normal mapping is still performed in this pass, because the final
+        view-space normal is exactly the quantity the deferred shader needs later.
+    </p>
+
+    <pre class="code-snippet" data-src="gbuffer.frag">Loading gbuffer.frag...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Deferred Lighting And Debug View</h3>
+
+    <p>
+        The second pass binds the G-buffer textures and draws one full-screen triangle. The
+        fragment shader reconstructs the surface data per pixel and computes Phong lighting
+        in image space. The debug path uses the same textures but remaps the texture
+        coordinates into four screen quadrants.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void renderDeferredImage" data-end="virtual void draw">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="deferred.frag">Loading deferred.frag...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,111 @@
+<!--#set var="pagetitle" value="Solution Sheet 15 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 15: Solution for Hello OpenGL</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The provided file contains the complete implementation for this exercise sheet.
+        To compare it with your own solution or with the starter code, replace the assignment
+        version of <code>main.cpp</code> with this file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp"><code>main.cpp</code> Open</a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Rectangle from Two Triangles</h3>
+
+    <p>
+        The starter code contains only one triangle. The solution replaces this geometry
+        with two triangles that together form a rectangle in normalized device coordinates
+        from <code>-0.5</code> to <code>0.5</code>. Both triangles share the diagonal from
+        upper left to lower right.
+    </p>
+
+    <p>
+        The OpenGL objects are extended to arrays: two VBOs and two VAOs, one set per
+        triangle. This is not the only possible solution, but it makes the mapping between
+        geometry and draw call direct.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="GLuint vbo" data-end="const GLchar* vertexShaderSource">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Shaders for the Two Colors</h3>
+
+    <p>
+        Both triangles use the same vertex shader because their positions are processed in
+        the same way. For the different colors, the solution defines two fragment shader
+        sources: one orange shader and one green shader.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="const GLchar* vertexShaderSource" data-end="static void draw">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Drawing</h3>
+
+    <p>
+        In <code>draw</code>, the framebuffer is cleared and then each triangle is drawn
+        separately. Before each draw call, the solution binds the matching VAO and shader
+        program. This gives the first triangle the orange color and the second triangle the
+        green color.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="static void draw" data-end="static void setupShaders">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Compile Shaders and Link Programs</h3>
+
+    <p>
+        <code>setupShaders</code> compiles the shared vertex shader and the two fragment
+        shaders. It then links two programs: <code>orangeProgram</code> combines the vertex
+        shader with the orange fragment shader, and <code>greenProgram</code> uses the green
+        fragment shader. After linking, the individual shader objects can be deleted.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="static void setupShaders" data-end="static void setupGeometry">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Geometry in VBOs and VAOs</h3>
+
+    <p>
+        In <code>setupGeometry</code>, two buffers and two vertex array objects are created.
+        For each triangle, the matching VAO is bound, the corresponding VBO is filled with
+        position data, and attribute <code>0</code> is configured as a three-component
+        floating-point position.
+    </p>
+
+    <p>
+        This lets the rendering path later bind only the desired VAO and draw exactly one
+        triangle with <code>glDrawArrays(GL_TRIANGLES, 0, 3)</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="static void setupGeometry" data-end="#ifndef __EMSCRIPTEN__">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

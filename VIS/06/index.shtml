@@ -1,0 +1,117 @@
+<!--#set var="pagetitle" value="Exercise 06 – Particles and Lines" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<div class="task-container">
+    
+    <h1>Flow Field Visualization</h1>
+    
+    <p>
+        All assignments must be uploaded to Moodle. Submissions not uploaded before the deadline will not be graded and will receive 0 points. Assignments that fail to compile will also receive 0 points. Example inputs and outputs are often provided for testing; assignments that do not handle these correctly will be awarded very few points. Please ensure your program produces only the requested output, without any additional messages. Submit your solution as a single zip archive named <strong>FirstName_LastName.zip</strong>, including all modified files. For assignments that also include theoretical tasks, you must additionally provide a text file or a scan/photo containing your written answers within the same archive.
+    </p>
+    
+    <h3 class="assignment">Exercise: Particles (10 points)</h3>
+    
+    <div style="display: flex; justify-content: center;">
+        <a href="part1/">
+            <img src="particles.png" alt="Flowfield visualized with particles" style="width: 40%;">
+        </a>
+    </div>
+    <p>
+        Flowfield visualized using (animated) particles.
+    </p>
+    
+    <p>
+        <strong>Do not change any helper classes in the provided <code>Utils</code> folder!</strong>
+    </p>
+    
+    <p>
+        Before beginning, make yourself familiar with the <code>Flowfield</code> class.
+    </p>
+    
+    <p>
+        In this task, you will implement the advection of particles in a three-dimensional
+        flow field. Complete the <code>advect</code> function in <code>main.cpp</code>.
+    </p>
+    
+    <p>
+        Each particle position is stored in the normalized flow-field domain
+        <code>[0, 1]^3</code>. Use an explicit Euler step to move a particle from its current
+        position <code>p</code> to the next position:
+        <code>p_next = p + flow.interpolate(p) * deltaT</code>.
+    </p>
+    
+    <p>
+        If a particle moves out of bounds, meaning any component is smaller than
+        <code>0</code> or larger than <code>1</code>, reset it to a new random position. The
+        resulting moving particle cloud should follow the flow field over time and make the
+        structure of the vector field visually apparent.
+    </p>
+    
+    Click <a href="part1/">here</a> to watch the particles animate along the flowfield.
+    
+    <h3 class="assignment">Exercise: Lines (10 points)</h3>
+    
+    <div style="display: flex; justify-content: center;">
+        <a href="part2/">
+            <img src="lines.png" alt="Flowfield visualized with lines" style="width: 40%;">
+        </a>
+    </div>
+    <p>
+        Flowfield visualized using lines.
+    </p>
+    
+    <p>
+        Flow fields can be visualized not only by moving particles, but also by lines that
+        follow the local flow direction. In this task, extend your previous particle-based
+        solution to produce static flow-aligned lines. Complete the <code>initLines()</code>
+        function in <code>main.cpp</code>.
+    </p>
+    
+
+    <p>
+        You may reuse and modify your previous advection implementation. Start each line at a
+        random seed position in the normalized domain <code>[0, 1]^3</code>. Then repeatedly
+        advance the previous point with an explicit Euler step using
+        <code>flow.interpolate</code>. The resulting line should appear static and clearly
+        show the directional structure of the flow field.
+    </p>
+    
+    <p>
+        Unlike the particle exercise, a line should not reset to a new random position when
+        it leaves the domain. Instead, terminate the line. The provided render conversion
+        stops a line when it finds two consecutive identical points. Therefore, if a line
+        terminates early, store a duplicate of the last valid point as the next point. This
+        duplicate endpoint acts as a sentinel and prevents a segment from being drawn outside
+        the volume.
+    </p>            
+    
+    Click <a href="part2/">here</a> to watch the line based flow visualization.
+    
+    Click <a href="part3/">here</a> to watch see how path-, stream-, and streaklines differ.
+    <p>
+        Submit <strong>two separate</strong> <code>main.cpp</code> files:
+    </p>
+    <ul>
+        <li>One for the <strong>particle-based</strong> visualization</li>
+        <li>One for the <strong>line-based</strong> visualization</li>
+    </ul>
+    
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../05" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../07" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<!--#include virtual="/_bottom.shtml" -->

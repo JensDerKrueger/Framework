@@ -1,0 +1,126 @@
+<!--#set var="pagetitle" value="Exercise 11 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 11: Texture Coordinates & Sampling</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Texture coordinates (10 points)</h3>
+    <p>
+        The updated classes from the previous sheet are prepared for texturing support.
+        <code>TODO</code> markers in the code identify the missing components.
+    </p>
+    <p>
+        Texture coordinates are necessary to map textures correctly onto primitives such as planes, spheres, and triangles.
+        <code>Plane.intersect</code> already computes texture coordinates for hit points.
+        In computer graphics, such coordinates are often visualized as RGB values for debugging, usually with <code>u</code> shown as red and <code>v</code> as green.
+    </p>
+    <p>
+        The two leftmost images below show a debug view and a scene without textures.
+        You can switch between them with the Spacebar.
+    </p>
+    
+    <p>
+        For this exercise, implement texture-coordinate computation for spheres using
+        <a href="http://en.wikipedia.org/wiki/Polar_coordinate_system" target="_blank">polar coordinates</a>.
+        <code>Sphere</code> accepts three parameters to control the mapping:
+    </p>
+    
+    <ol>
+        <li>
+            <strong>Euler angles</strong> (<code>Sphere.rotation</code>): rotate the direction vector <code>r</code> around the x-, y-, and z-axis in exactly that order using rotation matrices.
+        </li>
+        <li>
+            Compute the polar coordinates <code>(phi, theta)</code> and normalize <code>(u, v)</code> to the interval <code>[0, 1]</code>.
+        </li>
+        <li>
+            Scale the texture coordinates with <code>Sphere.scale</code> and then offset them with <code>Sphere.bias</code>.
+        </li>
+    </ol>
+    
+    
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <img src="DebugPlane.png" alt="Texture debug view for the plane only" style="width: 30%;">
+        <img src="NonTexturedScene.png" alt="Scene without textures" style="width: 30%;">
+        <img src="DebugScene.png" alt="Texture debug view for the full scene" style="width: 30%;">
+    </div>
+    
+    <p style="text-align: center;">
+        <em>Figure: debug texture coordinates for the plane (left), untextured scene (center), and full scene with texture coordinates (right).</em>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Procedurally generating a Texture (5 points)</h3>
+    <p>
+        Implement <code>genCheckerboardTexture</code> in <code>Texture</code>.
+        For a correct result, the first texel (<code>data[0]</code>) must be black.
+        The correct implementation produces a checkerboard pattern.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Texture sampling (10 points)</h3>
+    <p>
+        To project textures onto 2D surfaces, implement the corresponding texture-sampling methods.
+    </p>
+    <p>
+        Familiarize yourself with <code>Texture</code> and the enumerations <code>BorderMode</code> and <code>FilterMode</code>.
+    </p>
+    
+    <p>
+        Complete the methods marked with <code>TODO</code> so the following combinations are supported:
+    </p>
+    <ul>
+        <li>Filters: <code>NEAREST</code> and <code>BILINEAR</code></li>
+        <li>Border Modes: <code>CLAMP_TO_EDGE</code>, <code>CLAMP_TO_BORDER</code>, <code>MIRRORED_REPEAT</code></li>
+    </ul>
+    <p>
+        Filter and border modes can be combined freely.
+        The textures in the scene use these combinations deliberately:
+    </p>
+    
+    <ul>
+        <li>Earth: <code>REPEAT</code> + <code>NEAREST</code></li>
+        <li>Light logo: <code>CLAMP_TO_EDGE</code> (everything outside becomes white)</li>
+        <li>Dark logo: <code>MIRRORED_REPEAT</code> in <code>u</code> + <code>CLAMP_TO_BORDER</code> in <code>v</code>, creating a ring effect</li>
+        <li>Checkerboard: <code>REPEAT</code> + <code>NEAREST</code> or <code>BILINEAR</code></li>
+    </ul>
+    
+    <p>
+        During ray traversal, sampled texture values are automatically multiplied with the ambient and diffuse values of the Phong shading model. You do not need to change these equations.
+    </p>
+    
+    <p>
+        To test bilinear interpolation, simply change the checkerboard filter mode from <code>NEAREST</code> to <code>BILINEAR</code>.
+    </p>
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <p style="text-align: center;">
+        <em>Complete scene. Click and drag to interact.</em>
+        
+    </p>
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../10" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../12" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,124 @@
+<!--#set var="pagetitle" value="Exercise 04 – Direct Volume Renderer" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<div class="task-container">
+    
+    <h1>Volume Rendering</h1>
+    
+    <p>
+        All assignments must be uploaded to Moodle. Submissions not uploaded before the deadline will not be graded and will receive 0 points. Assignments that fail to compile will also receive 0 points. Example inputs and outputs are often provided for testing; assignments that do not handle these correctly will be awarded very few points. Please ensure your program produces only the requested output, without any additional messages. Submit your solution as a single zip archive named <strong>FirstName_LastName.zip</strong>, including all modified files. For assignments that also include theoretical tasks, you must additionally provide a text file or a scan/photo containing your written answers within the same archive.
+    </p>
+    
+    <h3 class="assignment">Exercise: Direct Volume Renderer (10 points)</h3>
+    
+    <p>
+        <strong>Do not change any helper classes in the provided <code>Utils</code> folder!</strong>
+    </p>
+
+    <p>
+        This exercise is a compact introduction to ideas that also appear in current volume
+        visualization research. In the recent research project
+        <a href="https://www.cgvis.de/vs/">Virtual Sampling</a>, you can explore different
+        methods for interpolating data inside a volume. The research prototype is a more
+        sophisticated version of the kind of renderer used here and supports many
+        interpolation and reconstruction methods beyond the tri-linear interpolation used in
+        this assignment.
+    </p>
+    
+    <p>
+        In this assignment, you must implement a <em>direct volume renderer</em>. Extend the main function in <code>cubeFS.glsl</code> and write the final rendered color into the <code>result</code> vector.
+    </p>
+
+    <p>
+        The shader already provides the geometric setup for one ray per fragment. The
+        varying <code>entryPoint</code> is the position where the viewing ray enters the
+        volume in texture coordinates. The uniform <code>cameraPosInTextureSpace</code>
+        gives the camera position in the same coordinate system, so the ray direction is
+        computed as <code>normalize(entryPoint - cameraPosInTextureSpace)</code>.
+    </p>
+
+    <p>
+        The helper <code>distanceToVolumeExit</code> computes <code>rayLength</code>, the
+        distance from the entry point to the point where the ray leaves the clipped volume
+        bounds. From this length and the volume resolution <code>voxelCount</code>, the
+        shader estimates how many voxels the ray crosses. Multiplying that estimate by
+        <code>oversampling</code> gives <code>sampleCount</code>. The values
+        <code>stepLength = rayLength / sampleCount</code> and
+        <code>delta = rayDirection * stepLength</code> then define the spacing and direction
+        of the ray-marching samples.
+    </p>
+
+    <div style="text-align: center;">
+        <img src="ray_marching_overview.svg" alt="Top-down diagram of volume ray marching variables" style="max-width: 100%; height: auto;">
+        <p>
+            Top view of a fragment ray through the volume. The shader starts at
+            <code>entryPoint</code>, advances by <code>delta</code>, and stops at the volume
+            exit or after early ray termination.
+        </p>
+    </div>
+
+    <p>
+        Inside the ray-marching loop, start with <code>currentPoint = rayStart</code> and an
+        accumulated color of <code>vec4(0.0)</code>. At each sample, read the scalar value
+        from <code>volume</code>, map it through <code>transferFunction</code>, correct its
+        opacity for the current step length, composite it front-to-back with
+        <code>under</code>, and then advance <code>currentPoint</code> by <code>delta</code>.
+    </p>
+    
+    <p>
+        Implement <strong>early ray termination</strong> and stop the raycasting when the accumulated alpha exceeds <code>0.95</code>.
+    </p>
+
+    <p>
+        The opacity correction keeps the rendered volume visually stable when the sampling
+        rate changes. Without it, increasing <code>oversampling</code> would add more samples
+        with the same opacity, making the same volume appear too opaque. The shader uses
+        <code>opacityCorrection = 100.0 * stepLength</code> and corrects the transfer-function
+        alpha with
+        <code>correctedAlpha = 1.0 - pow(1.0 - transferAlpha, opacityCorrection)</code>.
+        Equivalently, the remaining transparency is raised to the step-size-dependent
+        exponent:
+        <code>1.0 - correctedAlpha = pow(1.0 - transferAlpha, opacityCorrection)</code>.
+        In this exercise, the factor <code>100.0</code> means that the transfer-function
+        opacity is treated as being defined for a reference step length of about
+        <code>0.01</code> in texture space.
+    </p>
+    
+    <p>
+        The final program should resemble the example shown below.
+    </p>
+<div class="canvas-container">
+    <canvas id="canvas"></canvas>
+</div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>V</em> toggle volume, <em>R</em> reset, <em>T</em> toggle transfer-function editor<br/>
+        <em>1</em> clip in X, <em>2</em> clip in Y, <em>3</em> clip in Z<br/>
+        <em>4</em> move clip in X, <em>5</em> move clip in Y, <em>6</em> move clip in Z<br/>
+        <em>Q</em> increase oversampling, <em>W</em> decrease oversampling<br/>
+        <em>Up</em> zoom in, <em>Down</em> zoom out<br/>
+        <em>Left</em> mouse drag rotate, <em>Right</em> mouse drag quick edit transfer function
+    </p>
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../03" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../05" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

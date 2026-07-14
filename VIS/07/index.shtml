@@ -1,0 +1,71 @@
+<!--#set var="pagetitle" value="Exercise 07 – Line Integral Convolution" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<div class="task-container">
+    
+    <h1>LIC Visualization</h1>
+    
+    <p>
+        All assignments must be uploaded to Moodle. Submissions not uploaded before the deadline will not be graded and will receive 0 points. Assignments that fail to compile will also receive 0 points. Example inputs and outputs are often provided for testing; assignments that do not handle these correctly will be awarded very few points. Please ensure your program produces only the requested output, without any additional messages. Submit your solution as a single zip archive named <strong>FirstName_LastName.zip</strong>, including all modified files. For assignments that also include theoretical tasks, you must additionally provide a text file or a scan/photo containing your written answers within the same archive.
+    </p>
+    
+    <h3 class="assignment">Exercise: Line Integral Convolution (10 points)</h3>
+    
+    <p>
+        In this assignment, you will implement the <em>Line Integral Convolution</em> (LIC) algorithm based on the lecture.
+        Your task is to complete the <code>computeLIC</code> function in <code>main.cpp</code>.
+    </p>
+    
+    <p>
+        Your implementation should match the output shown above.
+    </p>
+    
+    <p>
+        To achieve this:
+    </p>
+    <ul>
+        <li>Apply line integral convolution followed by histogram equalization, and repeat this combination <strong>three times</strong>.</li>
+        <li>The flowfields are <strong>three-dimensional</strong>, but for streamline calculation fix the depth at <code>z = 0.5</code>.</li>
+        <li>Use a <strong>kernel length of 50</strong> in both directions for the convolution.</li>
+        <li>Use the <strong>Euler method</strong> for advection, and stop advection when the streamline exits the domain bounds.</li>
+    </ul>
+    
+    Verify that the LIC result reveals the underlying vector field.
+<div class="canvas-container">
+    <canvas id="canvas"></canvas>
+</div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <div class="description">
+        <strong>D</strong> Restart with the drain field<br>
+        <strong>S</strong> Restart with the sattle field<br>
+        <strong>C</strong> Restart with the critical points field<br>
+        <strong>H</strong> Do another set of iterations<br>
+        <strong>1</strong> Restart with plain noise<br>
+        <strong>2</strong> Restart with sparse noise<br>
+        <strong>8</strong> Double the kernel size<br>
+        <strong>9</strong> Half the kernel size<br>
+    </div>
+    
+    
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../06" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+</div>
+  </div>
+</section>
+
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

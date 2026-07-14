@@ -1,0 +1,109 @@
+<!--#set var="pagetitle" value="Exercise 6c Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 6c: Streamlines, Pathlines, and Streaklines Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided file contains the completed line-type comparison. To compare it with
+        your own work, replace the exercise version of <code>main.cpp</code> with the
+        provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task Overview</h3>
+
+    <p>
+        The exercise compares streamlines, pathlines, and streaklines in a time-dependent
+        flow field. The solution precomputes one line buffer for each line type and lets the
+        user cycle between them with the space bar.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void initLines" data-end="void advectStream">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Streamlines</h3>
+
+    <p>
+        A streamline follows the vector field at one fixed time. The solution generates
+        random seed points and advects each line with <code>t = 0</code> for every step, so
+        the curve shows the instantaneous direction of the flow at that time slice.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void advectStream" data-end="void advectPath">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Pathlines</h3>
+
+    <p>
+        A pathline follows one particle through the time-dependent vector field. The solution
+        starts from a random seed, advects from the previous point, and advances the time
+        variable by <code>deltaT</code> after each successful step.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void advectPath" data-end="void advectStreak">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Streaklines</h3>
+
+    <p>
+        A streakline shows the positions of particles released from the same seed point at
+        different times. For every output sample, the solution restarts at the seed and
+        integrates forward for a different number of time steps before storing the point.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void advectStreak" data-end="Vec3 advect">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Shared Euler Step</h3>
+
+    <p>
+        All three line types use the same single-step advection helper. It stops integration
+        once a point leaves the unit cube; otherwise it performs an explicit Euler step using
+        <code>flow.interpolate(position, t)</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="Vec3 advect" data-end="void linePointsToRenderData">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Rendering and Switching</h3>
+
+    <p>
+        The render conversion is the same line-list layout as in the previous exercise, but
+        it writes into one of three buffers. The draw function renders the currently active
+        buffer, and the keyboard handler advances <code>activeLineType</code> and updates the
+        window title.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void linePointsToRenderData" data-end="virtual void mouseMove">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

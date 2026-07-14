@@ -1,0 +1,152 @@
+<!--#set var="pagetitle" value="Exercise 5 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 5: Photon Mapping</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Photon Mapping for Indirect Illumination (25 points)</h3>
+
+    <p>
+        In the previous exercises you implemented path tracing and radiosity. This exercise
+        uses a third global-illumination method: photon mapping. The renderer first emits
+        photons from the light source and stores them where they hit diffuse surfaces. Camera
+        rays are traced afterwards. When a camera ray hits a diffuse surface, the renderer
+        estimates illumination by looking up nearby stored photons.
+    </p>
+
+    <p>
+        The application already creates the scene, emits photons over multiple frames,
+        displays the photon positions as small points, traces camera rays, and builds a
+        spatial hash grid for fast photon lookup. Your task is to complete the missing code
+        in <code>PhotonMapper.cpp</code>, specifically <code>tracePhotonPath</code> and
+        <code>estimatePhotonRadiance</code>.
+    </p>
+
+    <p>
+        A stored photon represents incoming flux at a diffuse surface point. In the code this
+        is the <code>Photon</code> struct: it stores the hit position, the incoming photon
+        direction, the surface normal at the hit point, and the photon power.
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/photon_record.png"
+             alt="A stored photon consists of position, incoming direction, surface normal, and photon power." />
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Trace Photon Paths (13 points)</h3>
+
+    <p>
+        Complete <code>PhotonMapper::tracePhotonPath</code>. This function follows one photon
+        emitted by the light source through the scene. The function receives the initial
+        photon origin, direction, and power. The prepared variables <code>ray</code> and
+        <code>photonPower</code> store the current state of the photon path.
+    </p>
+
+    <p>
+        Inside the bounce loop:
+    </p>
+
+    <ol>
+        <li>Intersect the current photon ray with the scene using <code>scene.intersect(ray, false)</code>.</li>
+        <li>Terminate the path if the photon leaves the scene.</li>
+        <li>Compute hit position, normal, and material from the intersection.</li>
+        <li>Terminate the path if the photon hits emissive geometry.</li>
+        <li>For glass, use the Fresnel reflectivity as the probability of reflection. Otherwise refract if possible.</li>
+        <li>For mirror-like material, reflect the photon and multiply its power by the specular color.</li>
+        <li>For diffuse material, store the photon with <code>storePhoton</code>.</li>
+        <li>After a diffuse hit, multiply the photon power by the diffuse color and continue in a random diffuse direction.</li>
+        <li>Use <code>offsetRayOrigin</code> whenever the next ray starts on a surface.</li>
+    </ol>
+
+    <p>
+        Do not store photons on glass or mirror surfaces. In this simplified implementation
+        they only redirect photons. Diffuse surfaces are the places where the photon map
+        records incoming light.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Gather Photons (12 points)</h3>
+
+    <p>
+        Complete <code>PhotonMapper::estimatePhotonRadiance</code>. This function is called
+        when a camera ray hits a diffuse surface. It estimates outgoing radiance by summing
+        nearby photons and dividing by the area of the gather disk:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/photon_density.png"
+             alt="Outgoing radiance is approximated by diffuse reflectance times summed nearby photon powers divided by pi times gather radius squared." />
+    </p>
+
+    <p>
+        In the formula, <code>x</code> is the visible surface point, <code>r</code> is
+        <code>PHOTON_GATHER_RADIUS</code>, <code>&rho;<sub>d</sub></code> is the diffuse
+        material color, and <code>&Delta;&Phi;<sub>p</sub></code> is the power stored in one
+        nearby photon. The implementation also multiplies by
+        <code>PHOTON_RADIANCE_SCALE</code>, a constant chosen to make the small educational
+        photon map visually useful.
+    </p>
+
+    <p>
+        Use the hash grid instead of looping over all photons. Compute the grid-cell range
+        around the hit position, visit all candidate cells, and then apply the precise radius
+        test. Keep only photons that:
+    </p>
+
+    <ol>
+        <li>are inside the gather radius,</li>
+        <li>arrived from the front side of the visible surface, and</li>
+        <li>were stored on a surface with a sufficiently similar normal.</li>
+    </ol>
+
+    <p>
+        The normal test reduces light leaking across sharp edges, for example from the floor
+        through a wall corner. After summing the accepted photon powers, multiply the sum by
+        the diffuse color and divide by <code>pi * r * r</code>.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <p>
+        The reference solution below shows the expected behavior: photons are emitted from
+        the rectangular area light, bounce through the scene, and are gathered on diffuse
+        surfaces. Mirror and glass surfaces redirect camera rays and photon paths, so they
+        still show indirect illumination from the photon map.
+    </p>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>Left</em> mouse drag rotate, <em>R</em> reset rotation
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../04" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../06" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

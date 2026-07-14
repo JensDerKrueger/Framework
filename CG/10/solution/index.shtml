@@ -1,0 +1,56 @@
+<!--#set var="pagetitle" value="Solution Exercise 10 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Solution for Exercise 10: Octrees</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the finished octree implementation. To compare the solution with your own implementation, replace the assignment versions of <code>AABB.h</code> and <code>Scene.cpp</code> with these files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="AABB.h">Open <code>AABB.h</code></a>
+        <a class="source-link" href="Scene.cpp">Open <code>Scene.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Octree Construction</h3>
+
+    <p>
+        The slab-based ray-box test already exists in the exercise code. The AABB function needed for construction is <code>overlaps</code>: it checks whether a primitive's bounding box touches a child cell. The builder leaves scene objects in their original vector and stores only indices in <code>octreeObjectIndices</code>. The root bounds are expanded to a cube. Each inner node splits its cube into eight children. Small primitives are inserted into all overlapping children, while objects that overlap many children remain in the current node.
+    </p>
+
+    <pre class="code-snippet" data-src="AABB.h" data-start="bool overlaps" data-end="void expand">Loading AABB.h...</pre>
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="void Scene::buildOctree" data-end="std::optional<Intersection> Scene::intersectBruteForce">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Octree Traversal</h3>
+
+    <p>
+        Traversal uses the root AABB only to compute the entry and exit interval. Inside an inner node, the eight child cells are traversed with a 3D DDA. The traversal visits only cells that the ray actually crosses, from front to back. <code>maxT</code> is reduced as soon as a nearer intersection is found. A mailbox stamp prevents duplicated primitives from being tested more than once per ray.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="std::optional<Intersection> Scene::intersectOctreeNode" data-end="std::optional<Intersection> Scene::intersectOctree">Loading Scene.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

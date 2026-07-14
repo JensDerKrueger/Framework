@@ -1,0 +1,194 @@
+<!--#set var="pagetitle" value="Exercise 8 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 8: Procedural Volume Generation</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Rescale-And-Add Clouds (20 points)</h3>
+    <p>
+        In this exercise you will replace the analytic volume datasets from the previous sheets
+        with a procedurally generated cloud volume. The raycaster, transfer function, and
+        volumetric shadow computation are already implemented.
+    </p>
+    <p>
+        Your task is to complete <code>RescaleAndAddVolume.cpp</code>. The class already contains
+        the volume parameters, a permutation table, Perlin noise sampling, and helper functions
+        such as <code>smoothStep</code>. The missing part is the actual cloud-density generation.
+    </p>
+
+    <p>
+        Implement the procedural volume in three parts:
+    </p>
+
+    <ul>
+        <li>Fill <code>RescaleAndAddVolume::generate</code> by iterating over all voxels.</li>
+        <li>Map voxel coordinates to normalized coordinates in <code>[0, 1]</code>.</li>
+        <li>Implement <code>fractalNoise</code> as rescale-and-add noise over multiple octaves.</li>
+        <li>Use <code>roughness</code> for the amplitude decay and <code>lacunarity</code> for the frequency growth.</li>
+        <li>Implement <code>cloudEnvelope</code> to create a soft, noisy spherical falloff.</li>
+        <li>Shape the final density using coverage, density scale, density offset, and density exponent.</li>
+    </ul>
+
+    <p>
+        The fractal noise should follow the rescale-and-add formula from the lecture:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/fractal_noise.png"
+             alt="H(x,y,z) equals one over A times the sum over octaves of roughness to the octave times Perlin noise sampled at lacunarity to the octave times base frequency; A is the sum of the amplitudes." />
+    </p>
+
+    <p>
+        Here <code>N</code> is the provided Perlin noise function, <code>f</code> is
+        <code>baseFrequency</code>, <code>l</code> is <code>lacunarity</code>,
+        <code>r</code> is <code>roughness</code>, and <code>o</code> is
+        <code>octaves</code>. Normalize the sum by
+        <code>A = &sum;<sub>i=0</sub><sup>o-1</sup> r<sup>i</sup></code> so the
+        result remains in a stable range when changing the number of octaves.
+    </p>
+
+    <p>
+        The provided <code>perlin</code> function returns values roughly in
+        <code>[-1, 1]</code>. For ordinary noise, remap each octave with
+        <code>0.5 * octaveValue + 0.5</code>. For billowy noise, use
+        <code>1.0 - abs(octaveValue)</code> before adding the octave to the sum.
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/noise_remap.png"
+             alt="Octave noise is one minus the absolute Perlin value for billowy noise, or one half times the Perlin value plus one half for ordinary noise." />
+    </p>
+
+    <p>
+        After computing the base fractal noise, shape the cloud density in
+        <code>generate</code>:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/density_shaping.png"
+             alt="Detail erosion, shaped noise, smooth coverage threshold, and final density equation." />
+    </p>
+
+    <ul>
+        <li>Compute <code>noise = fractalNoise(x, y, z)</code>.</li>
+        <li>Compute <code>envelope = cloudEnvelope(x, y, z)</code>.</li>
+        <li>Use an additional high-frequency Perlin sample as detail noise.</li>
+        <li>Compute <code>erosion = 1.0 - detailErosion * (1.0 - detail)</code>.</li>
+        <li>Combine structure and boundary with <code>shapedNoise = noise * (0.20 + 0.80 * envelope) * erosion</code>.</li>
+        <li>Threshold the cloud with <code>cloudShape = smoothStep(coverage, 1.0, shapedNoise)</code>.</li>
+        <li>Shape opacity with <code>pow(cloudShape, densityExponent) * densityScale + densityOffset</code>.</li>
+        <li>Clamp to <code>[0, 1]</code>, multiply by <code>envelope</code>, and store <code>round(density * 255)</code>.</li>
+    </ul>
+
+    <p>
+        For <code>cloudEnvelope</code>, start with the distance to the center of the unit volume.
+        Then perturb the radius with a low-frequency Perlin sample:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/envelope.png"
+             alt="Noisy silhouette sample, local radius, and smooth envelope equation." />
+    </p>
+
+    <p>
+        Use <code>radius * radiusScale</code> as the local boundary and return
+        <code>1.0 - smoothStep(radius - envelopeSoftness, radius, distance)</code>.
+        This keeps the volume brick rectangular, but makes the actual cloud fade out with
+        a soft, noisy silhouette.
+    </p>
+
+    <p>
+        The generated volume should be written into <code>volume.data</code> as 8-bit density values.
+        Use the parameter sets in <code>main.cpp</code> to compare different clouds with the
+        <em>V</em> key.
+    </p>
+
+    <p>
+        The most relevant parameters are:
+    </p>
+
+    <ul>
+        <li><code>octaves</code>, <code>roughness</code>, and <code>lacunarity</code>: control the rescale-and-add noise.</li>
+        <li><code>baseFrequency</code>: controls the scale of the largest structures.</li>
+        <li><code>coverage</code>: controls how much of the noise becomes visible cloud.</li>
+        <li><code>radius</code> and <code>envelopeSoftness</code>: control the large-scale cloud boundary.</li>
+        <li><code>silhouetteNoiseFrequency</code> and <code>silhouetteNoiseStrength</code>: roughen the outline.</li>
+        <li><code>detailErosion</code>: removes material using high-frequency detail.</li>
+    </ul>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Find a Better Cloud (10 points)</h3>
+    <p>
+        The provided parameter sets in <code>main.cpp</code> are intentionally only a starting point.
+        They demonstrate that the generator works, but they do not create especially convincing
+        clouds yet. Procedural modeling often needs experimentation: small parameter changes can
+        move the result from a soft cloud to a dense blob, noisy foam, or something that looks
+        more like stone.
+    </p>
+
+    <p>
+        Create at least one additional <code>RescaleAndAddVolumeParameters</code> entry that
+        produces a better-looking cloud. You may change any generator parameter, but keep the
+        volume resolution reasonable enough that the program remains interactive.
+    </p>
+
+    <p>
+        Try to improve both the large shape and the fine structure:
+    </p>
+
+    <ul>
+        <li>Use <code>radius</code>, <code>envelopeSoftness</code>, and silhouette noise to avoid an obvious sphere.</li>
+        <li>Use <code>coverage</code>, <code>densityScale</code>, and <code>densityExponent</code> to control how quickly density appears.</li>
+        <li>Use <code>baseFrequency</code>, <code>octaves</code>, <code>roughness</code>, and <code>lacunarity</code> to balance large fluffy shapes and smaller detail.</li>
+        <li>Use <code>detailErosion</code> to break up overly solid regions.</li>
+        <li>Check the result from multiple view and light directions.</li>
+    </ul>
+
+    <p>
+        Submit the new parameter set together with a short explanation of what you changed and
+        why the result looks more cloud-like than the provided examples.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>V</em> toggle cloud parameter set, <em>R</em> reset, <em>T</em> toggle transfer-function editor<br/>
+        <em>1</em> clip in X, <em>2</em> clip in Y, <em>3</em> clip in Z<br/>
+        <em>4</em> move clip in X, <em>5</em> move clip in Y, <em>6</em> move clip in Z<br/>
+        <em>Q</em> increase oversampling, <em>W</em> decrease oversampling<br/>
+        <em>J/L</em> move light in X, <em>I/K</em> move light in Y, <em>U/O</em> move light in Z<br/>
+        <em>Up</em> zoom in, <em>Down</em> zoom out<br/>
+        <em>Left</em> mouse drag rotate, <em>Right</em> mouse drag quick edit transfer function
+    </p>
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../07" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../09" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

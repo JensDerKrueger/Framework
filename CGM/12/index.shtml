@@ -1,0 +1,135 @@
+<!--#set var="pagetitle" value="Exercise 12 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 12: Sampling</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Supersampling And Jittered Sampling (25 points)</h3>
+
+    <p>
+        A rendered image is a finite set of samples of a continuous image signal. If the
+        signal contains details that are too small for the pixel spacing, point sampling
+        produces aliases: jagged edges, lost detail, and structured false patterns. In this
+        exercise you implement several simple anti-aliasing strategies and compare them on the
+        same analytic image signal.
+    </p>
+
+    <p>
+        The project already contains the OpenGL window, image display code, and a continuous
+        test signal. The program renders four images. The top-left image is point sampling,
+        the top-right image is regular <code>4 x 4</code> supersampling, the bottom-left
+        image uses jittered stratified <code>8 x 8</code> sampling, and the bottom-right
+        image is a higher-quality jittered <code>16 x 16</code> reference.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="sample_patterns.svg" alt="Regular and jittered sampling patterns inside a pixel" />
+        <figcaption>
+            Regular supersampling increases the sampling frequency. Jittered stratified
+            sampling keeps one sample per stratum but removes the globally repeated sample
+            pattern.
+        </figcaption>
+    </figure>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Regular Supersampling (8 points)</h3>
+
+    <p>
+        Complete <code>regularSampleOffset</code> in <code>main.cpp</code>. The function
+        receives the integer coordinate of a sub-cell inside an <code>N x N</code> sampling
+        grid. It should return the center of that sub-cell as a sub-pixel offset in
+        <code>[0, 1]^2</code>.
+    </p>
+
+    <p>
+        For example, in a <code>4 x 4</code> grid, the first sample should be located at
+        <code>(0.125, 0.125)</code>, not at the pixel corner. The averaging loop in
+        <code>samplePixel</code> already evaluates all sub-samples and divides by the total
+        weight.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Sample Count Per Mode (6 points)</h3>
+
+    <p>
+        Complete <code>samplesPerAxisForMode</code>. Regular supersampling and jittered
+        supersampling should use different sample counts here, so the image quality improves
+        in reading order: point sampling first, then regular supersampling, then jittered
+        supersampling, and finally the reference image.
+    </p>
+
+    <p>
+        Use <code>4 x 4</code> samples for regular supersampling, <code>8 x 8</code> samples
+        for jittered sampling, and <code>16 x 16</code> jittered samples for the reference.
+        The reference is more expensive, but it gives a better approximation of the pixel
+        average and serves as a target image for the comparison.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 3: Jittered Stratified Sampling (9 points)</h3>
+
+    <p>
+        Complete <code>jitteredSampleOffset</code>. Regular supersampling still repeats the
+        same sample pattern in every pixel, which can leave visible aliases. Jittered
+        stratified sampling divides the pixel into the same regular sub-cells but places one
+        random sample inside each sub-cell.
+    </p>
+
+    <p>
+        Use the built-in <code>Vec2::random()</code> helper to generate two random numbers
+        in <code>[0, 1)</code>. These numbers should move the sample inside its own stratum,
+        not across the whole pixel.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 4: Compare The Results (2 points)</h3>
+
+    <p>
+        Compare the four images. Point sampling should show strong aliasing. Regular
+        supersampling should reduce the problem but can still create structured patterns.
+        Jittered sampling should turn some of those structured aliases into less regular
+        noise. The reference image should show the least aliasing because it uses more
+        samples. Press <code>S</code> to switch between test signals and use the arrow keys
+        to change the signal frequency.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        Top-left point, top-right regular, bottom-left jittered, bottom-right reference<br/>
+        <em>S</em> switch signal, <em>J</em> new jitter pattern,
+        <em>Up/Down</em> change frequency, <em>R</em> reset
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../11" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

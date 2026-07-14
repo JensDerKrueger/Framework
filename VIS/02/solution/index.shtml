@@ -1,0 +1,110 @@
+<!--#set var="pagetitle" value="Exercise 2 Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 2: Image Processing Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed implementation for this exercise. To compare
+        them with your own work, replace the exercise version of <code>main.cpp</code> with
+        the provided file and rebuild the project. The included <code>ColorConversion.h</code>
+        is used only for the fallback image generated when <code>lenna.bmp</code> cannot be
+        loaded.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="ColorConversion.h">Open <code>ColorConversion.h</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Grayscale Conversion</h3>
+
+    <p>
+        The grayscale function first checks whether the image has at least three color
+        components. It then chooses either uniform weights or the common luminance weights
+        <code>0.299</code>, <code>0.587</code>, and <code>0.114</code> for red, green, and
+        blue.
+    </p>
+
+    <p>
+        Each pixel is converted by reading its RGB values, computing the weighted sum, and
+        writing the same value back to the image.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void toGrayscale" data-end="void loadImage">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">ASCII Luminance</h3>
+
+    <p>
+        The helper <code>getLumiValue</code> converts the current pixel format to one
+        brightness value. Single-channel images can be used directly, two-channel images are
+        averaged, and RGB or RGBA images use the same weighted luminance formula as the
+        non-uniform grayscale mode.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="uint8_t getLumiValue" data-end="std::string toString">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">ASCII Art Output</h3>
+
+    <p>
+        The ASCII conversion maps each luminance value to a character in the selected lookup
+        table. Dark pixels select characters near the beginning of the table, bright pixels
+        select characters near the end. Each character is written twice to compensate for the
+        typical aspect ratio of monospace text.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="std::string toString" data-end="void filter">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Image Filtering</h3>
+
+    <p>
+        The filter function keeps a copy of the input image so every convolution reads from
+        the unchanged source data. It skips the outer border according to the kernel radius,
+        applies the kernel independently to each image component, clamps the result to the
+        valid byte range, and stores it in the temporary image.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void filter" data-end="virtual void keyboard">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Keyboard Shortcuts</h3>
+
+    <p>
+        The provided key bindings call the implemented operations directly: <code>G</code>
+        and <code>H</code> trigger weighted and uniform grayscale, <code>M</code> applies a
+        mean filter, <code>A</code> and <code>B</code> apply the two Sobel kernels,
+        <code>R</code> reloads the image, and <code>T</code> writes the ASCII output to
+        <code>ascii.txt</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void keyboard" data-end="#ifdef _WIN32">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

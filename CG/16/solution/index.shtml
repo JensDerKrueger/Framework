@@ -1,0 +1,97 @@
+<!--#set var="pagetitle" value="Solution Exercise 16 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Solution for Sheet 16: Local Lighting</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The solution consists of two files: <code>main.cpp</code> contains the normal display
+        from Exercise 1, and <code>fragmentShader.frag</code> contains the Phong shader from
+        Exercise 2. The preview on the assignment page was also built from these two solution
+        files, so the expected result is visible there directly.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp"><code>main.cpp</code> Open</a>
+        <a class="source-link" href="fragmentShader.frag"><code>fragmentShader.frag</code> Open</a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Normal Display</h3>
+
+    <p>
+        For the normal display, one short line is generated per vertex. The start of the
+        line is the vertex position, and its direction is the corresponding vertex normal.
+        The line data stores only the direction; the visible length is applied while drawing
+        through <code>normalLineLength</code> and can be changed with <code>Q</code> and
+        <code>W</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="std::vector&lt;float&gt; buildNormalLines" data-end="Mat4 modelMatrix">Loading main.cpp...</pre>
+
+    <p>
+        During drawing, the same separation as in the shader is used: the vertex position
+        is a position, and the normal is a direction. Therefore the line start is transformed
+        with the model-view matrix, but the normal direction is transformed with the
+        inverse-transposed model-view matrix. This is deliberately done in C++ before the
+        lines are passed to <code>drawLines</code>.
+    </p>
+
+    <p>
+        The simple line shader in the GLApp framework has no concept of normals. For it,
+        the start and end of a line are just positions that would normally both be multiplied
+        by the current model-view transformation. Passing local lines unchanged to that
+        shader would therefore transform the normal direction like a position. The solution
+        first builds finished lines in view space and then sets the identity transform via
+        <code>setDrawTransform(Mat4{})</code>, so the simple shader draws the prepared
+        view-space lines unchanged.
+    </p>
+
+    <p>
+        As an additional demonstration, the variable <code>properly</code> controls whether
+        normals are transformed correctly with the inverse-transposed model-view matrix or
+        directly with the model-view matrix. In the running solution, toggle it with
+        <code>P</code>. This is not part of the actual assignment, but it clearly shows how
+        normals and lighting change when the normal transform is wrong.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void drawNormalLines" data-end="void drawLightMarker">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Phong-Shader</h3>
+
+    <p>
+        In the fragment shader, all quantities are in world space. The normal <code>N</code>,
+        the light direction <code>L</code>, and the view direction <code>V</code> are
+        normalized. Ambient light is a constant base fraction of the material color. The
+        diffuse term is the dot product between normal and light direction, clamped to the
+        range from 0 to 1. For the specular term, the incoming light direction is reflected
+        around the normal and compared with the view direction. Since <code>L</code> points
+        from the surface point to the light source, <code>reflect</code> receives the opposite
+        direction, <code>-L</code>; that function expects the incoming light ray.
+    </p>
+
+    <pre class="code-snippet" data-src="fragmentShader.frag">Loading fragmentShader.frag...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

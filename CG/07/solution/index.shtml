@@ -1,0 +1,88 @@
+<!--#set var="pagetitle" value="Solution Sheet 7 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 7: Solution for Ray Casting and Shadows</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the complete implementation for this sheet. To compare them with your own solution or with the starter code, replace the assignment versions of <code>Raytracer.cpp</code>, <code>Sphere.cpp</code>, and <code>Scene.cpp</code> with these files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="Raytracer.cpp">Open <code>Raytracer.cpp</code></a>
+        <a class="source-link" href="Sphere.cpp">Open <code>Sphere.cpp</code></a>
+        <a class="source-link" href="Scene.cpp">Open <code>Scene.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Primary Rays and Supersampling</h3>
+
+    <p>
+        The renderer iterates over all pixels of the target image and creates a primary ray through the camera for each pixel. With a single sample, the pixel position is used directly. With multiple samples per pixel, samples are distributed uniformly inside the pixel, each ray is traced separately, and the resulting colors are averaged.
+    </p>
+
+    <p>
+        The averaged color is then written to the three color channels, and alpha is set to fully visible. This makes <code>Raytracer::render</code> fill the given image exactly where the starter code still had the <code>TODO</code> marker.
+    </p>
+
+    <pre class="code-snippet" data-src="Raytracer.cpp" data-start="void Raytracer::render" data-end="Vec3 Raytracer::traceRay">Loading Raytracer.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Sphere Intersection</h3>
+
+    <p>
+        The sphere is intersected with the geometric ray-sphere test. First, the vector from the ray origin to the sphere center is projected onto the ray direction. If the center lies behind the ray, or if the distance from the ray line to the center is larger than the radius, there is no hit.
+    </p>
+
+    <p>
+        Otherwise, the distance along the ray direction gives the front intersection. If the ray starts inside the sphere, the back intersection is used instead. The normal is the normalized vector from the sphere center to the hit point.
+    </p>
+
+    <pre class="code-snippet" data-src="Sphere.cpp" data-start="std::optional&lt;Intersection&gt; Sphere::intersect" data-end="Tessellation Sphere::getMesh">Loading Sphere.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Scene Intersection and Background</h3>
+
+    <p>
+        <code>Scene::traceLocalRay</code> first searches for the nearest intersection of the ray with the scene. If the ray hits no object, the background color is returned. The function also contains a simple termination condition based on recursion depth; for sheet 7, local lighting is the important part, but the signature is already prepared for the following ray tracing exercises.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="Vec3 Scene::traceLocalRay" data-end="Vec3 localColor">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Shadows and Local Lighting</h3>
+
+    <p>
+        For each point light, a shadow ray is created from the hit point toward the light source. The shadow ray origin is shifted by a small <code>OFFSET_EPSILON</code> along the normal so rounding errors do not make the ray immediately hit the same surface again.
+    </p>
+
+    <p>
+        If no blocking intersection lies between the surface and the light, the solution adds ambient, diffuse, and specular Phong terms. If the point is in shadow, only the ambient term remains. Because the loop runs over all lights, shadows naturally support multiple point lights.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="Vec3 localColor" data-end="return localColor">Loading Scene.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

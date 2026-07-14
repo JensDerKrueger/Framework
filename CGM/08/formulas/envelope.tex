@@ -1,0 +1,16 @@
+\documentclass[border=6pt]{standalone}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\begin{document}
+\color{white}
+\(\displaystyle
+\begin{aligned}
+q &= \frac{1}{2}N\!\left(f_s(x+12.5),\,f_s(y+23.5),\,f_s(z+34.5)\right)+\frac{1}{2},\\
+R_{\mathrm{local}} &= R\left(1-\frac{1}{2}s_s+q\,s_s\right),\\
+E(x,y,z) &= 1-\operatorname{smoothStep}
+\left(R_{\mathrm{local}}-\epsilon,\;R_{\mathrm{local}},\;
+\left\|\begin{pmatrix}x\\y\\z\end{pmatrix}
+-\begin{pmatrix}0.5\\0.5\\0.5\end{pmatrix}\right\|\right)
+\end{aligned}
+\)
+\end{document}

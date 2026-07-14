@@ -1,0 +1,103 @@
+<!--#set var="pagetitle" value="Exercise 0 Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 0: Color Picker Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed implementation for this exercise. To compare
+        them with your own work, replace the exercise version of <code>main.cpp</code> with
+        the provided file and rebuild the project. The included <code>ColorConversion.h</code>
+        shows the helper used by the solution.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="ColorConversion.h">Open <code>ColorConversion.h</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">HSV to RGB Lookup</h3>
+
+    <p>
+        The exercise interprets the horizontal image coordinate as hue and the vertical image
+        coordinate as saturation. The value component is fixed to <code>1.0</code>, so the
+        image shows a full-brightness HSV color field.
+    </p>
+
+    <p>
+        The solution converts the normalized x-coordinate to degrees by multiplying it by
+        <code>360</code>, keeps the y-coordinate as saturation, and calls
+        <code>ColorConversion::hsvToRgb</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="#include &lt;ColorConversion.h&gt;" data-end="virtual void init">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">HSV to RGB Conversion</h3>
+
+    <p>
+        The conversion first maps hue to one of six color sectors. Saturation and value are
+        clamped to the valid range. For zero saturation the result is grey; otherwise the
+        fractional part of the sector determines the interpolation between the neighboring
+        primary and secondary colors.
+    </p>
+
+    <pre class="code-snippet" data-src="ColorConversion.h" data-start="template &lt;typename T&gt; Vec3t&lt;T&gt; hsvToRgb" data-end="template &lt;typename T&gt; Vec3t&lt;T&gt; hslToHsv">Loading ColorConversion.h...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Generating the Image</h3>
+
+    <p>
+        During initialization the program evaluates the conversion once for every pixel and
+        writes the resulting RGB values into the image. The mouse interaction uses the same
+        conversion function to display the HSV and RGB values below the image.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void init" data-end="virtual void draw">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Uses of HSV and HSL</h3>
+
+    <p>
+        HSV and HSL separate the hue of a color from its intensity-like components. This is
+        often easier to control than RGB, where changing one component usually changes both
+        the perceived color and the brightness. In an HSV or HSL color picker, users can
+        choose a hue first and then adjust saturation and value or lightness independently.
+    </p>
+
+    <p>
+        A good way to distinguish the common color spaces is by their intended use. RGB is
+        used by monitors and other additive displays. CMYK is used for printing. YUV and
+        related formats are useful for compression, storage, and transmission because they
+        separate brightness from chroma information. Lab is designed to be more device
+        independent. HSV and HSL, in contrast, are mainly human-facing models for interaction:
+        they are useful in color picker interfaces, image editing tools, palette design, and
+        simple adjustments such as changing saturation or brightness without directly editing
+        individual red, green, and blue channels.
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

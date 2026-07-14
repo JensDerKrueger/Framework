@@ -1,0 +1,58 @@
+#include "Triangle.h"
+
+constexpr float epsilon = 0.000001f;
+
+Triangle::Triangle(const Vertex& v0, const Vertex& v1, const Vertex& v2,
+                   const Shader& s) : v0(v0), v1(v1), v2(v2), shader(s) {
+}
+
+void Triangle::draw(Image& image) {
+  const float det = computeArea(v0,v1,v2);
+
+  const uint32_t minX = std::max(uint32_t{0},uint32_t(std::min(std::min(v0.position.x, v1.position.x), v2.position.x)));
+  const uint32_t maxX = std::min(image.height-1,uint32_t(std::max(std::max(v0.position.x, v1.position.x), v2.position.x)));
+  const uint32_t minY = std::max(uint32_t{0},uint32_t(std::min(std::min(v0.position.y, v1.position.y), v2.position.y)));
+  const uint32_t maxY = std::min(image.width-1,uint32_t(std::max(std::max(v0.position.y, v1.position.y), v2.position.y)));
+
+	for (uint32_t y = minY; y <= maxY; ++y) {
+    for (uint32_t x = minX; x <= maxX; ++x) {
+      const float a0 = computeArea(Vertex(x,y),v1,v2)/ det;
+      const float a1 = computeArea(v0, Vertex(x,y),v2)/ det;
+      const float a2 = 1 - a0 - a1;
+
+      if (0-epsilon <= a0 && 0-epsilon <= a1 && 0-epsilon <= a2 &&
+          1+epsilon >= a0 && 1+epsilon >= a1 && 1+epsilon >= a2) {
+        Vertex v;
+        v.position = interpolate(v0.position, a0, v1.position, a1, v2.position, a2);
+        v.normal = interpolate(v0.normal, a0, v1.normal, a1, v2.normal, a2);
+        v.material.color_ambient = interpolate(v0.material.color_ambient, a0,
+                    v1.material.color_ambient, a1, v2.material.color_ambient, a2);
+        v.material.color_diffuse = interpolate(v0.material.color_diffuse, a0,
+                    v1.material.color_diffuse, a1, v2.material.color_diffuse, a2);
+        v.material.color_specular = interpolate(v0.material.color_specular, a0,
+                    v1.material.color_specular, a1, v2.material.color_specular, a2);
+
+        const Vec3 color = Vec3{ shader.shade(v)};
+
+        image.setNormalizedValue(x, y, 0, color.r);
+        image.setNormalizedValue(x, y, 1, color.g);
+        image.setNormalizedValue(x, y, 2, color.b);
+        image.setValue(x, y, 3, 255);
+      }
+		}
+	}
+}
+
+Vec3 Triangle::interpolate(const Vec3& val0, float a0,
+                           const Vec3& val1, float a1, const Vec3& val2,
+                           float a2) {
+	return val0 * a0 + val1 * a1 + val2 * a2;
+}
+
+
+float Triangle::computeArea(const Vertex& a, const Vertex& b, const Vertex& c) {
+  const Vec3 pA = a.position;
+  const Vec3 pB = b.position;
+  const Vec3 pC = c.position;
+  return (pB.y - pC.y) * (pA.x - pC.x) + (pC.x - pB.x) * (pA.y - pC.y);
+}

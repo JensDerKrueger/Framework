@@ -1,0 +1,131 @@
+<!--#set var="pagetitle" value="Exercise 01 – Advanced Image Synthesis" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<div class="task-container">
+            
+        <h2>General</h2>
+        <p>
+            Please note that you must upload the exercises <mark>before the submission deadline</mark>. The submission system will be announced in the course. Exercises that are not submitted on time will be graded with 0 points. Submissions that do not compile also receive 0 points. Sample inputs and outputs are often available, which you can use to test your programs. Submissions that do not process these samples correctly will receive only few points. Please do not add additional output to your program unless explicitly requested. Submit your solution as a single zip file named using the following scheme: <code>a1_Firstname_Lastname.zip</code>.</p> <p>
+                Compress all files you have modified into one archive. If the exercises include theoretical parts, please also include a text file, scan, or photo with your answers.
+            </p>
+        
+        <p>For example: A complete first assignment consists of a zip file containing only the <code>main.cpp</code> file.</p>
+        
+        <h2>Setting Up the Development Environment</h2>
+        <p>To set up your environment for the exercises, please follow these instructions:</p>
+        
+        <h3>For Windows users:</h3>
+        <p>Download the latest <a href="https://visualstudio.microsoft.com">Visual Studio IDE</a> (not Visual Studio Code).</p>
+        <p>Select "Desktop development with C++" during installation.</p>
+        
+        <h3>For Mac users:</h3>
+        <p>Install Xcode and additionally install <a href="http://glew.sourceforge.net/">GLEW</a> and <a href="https://www.glfw.org/">GLFW</a>.</p>
+        
+        <h3>For Linux users:</h3>
+        <p>Install the required tools using:</p>
+        <code>sudo apt install build-essential libglew-dev libglfw3-dev</code>
+                
+        <h2>Download the Framework and Exercise Code</h2>
+        <p>
+            The code framework to start the exercises is provided via a GitHub repository at 
+            <a href="https://github.com/JensDerKrueger/AIS">github</a>. On Linux or macOS systems, you can open a terminal window and type:
+        </p>
+        
+        <pre><code>git clone https://github.com/JensDerKrueger/AIS</code></pre>
+        
+        </div>
+
+        <h1>Sheet 01: Hello OpenGL</h1>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Hello OpenGL (20 points)</h3>
+            <p>
+                This and the following exercises use <strong>OpenGL</strong> to render the scene.
+                All OpenGL tasks must be implemented using <strong>OpenGL 3.2 Core Profile</strong> or higher.
+                OpenGL 3 is the foundation of modern OpenGL — the Fixed Function Pipeline and Immediate Mode commands are deprecated.
+            </p>
+            
+            <p>
+                For more information on OpenGL, see the literature list from the first lecture.
+                The OpenGL <em>Red Book</em> and the <em>Real-Time Rendering</em> compendium are especially recommended.
+                A quick overview of all OpenGL and GLSL commands from version 3.2 onwards is provided by the
+                <a href="http://www.khronos.org/files/opengl-quick-reference-card.pdf" target="_blank">Quick Reference Cards</a>.
+            </p>
+            
+            <p>
+                You can check whether your system supports OpenGL 3.2 or higher using the tool
+                <a href="http://www.realtech-vr.com/glview" target="_blank">OpenGL Extensions Viewer</a>.
+            </p>
+            
+            <p>
+                The sample program <code>Hello OpenGL</code> initially renders a simple white triangle
+                (see the left image in Figure <strong>triangles</strong>).
+                Extend the program so that it matches <strong>exactly</strong> the right image:
+                Two colored triangles form a rectangle on a dark cyan background.
+            </p>
+            
+            <p>
+                To complete this task:
+            </p>
+            <ul>
+                <li>
+                    Familiarize yourself with <code>shaders</code>, <abbr title="Vertex Buffer Object">VBOs</abbr>, and
+                    <abbr title="Vertex Array Object">VAOs</abbr>.
+                </li>
+                <li>
+                    Adjust the data in the <code>triangle</code> array so that one of the triangles is displayed correctly.
+                </li>
+                <li>
+                    Add additional geometry for the second triangle.
+                </li>
+                <li>
+                    To color the two triangles differently, create a second shader program with a different fragment shader.
+                </li>
+            </ul>
+            
+            <p>
+                The colors are given as normalized RGB values:
+            </p>
+            <pre><code>orange:     (0.9, 0.5, 0.2)
+green:      (0.2, 0.9, 0.2)
+background: (0.1, 0.15, 0.15)</code></pre>
+            
+            <p>
+                After every OpenGL command, use the call <code>glGetError</code>
+                to detect invalid commands or arguments immediately.
+                According to the specification, OpenGL behaves <em>undefined</em> in case of an invalid state,
+                which can lead to hard-to-trace platform differences.
+            </p>
+            
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+                <img src="SimpleTriangle.png" alt="White Triangle" style="width: 45%;">
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div class="loading-text" id="loading">Loading</div>
+                <p style="text-align:center;">
+                    <em>Top – Initial example with one white triangle.
+                        Bottom – Target result with two colored triangles on a dark background.</em>
+                </p>
+            </div>
+            
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href=".." class="nav-link">Back to Overview</a>
+            <a href="../02" class="nav-link nav-arrow">➡</a>
+        </div>
+  </div>
+</section>
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

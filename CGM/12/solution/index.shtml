@@ -1,0 +1,96 @@
+<!--#set var="pagetitle" value="Exercise 12 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 12: Sampling Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        Replace the exercise version of <code>main.cpp</code> with the completed file below
+        and rebuild the project. The solution keeps point sampling as the baseline and adds
+        regular supersampling, jittered stratified sampling, and a higher-quality jittered
+        reference.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Regular Sample Positions</h3>
+
+    <p>
+        A regular <code>N x N</code> pattern divides each pixel into equal sub-cells. The
+        sample is placed at the center of each sub-cell. This increases the sampling frequency
+        by evaluating the continuous signal multiple times per pixel.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="Vec2 regularSampleOffset" data-end="Vec2 jitteredSampleOffset">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Jittered Stratified Samples</h3>
+
+    <p>
+        Jittering removes the globally repeated sample locations of the regular grid. The
+        important detail is that the random offset is local to the current stratum: every
+        stratum still contains exactly one sample, so the sampling pattern remains well
+        distributed inside the pixel.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="../sample_patterns.svg" alt="Regular and jittered sampling patterns inside a pixel" />
+        <figcaption>
+            Regular sampling produces repeated structure. Jittered stratification keeps the
+            coverage but breaks up the repeated pattern.
+        </figcaption>
+    </figure>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="Vec2 jitteredSampleOffset" data-end="uint32_t samplesPerAxisForMode">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Sample Counts</h3>
+
+    <p>
+        The sample counts are chosen so the four images improve in reading order. Regular
+        supersampling uses <code>4 x 4</code> samples. The jittered image uses
+        <code>8 x 8</code> samples, which keeps the noise lower than a low-sample jittered
+        image. The reference image uses <code>16 x 16</code> jittered samples and should
+        therefore be the smoothest.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="uint32_t samplesPerAxisForMode" data-end="Vec3 samplePixel">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Pixel Integration</h3>
+
+    <p>
+        The sampling loop approximates the color of a pixel by averaging several evaluations
+        of the continuous image signal. The point sample uses only the pixel center. All
+        other modes average an <code>N x N</code> grid of sub-samples.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="Vec3 samplePixel" data-end="void setPixel">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

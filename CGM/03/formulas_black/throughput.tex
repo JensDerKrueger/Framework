@@ -1,0 +1,15 @@
+\documentclass[border=6pt]{standalone}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\begin{document}
+\color{black}
+\(\displaystyle
+T_{k+1} = T_k \cdot a(x_k),
+\qquad
+L_{\mathrm{path}} =
+\begin{cases}
+T_k \cdot L_{\mathrm{env}}(\omega_k), & \mathrm{miss}\\
+T_k \cdot L_e(x_k,\omega_k), & \mathrm{light\ hit}
+\end{cases}
+\)
+\end{document}

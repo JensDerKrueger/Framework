@@ -1,0 +1,197 @@
+<!--#set var="pagetitle" value="Exercise 14 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Exercise 14: Triangle Rasterization</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Topic: Edge Functions and Bounding Boxes (25 points)</h3>
+
+    <p>
+        In the software rasterization exercises for diffuse and Phong lighting, triangles were drawn by testing every pixel of the whole image.
+        That is simple, but wasteful.
+        This exercise keeps the basic idea of shading pixels inside a triangle, but replaces the brute-force loop over the whole image with a GPU-like triangle rasterizer.
+    </p>
+
+    <p>
+        The central tools are a screen-space bounding box and three edge functions.
+        The bounding box restricts the set of tested pixels.
+        The edge functions decide whether a pixel center lies inside the triangle and also provide barycentric weights for interpolation.
+    </p>
+
+    <p>
+        An edge function is a signed area test for a directed edge and a point.
+        For edge <code>a -> b</code> and pixel center <code>p = (x, y)</code>, use:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/edge_function.png"
+             alt="Edge function E_ab of p as a signed area expression." />
+    </p>
+
+    <p>
+        The value is positive on one side of the edge, negative on the other, and zero exactly on the edge.
+        A triangle has three edges, so a pixel center lies inside the triangle when all three edge tests have the same sign.
+        The code supports both clockwise and counter-clockwise triangles by multiplying all edge values by an orientation factor.
+        After that correction, the inside test is simply:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/inside_test.png"
+             alt="Inside test: e_A, e_B, and e_C are greater than or equal to zero." />
+    </p>
+
+    <p>
+        The same three values are also used for interpolation.
+        For triangle vertices <code>a</code>, <code>b</code>, and <code>c</code>, evaluate the opposite edge in each case:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/opposite_edges.png"
+             alt="Edge values e_A, e_B, and e_C are computed at the opposite edges." />
+    </p>
+
+    <p>
+        Dividing these values by the total triangle area gives the barycentric coordinates <code>lambdaA</code>, <code>lambdaB</code>, and <code>lambdaC</code>.
+        The signed total area can be computed with the same edge function by evaluating the edge opposite <code>a</code> at vertex <code>a</code>:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/triangle_area.png"
+             alt="Triangle area A is computed as E_bc of a." />
+    </p>
+
+    <p>
+        Because the demo scene is projected perspectively, these screen-space weights are not used directly for affine color interpolation.
+        Instead, attributes are interpolated perspective-correctly: interpolate <code>attribute / z</code> and <code>1 / z</code>, then divide the two results.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="edge_functions.svg" alt="Triangle bounding box and inside tests with edge functions" />
+        <figcaption>
+            Only pixels inside the bounding box are visited. A pixel belongs to the triangle when all three oriented edge tests agree.
+        </figcaption>
+    </figure>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Edge Function (5 points)</h3>
+
+    <p>
+        Implement <code>edgeFunction</code> in <code>main.cpp</code>. The function returns the signed area expression for the directed edge <code>a -> b</code> and the point <code>p = (x, y)</code>. The sign indicates which side of the edge the point lies on. Use the formula above directly. The function should not perform the inside test itself; it should only return the signed value.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Rasterization with a Bounding Box (7 points)</h3>
+
+    <p>
+        Complete the first part of <code>drawTriangle</code>. Compute the signed area, discard degenerate triangles, handle both orientations, and compute an integer bounding box clamped to the image size. The rasterizer should visit only pixels inside this box.
+    </p>
+
+    <p>
+        The signed triangle area can be computed with an edge function, for example <code>edgeFunction(b, c, a.x, a.y)</code>. This is the code version of the area expression shown above. If this area is negative, the triangle has the opposite orientation. Store an orientation factor <code>1</code> or <code>-1</code> and multiply each edge value by it. This keeps the later inside test independent of vertex order.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 3: Incremental Edge Updates (7 points)</h3>
+
+    <p>
+        Evaluate the three edge functions at the first pixel center of the bounding box.
+        Then use constant increments to update edge values when stepping by one pixel in <code>x</code>- or <code>y</code>-direction.
+        This is the key efficiency improvement: in the inner loop, edge values are only incremented instead of recomputing the full formula.
+    </p>
+
+    <p>
+        This works because the edge function is linear in <code>x</code> and <code>y</code>.
+        Starting from the definition:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/edge_function.png"
+             alt="Definition of edge function E_ab of x and y." />
+    </p>
+
+    <p>
+        the terms that depend on the pixel position can be written explicitly:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/edge_linear.png"
+             alt="Linear form of the edge function with a constant part." />
+    </p>
+
+    <p>
+        The remaining terms contain only the fixed edge vertices <code>a</code> and <code>b</code>. They remain constant while pixels are scanned.
+        A step by one pixel to the right therefore changes only the <code>x</code> term, and a step by one pixel downward changes only the <code>y</code> term:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/edge_increments.png"
+             alt="Edge function increments for one step in x- and y-direction." />
+    </p>
+
+    <p>
+        Compute these increments once for all three edges and use them when scanning the bounding box row by row.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 4: Interpolation and Depth (6 points)</h3>
+
+    <p>
+        For pixels inside the triangle, normalize the edge values by the triangle area to obtain barycentric coordinates.
+        Use these coordinates to interpolate color and depth perspective-correctly.
+        The projected vertices already store <code>inverseZ</code>, meaning <code>1 / z</code> in camera space.
+        The provided <code>depthBuffer</code> should keep only the closest triangle at each pixel.
+    </p>
+
+    <p>
+        The edge value opposite vertex <code>a</code>, for example, becomes the barycentric weight for vertex <code>a</code>. Use the same idea for <code>b</code> and <code>c</code>:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/barycentric_weights.png"
+             alt="Barycentric weights as edge values divided by the total area." />
+    </p>
+
+    <p>
+        Here <code>A</code> is the signed total area of the triangle. For pixels inside the triangle, the three weights should add up to roughly one. For a vertex attribute <code>v</code>, compute:
+        <code>(lambdaA * vA / zA + lambdaB * vB / zB + lambdaC * vC / zC) /
+        (lambdaA / zA + lambdaB / zB + lambdaC / zC)</code>.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Preview</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p class="controls-hint">
+        <em>Spacebar</em> Animation pause/resume, <em>R</em> reset
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../13" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../15" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

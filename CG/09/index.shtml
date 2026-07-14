@@ -1,0 +1,229 @@
+<!--#set var="pagetitle" value="Exercise 09 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Exercise 09: Bounding Volume Hierarchies</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Topic: Acceleration Structures for Ray Tracing (25 points)</h3>
+
+    <p>
+        Ray tracing a complex triangle mesh by testing every ray against every object is wasteful.
+        Most rays pass through only a small part of the scene.
+        Acceleration structures exploit this observation: inexpensive bounding volumes are tested first, and only primitives that could actually be hit are visited.
+    </p>
+
+    <p>
+        In this exercise you implement a Bounding Volume Hierarchy (BVH).
+        The scene contains a triangle mesh, several spheres, and a large floor.
+        The application already includes a brute-force ray tracer, progressive rendering, a split-screen comparison, and a BVH visualization.
+        Your task is to complete the missing BVH code in <code>AABB.h</code> and <code>Scene.cpp</code>.
+    </p>
+
+    <p>
+        Press <code>M</code> to switch between split-screen comparison, full BVH rendering, and full brute-force rendering.
+        Use the up and down arrow keys to zoom.
+        Press <code>B</code> to show or hide BVH boxes, and use the left and right arrow keys to change how deeply the hierarchy is drawn.
+        Press <code>R</code> to toggle whether a new ray-traced image starts automatically after the mouse is released.
+        Drag with the left mouse button to rotate the scene.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Ray-Box Intersection (7 points)</h3>
+
+    <p>
+        Complete <code>AABB::intersectInterval</code>. Use the slab method:
+        for each coordinate axis, compute the interval in which the ray lies between the two planes of the box.
+        The intersection of the three intervals is the part of the ray that runs through the box.
+    </p>
+
+    <p>
+        The function receives <code>tMin</code> and <code>tMax</code>. Treat these as the currently valid ray interval.
+        Store the final interval in <code>tEnter</code> and <code>tExit</code>.
+        The BVH traversal only needs the boolean wrapper <code>AABB::intersect</code>, but the interval computation is the same ray-box test used in the octree exercise.
+    </p>
+
+    <p>
+        Remember the parallel-ray case. If a ray is parallel to a pair of slab planes, it intersects the box only if its origin lies between those two planes.
+    </p>
+
+    <ol>
+        <li>If the box is empty, return <code>false</code>.</li>
+        <li>Read the ray origin and direction once before the loop.</li>
+        <li>Iterate over the three coordinate axes and intersect the ray with the two planes of the corresponding slab.</li>
+        <li>If the ray direction on this axis is almost zero, treat it as a parallel ray. The ray can hit the box only if its origin coordinate lies between <code>minCorner</code> and <code>maxCorner</code>.</li>
+        <li>For a non-parallel ray direction, compute the two intersection parameters <code>t0</code> and <code>t1</code>. Swap them if necessary so <code>t0</code> is the nearer plane and <code>t1</code> the farther plane.</li>
+        <li>Intersect this slab interval with the current valid ray interval: <code>tMin = max(tMin, t0)</code> and <code>tMax = min(tMax, t1)</code>.</li>
+        <li>If the interval becomes empty, return <code>false</code>. If all axes survive, write the final interval to <code>tEnter</code> and <code>tExit</code> and return <code>true</code>.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: BVH Construction (10 points)</h3>
+
+    <p>
+        Complete <code>Scene::buildBVH</code> and <code>Scene::buildBVHNode</code>.
+        The vector <code>sceneObjects</code> stores the actual objects.
+        The vector <code>bvhObjectIndices</code> stores indices into <code>sceneObjects</code> and may be freely reordered while the hierarchy is built.
+    </p>
+
+    <p>
+        Each BVH node stores a bounding box. A leaf node stores a contiguous range in <code>bvhObjectIndices</code>.
+        An inner node stores the indices of its two child nodes.
+        Stop recursion when a node contains at most <code>BVH_LEAF_SIZE</code> objects.
+    </p>
+
+    <p>
+        Inner nodes are split at the median of the bounding-box centers.
+        Use the axis along which the centers have the largest extent.
+        <code>std::nth_element</code> can partition the range without fully sorting it.
+    </p>
+
+    <p>
+        Unlike an octree, the BVH does not subdivide space into fixed cells.
+        It subdivides an object list.
+        Each object appears exactly once in the hierarchy, and each leaf stores a range of indices in <code>bvhObjectIndices</code>.
+    </p>
+
+    <p>Build the hierarchy in this order.</p>
+
+    <ol>
+        <li>In <code>Scene::buildBVH</code>, clear <code>bvhObjectIndices</code> and <code>bvhNodes</code>.</li>
+        <li>Iterate over <code>sceneObjects</code>. For each object with a non-empty bounding box, append its index to <code>bvhObjectIndices</code>. Do not copy or reorder <code>sceneObjects</code> itself.</li>
+        <li>If <code>bvhObjectIndices</code> is not empty, call <code>buildBVHNode(0, bvhObjectIndices.size())</code>. The returned node is the root. In this implementation the root is at index 0 because it is appended first.</li>
+        <li>In <code>Scene::buildBVHNode</code>, create a node for the half-open range <code>[begin, end)</code> in <code>bvhObjectIndices</code>.</li>
+        <li>Compute the node's bounding box by uniting the bounds of all objects in that range. At the same time, compute a second bounding box over the object centers; this center box is used only to choose the split axis.</li>
+        <li>Append the new <code>BVHNode</code> to <code>bvhNodes</code> and remember its index. The child indices are filled after the recursive calls.</li>
+        <li>If the range contains at most <code>BVH_LEAF_SIZE</code> objects, make the node a leaf: store <code>firstObject = begin</code> and <code>objectCount = end - begin</code>, then return the node index.</li>
+        <li>Otherwise, choose the split axis from the extent of the center box. Use the axis with the largest extent because that is where the object centers are spread out the most.</li>
+        <li>Compute <code>middle = begin + objectCount / 2</code>. Use <code>std::nth_element</code> to partition <code>bvhObjectIndices</code> so objects before <code>middle</code> have smaller center coordinates on the split axis than objects after <code>middle</code>. A full sort is unnecessary.</li>
+        <li>Recursively build the left child over <code>[begin, middle)</code> and the right child over <code>[middle, end)</code>. Store the returned node indices in <code>left</code> and <code>right</code>, then return the current node index.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 3: BVH Traversal (8 points)</h3>
+
+    <p>
+        Complete <code>Scene::intersectBVHNode</code>. First test the ray against the bounding box of the current node. If the box is missed, the whole subtree can be skipped.
+    </p>
+
+    <p>
+        If the node is a leaf, intersect the ray with all objects in the stored leaf range and return the nearest hit.
+        If the node is an inner node, traverse both children and return the nearest child hit.
+        As soon as a nearer hit is found, use its distance to shrink <code>maxT</code>. Later box and primitive tests can then ignore farther intersections.
+    </p>
+
+    <p>Implement the traversal in this order.</p>
+
+    <ol>
+        <li>In <code>Scene::intersectBVH</code>, fall back to brute force if no BVH exists. Otherwise call <code>intersectBVHNode</code> for node 0 with <code>maxT = infinity</code>.</li>
+        <li>In <code>Scene::intersectBVHNode</code>, read the current node from <code>bvhNodes</code>.</li>
+        <li>Test the ray against the node bounding box with <code>AABB::intersect</code>. Pass <code>0</code> as the lower interval bound and the current <code>maxT</code> as the upper bound. If the box is missed, return no hit.</li>
+        <li>If the node is a leaf, iterate over <code>node.objectCount</code> objects. The actual object index is stored in <code>bvhObjectIndices[node.firstObject + i]</code>.</li>
+        <li>Intersect the ray with each object in the leaf. Ignore misses and hits with <code>t &gt; maxT</code>. Keep the nearest hit found so far.</li>
+        <li>When a nearer leaf hit is found, update <code>maxT</code> to that hit distance. This lets the remaining primitive tests ignore farther intersections.</li>
+        <li>If the node is an inner node, traverse the left child first. If the left child reports a hit, shrink <code>maxT</code> to its distance.</li>
+        <li>Traverse the right child with the reduced <code>maxT</code>. If the right child returns a hit, it is nearer than the left hit because the right subtree was limited to the left hit distance. Return the right hit; otherwise return the left one.</li>
+        <li>This traversal is intentionally simple. A more advanced implementation could visit children in ray order, but that is not required for this exercise.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Questions</h3>
+
+    <ol>
+        <li>Why does the BVH help much more for the bunny mesh than for a scene with only a few spheres?</li>
+        <li>What happens when <code>BVH_LEAF_SIZE</code> is chosen very small or very large?</li>
+        <li>Why can a poor hierarchy be slower than brute force for a tiny scene?</li>
+        <li>What does the BVH overlay reveal about the chosen split strategy?</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Preview</h3>
+
+    <p>
+        By pressing the <code>M</code> key, you can cycle through different rendering modes. The application starts with BVH ray traversal, then toggles to brute force, and finally to split-screen mode, where the BVH version is rendered on the left and the brute-force version on the right. The program will make the performance difference visible, because almost the same scene is rendered on both sides but with vastly different performance.
+    </p>
+
+    <p class="solution-preview-start-note">
+        Hit start to start the BVH-construction process and then render the scene.
+    </p>
+    <button class="bvh-start-control" id="loading" type="button">Start</button>
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+        (() => {
+            const solutionCanvas = document.getElementById("canvas");
+            const loadingControl = document.getElementById("loading");
+            let started = false;
+
+            solutionCanvas.style.cursor = "pointer";
+            solutionCanvas.oncontextmenu = e => e.preventDefault();
+
+            const startSolution = e => {
+                e.preventDefault();
+                if (started)
+                    return;
+
+                started = true;
+                solutionCanvas.style.cursor = "default";
+                loadingControl.textContent = "Preprocessing...";
+                loadingControl.style.cursor = "default";
+
+                window.Module = {
+                    canvas: solutionCanvas,
+                    setStatus: text => {
+                        loadingControl.textContent = text || "";
+                        loadingControl.style.display = text ? "block" : "none";
+                    },
+                    print: console.log.bind(console),
+                    printErr: console.error.bind(console)
+                };
+
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        const script = document.createElement("script");
+                        script.src = "Solution.js";
+                        script.async = true;
+                        script.onerror = () => {
+                            started = false;
+                            solutionCanvas.style.cursor = "pointer";
+                            loadingControl.textContent = "Solution could not be loaded";
+                            loadingControl.style.display = "block";
+                            loadingControl.style.cursor = "pointer";
+                        };
+                        document.body.appendChild(script);
+                    }, 0);
+                });
+            };
+
+            loadingControl.addEventListener("click", startSolution);
+            solutionCanvas.addEventListener("click", startSolution);
+        })();
+    </script>
+    <p style="text-align:center;">
+        <em>M</em> render mode, <em>up/down arrow keys</em> zoom, <em>B</em> BVH boxes,
+        <em>left/right arrow keys</em> overlay depth,
+        <em>R</em> automatic rendering after releasing the mouse, drag with the left mouse button to rotate the scene
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../08" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../10" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<!--#include virtual="/_bottom.shtml" -->

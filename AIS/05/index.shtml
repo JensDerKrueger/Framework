@@ -1,0 +1,61 @@
+<!--#set var="pagetitle" value="Exercise 05 – Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 05: Shadows</h1>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Shadows (30 Points)</h3>
+            <p>
+                Reuse your submission for assignment 4 as your codebase for this assignment or start from the fifth project from github.
+            </p><p>
+                Add shadows to the scene implemented with shadow mapping.
+                It is required that the teapot casts a shadow onto itself and onto the ground plane. The light source's default position should be changed to (-80, 60, 80) and by pressing the space bar it should start rotating as usual. It is sufficient to use a single shadow map.
+                Similar to the previous assignments: Do not change the initial viewing angle of the scene for your submission!
+            </p><p>
+                To implement shadow mapping split the rendering process into two passes. In the first pass the shadow map is rendered and in the second pass the previously rendered shadow map is used to apply shadows to the scene.
+            </p><p>
+                A shadow map is a depth rendering of the scene from a light's view. For rendering the shadow map create a framebuffer object and configure it accordingly. Create a texture that stores depth values and attach it as a <code>GL_DEPTH_ATTACHMENT</code> to that framebuffer. You may want to take a look at the <code>GLFramebuffer</code> and <code>GLDepthTexture</code>-classes in the <code>Utils</code>-folder. Then render all shadow casting objects to that framebuffer. For the view matrix you can use the provided <code>Mat4::lookAt</code> function and as projection use a perspective projection. The attached texture will be used as depth buffer when rendering to that framebuffer and ultimately represents the shadow map.
+            </p><p>
+                In the second rendering pass use the rendered shadow map to shade the fragments accordingly. In the phong vertex shader transform in addition the vertex position into light space. This can be achieved using a view-to-light-matrix or world-to-light-matrix (depending on what space you want to use), see Figure 1 for an explanation of the view-to-light-matrix. The resulting coordinates represent the vertex position seen from the light's view. In addition a bias is applied such that the coordinates can be used for sampling a texture. In the fragment shader you can use this coordinate to sample the shadow map. To know whether a fragment is in shadow or lit by the light, the sampled value must be compared to the fragments depth. If a fragment is in shadow apply to the diffuse and specular color term a factor of 0 such that the fragment only gets contribution from the ambient term. This fragment shader part can also be done using built in OpenGL functionality. To use this functionality you need a different sampler2D for the shadow map named <code>sampler2DShadow</code> and further set additional texture parameter to the depth texture.
+                </p>
+                
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <img src="view_to_light_matrix.png" style="width: 85%;">
+            </div>
+            <p style="text-align:center;">
+                <em>Figure 1: The View To Light Matrix.</em>
+            </p>
+
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div class="loading-text" id="loading">Loading</div>
+            </div>
+            <p style="text-align:center;">
+                <em>Solution.<br>
+                    Use the mouse to interact with the scene.
+                    <code>Spacebar</code>: Toggles animation on/off
+                    <code>R</code> key: Resets the animation and the view
+                </em>
+            </p>
+
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="../04" class="nav-link nav-arrow">⬅</a>
+            <a href=".." class="nav-link">Back to Overview</a>
+            <a href="../06" class="nav-link nav-arrow">➡</a>
+        </div>
+  </div>
+</section>
+<script src="/assets/exercise.js"></script>
+<script src="solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

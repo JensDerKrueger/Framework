@@ -1,0 +1,35 @@
+<!--#set var="pagetitle" value="Advanced Image Synthesis Exercises" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-course-section" aria-labelledby="ais-title">
+  <div class="section-inner">
+    <div class="exercise-course-heading">
+      <p class="eyebrow">Exercises</p>
+      <h1 id="ais-title">Advanced Image Synthesis</h1>
+      <p>Exercise sheets and browser-based WebAssembly solutions for the lecture.</p>
+    </div>
+
+    <div class="exercise-sheet-grid" aria-label="Exercise sheets">
+      <a class="exercise-link" href="01">Sheet 1</a>
+      <a class="exercise-link" href="02">Sheet 2</a>
+      <a class="exercise-link" href="03">Sheet 3</a>
+      <a class="exercise-link" href="04">Sheet 4</a>
+      <a class="exercise-link" href="05">Sheet 5</a>
+      <a class="exercise-link" href="06">Sheet 6</a>
+      <a class="exercise-link" href="07">Sheet 7</a>
+      <span class="exercise-link exercise-link-muted">More to come</span>
+    </div>
+
+    <div class="exercise-course-note">
+      <p>On this website, you will find the exercises for the lecture <strong>Advanced Image Synthesis</strong>. Alongside the tasks, you can also see the solutions running live in your browser.</p>
+      <p>The solutions were compiled from the original C++ exercise programs and translated into WebAssembly using the <a href="https://emscripten.org" target="_blank" rel="noopener">Emscripten</a> framework.</p>
+    </div>
+  </div>
+</section>
+
+<!--#include virtual="/_bottom.shtml" -->

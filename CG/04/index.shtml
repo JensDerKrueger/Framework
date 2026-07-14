@@ -1,0 +1,74 @@
+<!--#set var="pagetitle" value="Exercise 04 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 4: Color Conversion</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: HSV to RGB conversion (15 points)</h3>
+    <p>
+        Familiarize yourself with the methods <code>init</code> and <code>mouseMove</code>.
+        The overridden <code>init</code> method iterates over an image of a given width and height.
+    </p>
+                
+    <p>
+        The image pixels are colored with <code>convertPosFromHSVToRGB</code>.
+        <code>image.setNormalizedValue</code> expects RGB values in the range <code>[0, 1]</code>.
+        At the moment, the returned color uses the x-coordinate as red, the y-coordinate as green, and <code>1</code> as blue. The image below shows this initial output.
+    </p>
+    
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <img src="rendering.png" alt="Initial image output" style="width: 45%;">
+    </div>
+    <p>
+        <em>Initial rendering.</em>
+    </p>
+
+    <p>
+        While the program is running, <code>mouseMove</code> prints a debug message that shows both the HSV and RGB value of the pixel under the mouse cursor.
+        The debug output uses <code>convertPosFromHSVToRGB</code> to compute the RGB value from the expected HSV color.
+        The horizontal mouse position should correspond to hue (H) multiplied by <code>360</code>, and the vertical position should correspond to saturation (S). This is not implemented correctly yet.
+    </p>
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+        <p style="text-align:center;">
+            <em>Solution</em>
+        </p>
+    </div>
+            
+    <p>
+        <strong>Your task:</strong> Complete <code>convertPosFromHSVToRGB</code> so that the incoming <code>x</code> and <code>y</code> position parameters are interpreted as hue (H) and saturation (S).
+        Use <code>1.0</code> as value (V). Convert the HSV color to RGB and return it as a <code>Vec3</code>.
+        Use the image above as a reference.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Uses of HSV (2 points)</h3>
+    <p>
+        What is the advantage of using HSV or HSL instead of RGB?
+        In which typical applications are these color models used?
+    </p>
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../03" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../05" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

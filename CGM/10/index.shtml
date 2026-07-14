@@ -1,0 +1,138 @@
+<!--#set var="pagetitle" value="Exercise 10 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 10: Deferred Shading</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Deferred Shading (25 points)</h3>
+
+    <p>
+        In the previous OpenGL exercises, the fragment shader immediately computed the final
+        color of each visible surface point. Deferred shading separates this into two
+        stages. First, the scene is rendered into several textures, the G-buffer. Then a
+        second full-screen pass reads those textures and computes the lighting in image
+        space.
+    </p>
+
+    <p>
+        The provided project already contains the scene, camera controls, texture loading,
+        vertex buffers, and a full-screen triangle. Your task is to complete the deferred
+        rendering pipeline in <code>main.cpp</code>, <code>Shader/gbuffer.frag</code>, and
+        <code>Shader/deferred.frag</code>.
+    </p>
+
+    <p>
+        The G-buffer stores four pieces of information for every visible pixel:
+        diffuse color, specular color, view-space normal, and view-space position. Press
+        <code>D</code> to toggle between the final shaded image and a <code>2 x 2</code> debug
+        view of these intermediate buffers. Press <code>Space</code> to animate the light,
+        <code>R</code> to reset the view, and drag with the left mouse button to rotate the
+        scene.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Create And Fill The G-buffer (8 points)</h3>
+
+    <p>
+        Complete <code>ensureGBufferSize</code> and the first pass in <code>draw</code>. The
+        four textures <code>diffuseBuffer</code>, <code>specularBuffer</code>,
+        <code>normalBuffer</code>, and <code>positionBuffer</code> should have the current
+        framebuffer size and four floating point components. The depth buffer is needed so
+        the first pass still performs normal visibility testing.
+    </p>
+
+    <ol>
+        <li>Return early if the G-buffer already has the correct size.</li>
+        <li>Allocate the four textures with <code>GLTexture2D::setEmpty</code>.</li>
+        <li>Resize <code>depthBuffer</code> with <code>setSize</code>.</li>
+        <li>Bind the four color buffers and depth buffer with <code>gBuffer.bind</code>.</li>
+        <li>Clear the G-buffer and call <code>renderSceneToGBuffer</code>.</li>
+        <li>Unbind the framebuffer before rendering the final image.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Write The G-buffer Shader (7 points)</h3>
+
+    <p>
+        Complete <code>Shader/gbuffer.frag</code>. This shader does not compute lighting.
+        It only records the surface data needed by the later lighting pass.
+    </p>
+
+    <p>
+        The diffuse and specular outputs should use the material colors and, when enabled,
+        multiply them with the corresponding textures. The normal output should store a
+        normalized view-space normal. If normal mapping is enabled, transform the normal-map
+        vector from tangent space to view space using the tangent, binormal, and normal
+        vectors. Since texture values are in <code>[0, 1]</code>, encode the final normal from
+        <code>[-1, 1]</code> back to <code>[0, 1]</code> before storing it.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 3: Deferred Lighting (7 points)</h3>
+
+    <p>
+        Complete <code>renderDeferredImage</code> in <code>main.cpp</code> and
+        <code>shadePixel</code> in <code>Shader/deferred.frag</code>. The deferred pass renders
+        one full-screen triangle. For each screen pixel, the fragment shader reads the four
+        G-buffer textures and computes Phong illumination in view space.
+    </p>
+
+    <p>
+        The position buffer alpha marks whether the pixel belongs to geometry. Background
+        pixels have alpha <code>0</code> and should stay black. For visible pixels, reconstruct
+        the normal from the encoded normal buffer, compute the light vector from the stored
+        position to <code>lightPosition</code>, and use the camera at the view-space origin for
+        the view vector.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 4: Buffer Debug View (3 points)</h3>
+
+    <p>
+        Complete <code>showBuffer</code> in <code>Shader/deferred.frag</code>. Split the screen
+        into four quadrants and display the four G-buffer textures. A useful layout is
+        diffuse in the top-left, specular in the top-right, normal in the bottom-left, and
+        position in the bottom-right. The position values are view-space coordinates, so
+        remap them into a visible color range before displaying them.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>D</em> toggle G-buffer view, <em>Space</em> animate light, <em>R</em> reset<br/>
+        <em>Left</em> mouse drag rotate, <em>Right</em> mouse drag pan, mouse wheel zoom
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../09" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../11" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

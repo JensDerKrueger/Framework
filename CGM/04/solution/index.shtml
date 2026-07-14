@@ -1,0 +1,203 @@
+<!--#set var="pagetitle" value="Exercise 4 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 4: Growth Simulation & Spatial Subdivision Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided file contains the complete implementation of the missing octree
+        operations. To compare it with your own solution or with the framework, replace the
+        exercise version of <code>Octree.cpp</code> with this file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="Octree.cpp">Open <code>Octree.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Acceleration Structure Idea</h3>
+
+    <p>
+        The growth simulation repeatedly creates new particles and moves them randomly until
+        they are close enough to an existing particle. Without a spatial data structure, every
+        new position would have to be tested against all particles that have already been
+        inserted. The octree reduces this search by recursively subdividing space into eight
+        subregions.
+    </p>
+
+    <p>
+        Each <code>OctreeNode</code> describes an axis-aligned box between
+        <code>minPos</code> and <code>maxPos</code>. As long as a node is a leaf, it stores
+        its particles directly in <code>elements</code>. Once a leaf contains too many
+        elements and the maximum depth has not been reached, the node is split into eight
+        children.
+    </p>
+
+    <pre class="code-snippet" data-src="Octree.cpp" data-start="OctreeNode::OctreeNode" data-end="Vec3 OctreeNode::computeCenter">Loading Octree.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Center and Child Index</h3>
+
+    <p>
+        <code>computeCenter</code> computes the center of the node box. This center splits
+        the space into two halves along the x, y, and z axes, producing eight octants.
+    </p>
+
+    <p>
+        <code>subtreeIndex</code> encodes the matching octant as a number from
+        <code>0</code> to <code>7</code>. Points left of the center contribute
+        <code>0</code> in x direction, points to the right contribute <code>1</code>. For y,
+        either <code>0</code> or <code>2</code> is added, and for z, either <code>0</code>
+        or <code>4</code>. The sum is the child index.
+    </p>
+
+    <p>
+        This encoding matters because it uses the same ordering of the eight children
+        everywhere: during insertion, during splitting, and later during the distance search.
+    </p>
+
+    <pre class="code-snippet" data-src="Octree.cpp" data-start="Vec3 OctreeNode::computeCenter" data-end="void OctreeNode::add">Loading Octree.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Inserting Into the Octree</h3>
+
+    <p>
+        <code>OctreeNode::add</code> first distinguishes between leaf nodes and inner nodes.
+        If the current node is a leaf, the new particle is inserted directly into
+        <code>elements</code>. The solution then checks whether the allowed element count has
+        been exceeded and whether further subdivision is still allowed.
+    </p>
+
+    <p>
+        If both conditions are true, the node calls <code>split</code>. It also resets
+        <code>warranty</code> to <code>20</code>. This variable belongs to the visualization:
+        freshly split nodes are drawn more prominently for a few frames and then fade out.
+    </p>
+
+    <p>
+        If the current node is already an inner node, nothing is stored locally. Instead,
+        <code>subtreeIndex</code> determines the correct child, and insertion is recursively
+        forwarded to that child. During this recursive call, <code>maxDepth</code> is reduced
+        by one.
+    </p>
+
+    <pre class="code-snippet" data-src="Octree.cpp" data-start="void OctreeNode::add" data-end="void OctreeNode::split">Loading Octree.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Why the Depth Is Counted Down</h3>
+
+    <p>
+        Here, <code>maxDepth</code> represents the remaining recursion depth. The root node
+        starts with the value stored in <code>Octree</code>. With every descent into a child,
+        this value becomes smaller. A leaf may only be split if
+        <code>maxDepth &gt; 0</code>.
+    </p>
+
+    <p>
+        This creates a hard upper bound for the tree depth. That is important because
+        particles can be located very close to each other. Without a depth limit, such cases
+        could lead to ever smaller cells and uncontrolled recursion.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Creating Eight Child Nodes</h3>
+
+    <p>
+        <code>split</code> first computes the center of the current box. It then creates
+        eight new <code>OctreeNode</code> objects. Each child receives its own sub-box, whose
+        bounds are composed from <code>minPos</code>, <code>center</code>, and
+        <code>maxPos</code>.
+    </p>
+
+    <p>
+        The first four children lie in the lower z half, and children <code>4</code> through
+        <code>7</code> lie in the upper z half. Within each z half, the children are again
+        distinguished by y and x. This order exactly matches the index computation in
+        <code>subtreeIndex</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="Octree.cpp" data-start="void OctreeNode::split" data-end="// insert elements into children">Loading Octree.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Redistributing Existing Elements</h3>
+
+    <p>
+        After the children have been created, the inner node may no longer keep its particles
+        locally. Therefore, the solution iterates over all previously stored
+        <code>elements</code>, determines the matching child index for each element, and calls
+        <code>add</code> on that child.
+    </p>
+
+    <p>
+        This recursive call deliberately uses the same path as inserting a new particle. If a
+        child becomes too full because of the redistributed elements, it can immediately split
+        again as long as the remaining depth allows it. Only after that is the old node's
+        local element list cleared.
+    </p>
+
+    <pre class="code-snippet" data-src="Octree.cpp" data-start="// insert elements into children" data-end="float OctreeNode::minSqDistApprox">Loading Octree.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Interaction With the Distance Search</h3>
+
+    <p>
+        The actual nearest-neighbor search was already present in the framework. However, it
+        assumes that elements are stored correctly in leaves and that inner nodes contain only
+        children. This is exactly the invariant established by <code>add</code> and
+        <code>split</code>.
+    </p>
+
+    <p>
+        <code>minSqDistApprox</code> first searches the child that contains the query point.
+        If that child is an empty leaf, all children are considered as a fallback.
+        <code>minSqDist</code> then refines the search: a child is only visited if its box can
+        intersect the current search sphere. This skips many subtrees.
+    </p>
+
+    <pre class="code-snippet" data-src="Octree.cpp" data-start="float OctreeNode::minSqDistApprox" data-end="void OctreeNode::pushColor">Loading Octree.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Why This Is Enough for the Growth Simulation</h3>
+
+    <p>
+        For the simulation, each test point only needs the distance to the nearest existing
+        particle. If this distance is small enough, the new particle sticks to the structure
+        and is inserted into the tree with <code>Octree::add</code>. Thanks to spatial
+        subdivision, the computational cost grows much more slowly than with a comparison
+        against all previous particles.
+    </p>
+
+    <p>
+        The octree visualization is not an additional part of the exercise, but it helps with
+        validation: as the particle structure becomes denser, new subdivisions should appear
+        where many particles occupy small spatial regions.
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

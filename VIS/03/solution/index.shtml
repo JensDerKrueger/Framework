@@ -1,0 +1,87 @@
+<!--#set var="pagetitle" value="Exercise 3 Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 3: Marching Squares Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided file contains the completed marching-squares implementation. To compare
+        it with your own work, replace the exercise version of <code>MS.cpp</code> with the
+        provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="MS.cpp">Open <code>MS.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Cell Traversal and Data Lookup</h3>
+
+    <p>
+        The constructor iterates over every cell of the scalar image, stopping one pixel
+        before the right and top border because each cell needs four corner samples. For each
+        cell, the corner positions from <code>vertexPosTable</code> are converted into image
+        indices and copied into the local <code>cell</code> array.
+    </p>
+
+    <pre class="code-snippet" data-src="MS.cpp" data-start="for(size_t v" data-end="// classify vertices">Loading MS.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Marching-Squares Case</h3>
+
+    <p>
+        Each corner is compared with the current isovalue. If a corner lies above the
+        isovalue, the corresponding bit is set in <code>msCase</code>. The resulting
+        four-bit value selects the active edges from <code>edgeTable</code>. Cells without
+        active edges are skipped immediately.
+    </p>
+
+    <pre class="code-snippet" data-src="MS.cpp" data-start="// classify vertices" data-end="// compute offset">Loading MS.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Edge Interpolation</h3>
+
+    <p>
+        For every active edge, the solution looks up the two adjacent cell vertices,
+        linearly interpolates between their scalar values, and converts the resulting point
+        from cell-local coordinates into the normalized OpenGL coordinate range. Each point
+        is appended to <code>vertices</code>, which forms the line list drawn by the app.
+    </p>
+
+    <pre class="code-snippet" data-src="MS.cpp" data-start="// compute offset" data-end="// handle ambiguous cases">Loading MS.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Ambiguous Cases</h3>
+
+    <p>
+        Cases <code>5</code> and <code>10</code> contain two possible line connections. When
+        the asymptotic decider is enabled, the solution evaluates the decider value and swaps
+        two recently added vertices when the alternate topology is needed.
+    </p>
+
+    <pre class="code-snippet" data-src="MS.cpp" data-start="// handle ambiguous cases" data-end="__END_OF_FILE__">Loading MS.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

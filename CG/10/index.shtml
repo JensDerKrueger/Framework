@@ -1,0 +1,246 @@
+<!--#set var="pagetitle" value="Exercise 10 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Exercise 10: Octrees</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Topic: Acceleration Structures for Ray Tracing (25 points)</h3>
+
+    <p>
+        Ray tracing a complex triangle mesh by testing every ray against every object is wasteful.
+        Most rays pass through only a small part of the scene.
+        Acceleration structures exploit this observation: inexpensive bounding volumes are tested first, and only primitives that could actually be hit are visited.
+    </p>
+
+    <p>
+        In this exercise you implement an octree.
+        The scene contains a triangle mesh, several spheres, and a large floor.
+        The application already includes a brute-force ray tracer, progressive rendering, a split-screen comparison, and an octree visualization.
+        Your task is to complete the missing octree code in <code>AABB.h</code> and <code>Scene.cpp</code>.
+    </p>
+
+    <p>
+        Press <code>M</code> to switch between split-screen comparison, full octree rendering, and full brute-force rendering.
+        Use the up and down arrow keys to zoom.
+        Press <code>B</code> to show or hide octree boxes, and use the left and right arrow keys to change how deeply the hierarchy is drawn.
+        Press <code>R</code> to toggle whether a new ray-traced image starts automatically after the mouse is released.
+        Drag with the left mouse button to rotate the scene.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Provided Ray-Box Helper</h3>
+
+    <p>
+        The ray-box intersection from the BVH exercise is already available in <code>AABB::intersectInterval</code>.
+        The octree traversal uses this function to determine where a ray enters and exits the root cube.
+        You do not need to implement the slab test again in this exercise.
+    </p>
+
+    <p>
+        The AABB function still needed for octree construction is <code>AABB::overlaps</code>.
+        Two boxes overlap exactly when their intervals overlap on all three axes.
+        This is used to decide which child cells are touched by a primitive's bounding box.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Octree Construction (13 points)</h3>
+
+    <p>
+        Complete <code>AABB::overlaps</code>, <code>Scene::buildOctree</code>, and <code>Scene::buildOctreeNode</code>.
+        The vector <code>sceneObjects</code> stores the actual objects.
+        The vector <code>octreeObjectIndices</code> stores indices into <code>sceneObjects</code>.
+        The scene objects themselves should not be copied or reordered.
+    </p>
+
+    <p>
+        Each octree node stores a cubic bounding box.
+        A leaf node stores a contiguous range in <code>octreeObjectIndices</code>.
+        An inner node stores up to eight child nodes.
+        Stop recursion when a node contains at most <code>OCTREE_LEAF_SIZE</code> objects or when <code>OCTREE_MAX_DEPTH</code> is reached.
+    </p>
+
+    <p>
+        Inner nodes split their cube into eight equally sized child boxes.
+        An object is inserted into every child whose box overlaps the object's bounding box.
+        If an object overlaps more than <code>OCTREE_MAX_CHILD_REFERENCES</code> children, keep it in the current node instead.
+        This prevents very large objects from being duplicated throughout the tree.
+    </p>
+
+    <p>Construction consists of creating the root and recursively subdividing nodes.</p>
+
+    <ol>
+        <li>In <code>AABB::overlaps</code>, compare the two boxes on all three axes. The boxes overlap only if no separating axis exists.</li>
+        <li>In <code>Scene::buildOctree</code>, clear <code>octreeObjectIndices</code> and <code>octreeNodes</code>.</li>
+        <li>Iterate over <code>sceneObjects</code>. For each object with a non-empty bounding box, add its index to a temporary vector and expand the scene bounding box.</li>
+        <li>The root of an octree must be a cube. Convert the scene bounding box to a cube with <code>makeCubicBounds</code>, then call <code>buildOctreeNode</code> for the root.</li>
+        <li>In <code>Scene::buildOctreeNode</code>, create an <code>OctreeNode</code>, store the current node bounds in it, append it to <code>octreeNodes</code>, and remember its index.</li>
+        <li>If the object count is at most <code>OCTREE_LEAF_SIZE</code>, or <code>OCTREE_MAX_DEPTH</code> has been reached, make the node a leaf. Store the objects as a contiguous range in <code>octreeObjectIndices</code> using <code>firstObject</code> and <code>objectCount</code>.</li>
+        <li>Otherwise, compute the eight child boxes with <code>computeOctreeChildren</code>. Use one temporary vector per child and one vector for objects that remain in the current node.</li>
+        <li>For each object, count which child boxes overlap its bounding box. If the number of overlapping children is greater than <code>OCTREE_MAX_CHILD_REFERENCES</code>, put the object into the local object vector of the current node.</li>
+        <li>If the object overlaps only a few children, add its index to each of those child vectors. The same object can therefore be stored in multiple subtrees.</li>
+        <li>If all child vectors are empty, subdivision did not help. Store all objects as a leaf range in the current node and return.</li>
+        <li>Store the local object vector as the current node's own object range. Then recursively build each non-empty child and store the returned node index in the corresponding <code>children</code> entry.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Octree Traversal (12 points)</h3>
+
+    <p>
+        Complete <code>Scene::intersectOctree</code> and <code>Scene::intersectOctreeNode</code>.
+        The root function computes the ray interval through the root cube.
+        The node function then traverses octree cells in ray order.
+    </p>
+
+    <p>
+        Treat the eight children of an inner node as a <code>2 x 2 x 2</code> grid.
+        Start in the child cell that contains the ray entry point.
+        Compute the next cell boundary on each axis and use a 3D DDA to step through the crossed cells.
+        Recurse only into child nodes that the ray actually passes through.
+        Because cells are visited from front to back, you can stop as soon as the nearest hit lies before the next cell boundary.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="dda_traversal.svg" alt="2D cross-section of DDA traversal through octree child cells" />
+        <figcaption>
+            The DDA is shown here as a 2D cross-section. The implementation uses the same idea in three dimensions.
+        </figcaption>
+    </figure>
+
+    <p>
+        DDA stands for Digital Differential Analyzer.
+        In this exercise, it means the traversal follows the ray from one child cell to the next instead of recursively testing all eight child boxes.
+        For each axis, store the ray parameter of the next child boundary (<code>tMaxAxis</code>) and the distance in ray-parameter space to the following boundary (<code>tDelta</code>).
+        The smallest <code>tMaxAxis</code> tells you which boundary is crossed first.
+        Then advance the corresponding cell coordinate and add <code>tDelta</code> on that axis.
+    </p>
+
+    <p>
+        If the ray crosses an edge or corner of the child grid, two or three <code>tMaxAxis</code> values can be equal.
+        In that case, advance all matching axes.
+        This avoids visiting a cell that the ray only touches numerically, and it also avoids missing the cell behind a grid edge.
+    </p>
+
+    <p>
+        Since primitives may be inserted into multiple child cells, use <code>octreeMailbox</code> and <code>octreeMailboxStamp</code> to test each object at most once per ray.
+    </p>
+
+    <p>Implement the traversal in this order.</p>
+
+    <ol>
+        <li>In <code>Scene::intersectOctree</code>, fall back to brute force if no octree exists. Otherwise intersect the ray with the root cube using <code>intersectInterval</code>. If the ray misses the root cube, return no hit.</li>
+        <li>Prepare the mailbox for this ray. Grow <code>octreeMailbox</code> if necessary, increment <code>octreeMailboxStamp</code>, and clear the mailbox only if the stamp overflows.</li>
+        <li>Call <code>intersectOctreeNode</code> for the root node with <code>tEnter</code>, <code>tExit</code>, and the current mailbox stamp.</li>
+        <li>In <code>intersectOctreeNode</code>, first test the objects stored directly in the current node. Check the mailbox before each object test. If the object already has the current stamp, skip it. Otherwise set the stamp and test the object.</li>
+        <li>Keep the nearest hit and update <code>maxT</code> whenever a closer hit is found. This lets traversal ignore cells and primitives behind the current best hit.</li>
+        <li>If the node is a leaf, return the best hit among the directly stored objects.</li>
+        <li>For an inner node, compute the DDA start point as the ray position at <code>max(tEnter, 0)</code>, shifted forward slightly by a small epsilon.</li>
+        <li>Determine the current child cell by comparing this point with the node center. Each coordinate is 0 or 1. Pack the child index as <code>x + 2*y + 4*z</code>.</li>
+        <li>For each axis, compute <code>step</code>, <code>tMaxAxis</code>, and <code>tDelta</code>. <code>tMaxAxis</code> is the ray parameter of the next child boundary on that axis; <code>tDelta</code> is the parameter distance between child boundaries.</li>
+        <li>Visit child cells while the cell coordinate is inside the <code>2 x 2 x 2</code> grid and the current interval still lies before <code>tExit</code> and <code>maxT</code>.</li>
+        <li>Recurse into a visited cell only if the corresponding child node exists. Pass the interval <code>[currentT, nextT]</code> for that child cell.</li>
+        <li>Because cells are visited front to back, stop immediately if the current nearest hit lies inside the current child interval.</li>
+        <li>Advance to the next child cell by moving every axis whose <code>tMaxAxis</code> equals the next boundary. Advancing multiple axes is important when the ray crosses an edge or corner between cells.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Questions</h3>
+
+    <ol>
+        <li>Why does the octree help much more for the bunny mesh than for a scene with only a few spheres?</li>
+        <li>What happens when <code>OCTREE_LEAF_SIZE</code> is chosen very small or very large?</li>
+        <li>Why do objects that cross child boundaries make an octree more complicated?</li>
+        <li>What does the octree overlay reveal about the spatial subdivision?</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Preview</h3>
+
+    <p>
+        The reference solution shows the intended comparison. By pressing the <code>M</code> key, you can cycle through different rendering modes. The application starts with octree ray traversal, then toggles to brute force, and finally to split-screen mode, where the octree version is rendered on the left and the brute-force version on the right. The program will make the performance difference visible, because almost the same scene is rendered on both sides but with vastly different performance.
+    </p>
+
+    <p class="solution-preview-start-note">
+        Hit start to start the Octree-construction process and then render the scene.
+    </p>
+    <button class="octree-start-control" id="loading" type="button">Start</button>
+    <div class="canvas-container octree-reference-canvas">
+        <canvas id="canvas"></canvas>
+    </div>
+    <script>
+        (() => {
+            const solutionCanvas = document.getElementById("canvas");
+            const loadingControl = document.getElementById("loading");
+            let started = false;
+
+            solutionCanvas.style.cursor = "pointer";
+            solutionCanvas.oncontextmenu = e => e.preventDefault();
+
+            const startSolution = e => {
+                e.preventDefault();
+                if (started)
+                    return;
+
+                started = true;
+                solutionCanvas.style.cursor = "default";
+                loadingControl.textContent = "Preprocessing...";
+                loadingControl.style.cursor = "default";
+
+                window.Module = {
+                    canvas: solutionCanvas,
+                    setStatus: text => {
+                        loadingControl.textContent = text || "";
+                        loadingControl.style.display = text ? "block" : "none";
+                    },
+                    print: console.log.bind(console),
+                    printErr: console.error.bind(console)
+                };
+
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        const script = document.createElement("script");
+                        script.src = "Solution.js";
+                        script.async = true;
+                        script.onerror = () => {
+                            started = false;
+                            solutionCanvas.style.cursor = "pointer";
+                            loadingControl.textContent = "Solution could not be loaded";
+                            loadingControl.style.display = "block";
+                            loadingControl.style.cursor = "pointer";
+                        };
+                        document.body.appendChild(script);
+                    }, 0);
+                });
+            };
+
+            loadingControl.addEventListener("click", startSolution);
+            solutionCanvas.addEventListener("click", startSolution);
+        })();
+    </script>
+    <p style="text-align:center;">
+        <em>M</em> render mode, <em>up/down arrow keys</em> zoom, <em>B</em> octree boxes,
+        <em>left/right arrow keys</em> overlay depth,
+        <em>R</em> automatic rendering after releasing the mouse, drag with the left mouse button to rotate the scene
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../09" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../11" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<!--#include virtual="/_bottom.shtml" -->

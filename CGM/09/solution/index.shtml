@@ -1,0 +1,90 @@
+<!--#set var="pagetitle" value="Exercise 9 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 9: Radiosity Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed patch creation, form-factor estimate, and
+        visibility test. To compare them with your own work, replace the exercise versions of
+        <code>Scene.cpp</code> and <code>RadiositySolver.cpp</code> with these files and
+        rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="Scene.cpp">Open <code>Scene.cpp</code></a>
+        <a class="source-link" href="RadiositySolver.cpp">Open <code>RadiositySolver.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Patch Creation</h3>
+
+    <p>
+        The solution iterates over all scene objects, requests their tessellated triangle
+        mesh, and turns every triangle into one radiosity patch. Each patch stores its
+        vertices, center, normal, area, diffuse reflectance, emission, and initial radiosity.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="std::vector<RadiosityPatch> Scene::createPatches" data-end="std::vector<float> Scene::getTriangleData">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Form-Factor Estimate</h3>
+
+    <p>
+        The lecture form factor is an area integral. The exercise uses one center sample per
+        patch instead. This replaces the two area integrals by the emitter area
+        <code>A<sub>j</sub></code>, the center distance, the two cosine terms, and a
+        visibility term computed separately.
+    </p>
+
+    <p class="formula">
+        <img src="../formulas_black/form_factor_integral.png"
+             alt="Lecture form-factor integral." />
+    </p>
+
+    <p class="formula">
+        <img src="../formulas_black/form_factor_ray_estimate.png"
+             alt="Center-to-center form-factor estimate." />
+    </p>
+
+    <pre class="code-snippet" data-src="RadiositySolver.cpp" data-start="float formFactorEstimate" data-end="} // namespace">Loading RadiositySolver.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 3: Visibility</h3>
+
+    <p>
+        Visibility is approximated with one center-to-center ray. The ray starts slightly
+        away from the first patch, and the two patches are considered visible if no
+        intersection lies before the target center.
+    </p>
+
+    <p class="formula">
+        <img src="../formulas_black/visibility_ray.png"
+             alt="Center-to-center visibility test." />
+    </p>
+
+    <pre class="code-snippet" data-src="RadiositySolver.cpp" data-start="bool RadiositySolver::visible" data-end="__END_OF_FILE__">Loading RadiositySolver.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

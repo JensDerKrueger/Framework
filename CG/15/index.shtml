@@ -1,0 +1,98 @@
+<!--#set var="pagetitle" value="Exercise 15 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 15: Hello OpenGL</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Hello OpenGL (20 points)</h3>
+    <p>
+        This and the following exercise sheets use <strong>OpenGL</strong> to render the scene.
+        All OpenGL exercises must be implemented using <strong>OpenGL 3.2 Core Profile</strong> or higher.
+        OpenGL 3 is the foundation of modern OpenGL; the fixed function pipeline and immediate mode commands are deprecated.
+    </p>
+    
+    <p>
+        For more information on OpenGL, see the literature list from the lecture.
+        The OpenGL <em>Red Book</em> and the <em>Real-Time Rendering</em> compendium are especially recommended.
+        A quick overview of OpenGL and GLSL commands from version 3.2 onward is provided by the
+        <a href="http://www.khronos.org/files/opengl-quick-reference-card.pdf" target="_blank">Quick Reference Cards</a>.
+    </p>
+    
+    <p>
+        Use the <a href="http://www.realtech-vr.com/glview" target="_blank">OpenGL Extensions Viewer</a> to check whether your system supports OpenGL 3.2 or higher.
+    </p>
+    
+    <p>
+        The sample program <code>Hello OpenGL</code> initially renders a simple white triangle.
+        Extend the program so it matches the target image exactly:
+        two colored triangles form a rectangle on a dark cyan background.
+    </p>
+  
+  <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+    <img src="SimpleTriangle.png" alt="White triangle" style="width: 45%;">
+  </div>
+    
+    <p>
+        To solve this exercise:
+    </p>
+    <ul>
+        <li>
+            Familiarize yourself with <code>shaders</code>, <abbr title="Vertex Buffer Object">VBOs</abbr>, and
+            <abbr title="Vertex Array Object">VAOs</abbr>.
+        </li>
+        <li>
+            Adjust the data in the <code>triangle</code> array so one of the two triangles is rendered correctly.
+        </li>
+        <li>
+            Add additional geometry for the second triangle.
+        </li>
+        <li>
+            To color the two triangles differently, create a second shader program with a different fragment shader.
+        </li>
+    </ul>
+    
+    <p>
+        The colors are given as normalized RGB values:
+    </p>
+    <pre><code>orange:     (0.9, 0.5, 0.2)
+green:      (0.2, 0.9, 0.2)
+background: (0.1, 0.15, 0.15)</code></pre>
+    
+    <p>
+        Call <code>glGetError</code> after every OpenGL command to detect invalid commands or arguments immediately.
+        According to the specification, OpenGL behavior is <em>undefined</em> in an invalid state, which can lead to hard-to-trace platform differences.
+    </p>
+    
+
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+        <p style="text-align:center;">
+            <em>Top: initial example with one white triangle.
+                Bottom: target result with two colored triangles on a dark background.</em>
+        </p>
+    </div>
+    
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../14" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../16" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

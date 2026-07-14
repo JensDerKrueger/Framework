@@ -1,0 +1,159 @@
+<!--#set var="pagetitle" value="Exercise 06 - Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 06: Deferred Shadows</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Shadow Mapping in a Deferred Renderer (25 points)</h3>
+
+    <p>
+        In the previous sheet you implemented deferred shading. The scene was first rendered
+        into a G-buffer and the final Phong illumination was computed in a full-screen
+        image-space pass. In this exercise you will extend that renderer with shadow
+        mapping.
+    </p>
+
+    <p>
+        You have already used shadow maps in an earlier assignment. The idea is the same:
+        render the scene from the light into a depth texture, then compare the lit point with
+        the stored light-space depth. The important difference is where this comparison
+        happens. In the older forward renderer the shadow lookup was part of the material
+        shader while drawing the geometry. Here it happens later, in the deferred lighting
+        shader, for the visible image pixels.
+    </p>
+
+    <p>
+        This also motivates the small <code>3 x 3</code> filter used in this exercise. A
+        single shadow-map lookup produces hard, pixelated shadow edges. Sampling the
+        neighboring texels as well and averaging the nine comparison results gives a softer
+        transition. This costs more texture lookups, but in the deferred pass we shade only
+        the pixels that made it into the final image. We no longer repeat the shadow
+        computation for every material shader and every hidden fragment produced during the
+        geometry pass.
+    </p>
+
+    <p>
+        The deferred shading code is already complete. Your task is to add the shadow-map
+        pass in <code>main.cpp</code> and the shadow visibility computation in
+        <code>Shader/deferred.frag</code>.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Shadow Matrices (5 points)</h3>
+
+    <p>
+        Complete the shadow matrix setup in <code>updateState</code>. The shadow map is
+        rendered from the light, so it needs its own projection and view matrices. The
+        matrix <code>worldToShadowMatrix</code> should transform world-space positions into
+        shadow texture coordinates.
+    </p>
+
+    <p>
+        The deferred shader does not store world-space positions in the G-buffer. It stores
+        view-space positions. Therefore the shader receives <code>viewToShadowMatrix</code>,
+        which transforms directly from the current camera's view space into the shadow map's
+        texture space.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Shadow-Map Render Pass (8 points)</h3>
+
+    <p>
+        Complete <code>renderSceneToShadowMap</code>, the shadow pass in <code>draw</code>,
+        and the missing attribute connections in <code>setupGeometry</code>. The shadow
+        shader is depth-only and only needs vertex positions. Render the plane and the
+        teapot with the model-view-projection matrix of the light.
+    </p>
+
+    <ol>
+        <li>Bind <code>shadowFramebuffer</code> with <code>shadowMap</code>.</li>
+        <li>Set the viewport to the shadow-map resolution.</li>
+        <li>Clear the depth buffer.</li>
+        <li>Enable a small polygon offset to reduce self-shadowing.</li>
+        <li>Render the scene from the light with <code>renderSceneToShadowMap</code>.</li>
+        <li>Disable polygon offset and unbind the framebuffer.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 3: Pass Shadow Data to the Deferred Shader (4 points)</h3>
+
+    <p>
+        Complete the shadow-related uniforms in <code>renderDeferredImage</code>. The shader
+        already receives the four G-buffer textures. Add <code>viewToShadow</code> and bind
+        the depth texture <code>shadowMap</code> to an additional texture unit.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 4: 3 x 3 Shadow Lookup (8 points)</h3>
+
+    <p>
+        Complete <code>shadowVisibility</code> in <code>Shader/deferred.frag</code>. Transform
+        the view-space position from the G-buffer into shadow texture space. If the
+        projected coordinate lies outside the shadow map, return full visibility.
+    </p>
+
+    <p>
+        For visible shadow-map coordinates, perform a <code>3 x 3</code>
+        percentage-closer filter, usually abbreviated as PCF. A normal texture filter would
+        average depth values, but that is not what we want: the shadow test is a comparison.
+        PCF first performs several neighboring shadow comparisons and then averages the
+        comparison results. A <code>sampler2DShadow</code> returns <code>1</code> if the
+        comparison passes and <code>0</code> if it fails. The average of the nine values is a
+        visibility between <code>0</code> and <code>1</code>.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="pcf_filter.svg" alt="Percentage closer filtering with nine shadow map samples" />
+        <figcaption>
+            PCF averages comparison results, not raw depth values. Mixed lit and shadowed
+            samples produce a soft transition at the shadow edge.
+        </figcaption>
+    </figure>
+
+    <p>
+        Sample the center texel and its eight neighbors, average the nine results, and use
+        this average as the light visibility. Use a small bias in the depth comparison to
+        avoid self-shadowing, but keep it small enough that the shadow does not detach from
+        the object.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>D</em> toggle G-buffer view, <em>Space</em> animate light, <em>R</em> reset<br/>
+        <em>Left</em> mouse drag rotate, <em>Right</em> mouse drag pan, mouse wheel zoom
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../05" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../07" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

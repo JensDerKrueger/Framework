@@ -1,0 +1,96 @@
+<!--#set var="pagetitle" value="Exercise 8 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 8: Procedural Volume Generation Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The provided file contains the completed rescale-and-add volume generator. To compare
+        it with your own work, replace <code>RescaleAndAddVolume.cpp</code> in the exercise
+        folder with the provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="RescaleAndAddVolume.cpp">Open <code>RescaleAndAddVolume.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Volume Generation</h3>
+
+    <p>
+        The generator first creates a volume with the requested dimensions and maps every voxel
+        to normalized coordinates in <code>[0, 1]</code>. For each voxel, it computes fractal
+        noise, a soft cloud envelope, high-frequency detail erosion, and then stores the final
+        density as an 8-bit value.
+    </p>
+
+    <pre class="code-snippet" data-src="RescaleAndAddVolume.cpp" data-start="void RescaleAndAddVolume::generate" data-end="void RescaleAndAddVolume::buildPermutation">Loading RescaleAndAddVolume.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Fractal Noise</h3>
+
+    <p>
+        The rescale-and-add part evaluates several octaves of Perlin noise. After each octave,
+        <code>roughness</code> reduces the amplitude and <code>lacunarity</code> increases the
+        frequency. The accumulated value is divided by the sum of amplitudes so that changing
+        the octave count does not change the overall value range too much.
+    </p>
+
+    <p class="formula">
+        <img src="../formulas_black/fractal_noise.png"
+             alt="Fractal noise formula used for rescale-and-add volume generation." />
+    </p>
+
+    <pre class="code-snippet" data-src="RescaleAndAddVolume.cpp" data-start="float RescaleAndAddVolume::fractalNoise" data-end="float RescaleAndAddVolume::perlin">Loading RescaleAndAddVolume.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Perlin Noise</h3>
+
+    <p>
+        The Perlin implementation finds the lattice cell containing the sample point, computes
+        smooth interpolation weights with <code>fade</code>, evaluates hashed gradient vectors
+        at the cell corners, and trilinearly interpolates those contributions.
+    </p>
+
+    <pre class="code-snippet" data-src="RescaleAndAddVolume.cpp" data-start="float RescaleAndAddVolume::perlin" data-end="float RescaleAndAddVolume::gradient">Loading RescaleAndAddVolume.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Cloud Envelope</h3>
+
+    <p>
+        The envelope keeps the volume brick rectangular but fades the actual cloud density near
+        a soft spherical boundary. A low-frequency Perlin sample perturbs the radius, which
+        makes the silhouette less perfectly round.
+    </p>
+
+    <p class="formula">
+        <img src="../formulas_black/envelope.png"
+             alt="Noisy cloud envelope formula with radius perturbation and smooth boundary falloff." />
+    </p>
+
+    <pre class="code-snippet" data-src="RescaleAndAddVolume.cpp" data-start="float RescaleAndAddVolume::cloudEnvelope" data-end="int RescaleAndAddVolume::perm">Loading RescaleAndAddVolume.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

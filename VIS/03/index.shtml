@@ -1,0 +1,111 @@
+<!--#set var="pagetitle" value="Exercise 00 – Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<div class="task-container">
+
+    <h1>Getting started</h1>
+    
+    <p>
+        Please make sure to upload your solutions to <a href="https://lehre.moodle.uni-due.de/course/view.php?id=11863">Moodle</a> <mark>before the submission deadline</mark>. Submissions not uploaded before the deadline will not be graded (0 points). Solutions that do not compile will also receive 0 points. Sample input and output are often provided so you can test your programs; solutions that do not correctly handle these examples will only receive partial points. Please do not add any extra output to your program unless explicitly requested. Submit your solution as a single zip file named as follows: <code>a1_Firstname_Lastname.zip</code>.
+    </p>
+    <p>
+        Compress all files you have modified into one archive. If the exercises include theoretical parts, please also include a text file, scan, or photo with your answers.
+    </p>
+    
+    <p>Assignments consist of theoretical and programming tasks. The programming tasks require a C++ environment and downloading the exercise code.</p>
+    
+    <h2>Setup the Build Environment</h2>
+    
+    <p>
+        In order to get you started for the assignments, please follow these steps to setup your programming environment. Not all of these steps are mandatory for the first assignment sheets but they will become important once we start with assignments that require 
+        <a href="http://www.opengl.org">OpenGL</a>. Getting used to them now will save you trouble for later assignments.
+    </p>
+    
+    <strong>For Windows users:</strong>
+    
+    <ol>
+        <li>You should download the latest <a href="https://visualstudio.microsoft.com">Visual Studio IDE</a> (NOT Visual Studio Code). This can be downloaded for free from Microsoft. The Community Edition is sufficient for our needs.</li>
+        <li>Run the installer and check 'Desktop development with C++' in the 'Desktop &amp; Mobile' section of the 'Workloads' tab. Proceed with the installation.</li>
+        <li>Download the provided source code archive corresponding to the assignment sheet from Moodle, decompress it and use the .sln file to open the solution with Visual Studio.</li>
+    </ol>
+    
+    <strong>For Mac users:</strong>
+    <p>
+        You should install Xcode. It can be downloaded from the App Store for free. Also install 
+        <a href="http://glew.sourceforge.net/">glew</a> and <a href="https://www.glfw.org/">glfw</a>.
+    </p>
+    
+    <strong>For Linux users:</strong>
+    <p>
+        You should already have all necessary tools installed on your system. In the rare situation that you installed only a minimal distribution and it lacks the build essentials you can install the necessary tools by running:
+    </p>
+    <pre><code>sudo apt install build-essential libglew-dev libglfw3-dev</code></pre>
+    
+    <h2>Download the Framework and Exercise Code</h2>
+    
+    <p>
+        The code framework to start the exercises is provided via a GitHub repository at 
+        <a href="https://github.com/JensDerKrueger/Vis">github</a>. On Linux or macOS systems, you can open a terminal window and type:
+    </p>
+    
+    <pre><code>git clone https://github.com/JensDerKrueger/Vis</code></pre>
+    
+    <p>
+        In Visual Studio on Windows, you can open the repository from the Visual Studio start screen.
+    </p>
+    
+    <h3 class="assignment">Exercise: HSV to RGB conversion (15 points)</h3>
+    
+    <p>
+        Familiarize yourself with both the <code>init</code> and <code>mouseMove</code> methods. The overridden <code>init</code> method iterates through a pixel image with given width and height.
+    </p>
+    
+    <p>
+        The pixels of the image are colored using the <code>convertPosFromHSVToRGB</code> function. The method <code>image.setNormalizedValue</code> expects RGB color values in the range [0, 1]. Currently it returns a color with red corresponding to the x coordinate, green to the y coordinate, and z = 1. 
+    </p>
+    
+    <p>
+        If the program is running, the <code>mouseMove</code> method prints a debug message into the console consisting of the 
+        <a href="https://en.wikipedia.org/wiki/HSL_and_HSV">HSV</a> color space value and the RGB color value of the pixel the cursor is currently pointing at. The debug message uses the <code>convertPosFromHSVToRGB</code> function to compute the RGB color value based on the expected HSV color. For the HSV output, the debug message expects the hue (H) value corresponding to the horizontal mouse position * 360 and the saturation (S) value corresponding to the vertical mouse position. As of now this is not the case.
+    </p>
+    
+    <p>
+        Your task is to add code to the <code>convertPosFromHSVToRGB</code> function that interprets the passed x and y position parameters as hue (H) and saturation (S) respectively. Use 1.0 for the value (V) dimension. Then convert the color from the HSV color space to the RGB color space and return it as a <code>Vec3</code>. 
+    </p>
+    
+    <h3 class="assignment">Exercise: Uses of HSV (2 points)</h3>
+    
+    <p>
+        What is the purpose of using the HSV or HSL representation instead of RGB and what are typically their applications?
+    </p>
+    
+    <h2>A correct solution should look approximately like this:</h2>
+<div class="canvas-container">
+    <canvas id="canvas"></canvas>
+</div>
+    <div class="description">
+        Move the mouse over this canvas.
+    </div>
+
+        
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../02" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../04" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

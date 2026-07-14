@@ -1,0 +1,106 @@
+<!--#set var="pagetitle" value="Exercise 4 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 4: Growth Simulation & Spatial Subdivision</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Topic: Growth Simulation</h3>
+    <p>
+        The provided code simulates the growth of a dendrite-like structure using particles.
+        The main logic is implemented in the <code>simulate</code> function in <code>main.cpp</code>.
+    </p>
+    <p>
+        First, a seed particle is placed at the origin. In every subsequent step, a new
+        particle is generated at a random position in the range from <code>(-1, -1, -1)</code>
+        to <code>(1, 1, 1)</code>. It is then moved in random directions until it collides with
+        an existing particle. If it moves too far away from the origin, a new random position is
+        generated.
+    </p>
+    <p>
+        Without an acceleration structure, each new particle would have to be checked against
+        all existing particles. To speed this up, the code uses an <strong>octree</strong> for
+        spatial subdivision. The current octree structure can be visualized directly.
+    </p>
+    <p>
+        You can switch between a 2D and 3D visualization by commenting or uncommenting the
+        second line in <code>main.cpp</code>.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Octree as an Acceleration Structure (20 points)</h3>
+    <p>
+        The <code>Octree</code> class consists of a hierarchical structure of
+        <code>OctreeNode</code> objects. The <code>root</code> attribute points to the root of
+        the tree.
+    </p>
+    
+    <p>
+        Two central parameters control the structure:
+    </p>
+    <ul>
+        <li><code>maxElemCount</code>: maximum number of elements per node before a split occurs</li>
+        <li><code>maxDepth</code>: maximum depth of the octree</li>
+    </ul>
+    
+    <p>
+        The provided framework already contains a <strong>nearest-neighbor search</strong> in
+        <code>Octree::minDist</code> to determine the minimum distance to the current particle
+        position.
+    </p>
+    
+    <p>
+        Your task is to correctly implement the insertion of new elements into the octree and
+        to create child nodes whenever subdivision becomes necessary.
+    </p>
+    
+    <p>
+        Complete the following methods in the <code>OctreeNode</code> class:
+    </p>
+    <ul>
+        <li><code>OctreeNode::add</code></li>
+        <li><code>OctreeNode::split</code></li>
+    </ul>
+    
+    <p>
+        Both methods are marked with <code>TODO</code> comments in the source code. These
+        comments provide hints for the concrete implementation.
+    </p>
+    
+    <p>
+        For visual validation, compare your result with the reference solution on this page.
+        Note that the growth structure is based on random placement, so every simulation run
+        produces slightly different results.
+    </p>
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+        <p style="text-align:center;">
+            <em>Solution</em>
+        </p>
+    </div>
+
+    
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../03" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../05" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

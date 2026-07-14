@@ -1,0 +1,81 @@
+<!--#set var="pagetitle" value="Exercise 01 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 1: Introduction</h1>
+
+<div class="task-container">
+
+    <h2>General</h2>
+    <p>
+        Upload your exercises to Moodle <mark>before the submission deadline</mark>. Late submissions receive 0 points, and submissions that do not compile also receive 0 points. Sample inputs and outputs are often provided; use them to test your program. Please do not add extra output unless the assignment explicitly asks for it. Submit one zip file named <code>a1_Firstname_Lastname.zip</code>. For this first sheet, a complete submission should contain <code>main.cpp</code> and <code>cube.obj</code>.
+    </p>
+
+    <p>
+    Compress all files you changed into one archive. If an exercise contains theoretical questions, include a text file, scan, or photo with your answers.</p>
+    
+    
+    <h2>Setting Up the Development Environment</h2>
+    <p>Follow these steps to set up your exercise environment:</p>
+
+    <h3>Windows users:</h3>
+    <p>Download the latest <a href="https://visualstudio.microsoft.com">Visual Studio IDE</a> (not Visual Studio Code).</p>
+    <p>Select "Desktop development with C++" during installation.</p>
+
+    <h3>Mac users:</h3>
+    <p>Install Xcode, and also install <a href="http://glew.sourceforge.net/">GLEW</a> and <a href="https://www.glfw.org/">GLFW</a>.</p>
+
+    <h3>Linux users:</h3>
+    <p>Install the required tools with:</p>
+    <code>sudo apt install build-essential libglew-dev libglfw3-dev</code>
+    
+    
+    <h2>Download the Framework and Exercise Code</h2>
+        
+    <p>Download the exercise framework and starter files from GitHub at <a href="https://github.com/JensDerKrueger/CG">https://github.com/JensDerKrueger/CG</a>, or clone the repository with:</p>
+    
+    <pre><code>git clone https://github.com/JensDerKrueger/CG</code></pre>
+</div>
+<div class="task-container">
+
+    <h3 class="assignment">Exercise 1: Hello OBJ (10 points)</h3>
+    <p>Edit <code>main.cpp</code> in the <code>Hello_OBJ</code> folder so that it renders the OBJ model of a bunny. The class <code>OBJFile</code> reads <code>bunny.obj</code>. Your task is to convert the indexed representation into an explicit vertex representation.</p>
+</div>
+<div class="task-container">
+
+    <h3 class="assignment">Exercise 2: Create a Cube (5 points)</h3>
+        <p>Create a <code>cube.obj</code> file that describes a cube. Store only position data and topology.</p>
+        <p>Implement the necessary code in <code>init</code> to load the cube data, and add a keyboard shortcut that switches between the bunny and the cube when the user presses the Spacebar.</p>
+
+
+    <h2>A correct solution should look roughly like this:</h2>
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <div class="description">
+        Press the <strong>Spacebar</strong> to switch between the bunny and the cube.
+    </div>
+    
+
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../02" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

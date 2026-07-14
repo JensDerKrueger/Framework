@@ -1,0 +1,119 @@
+<!--#set var="pagetitle" value="Exercise 2 Solution - Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 2: Interpolation &amp; Transformation Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed implementation for this exercise. To compare
+        them with your own work, replace the exercise version of <code>main.cpp</code> and the
+        two shader files with the provided files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="vertexShader.vert">Open <code>vertexShader.vert</code></a>
+        <a class="source-link" href="fragmentShader.frag">Open <code>fragmentShader.frag</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Vertex Colors in the Shaders</h3>
+
+    <p>
+        The vertex shader receives a position and a color for each vertex. The position is
+        transformed by the projection and model-view matrices. The color is passed to the
+        fragment shader as an interpolated varying, so fragments inside a triangle receive
+        smoothly blended colors.
+    </p>
+
+    <pre class="code-snippet" data-src="vertexShader.vert">Loading vertexShader.vert...</pre>
+
+    <p>
+        The fragment shader simply writes the interpolated color. The interpolation itself is
+        performed by the rasterizer between the vertex and fragment shader stages.
+    </p>
+
+    <pre class="code-snippet" data-src="fragmentShader.frag">Loading fragmentShader.frag...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Triangle Geometry and Colors</h3>
+
+    <p>
+        The solution stores one equilateral triangle in object space and reuses it three
+        times. A separate color array stores three RGB colors for each triangle. The three
+        vertex arrays select the same position buffer but different offsets into the color
+        buffer.
+    </p>
+
+    <p>
+        There are many valid ways to solve this assignment, and several of them are shorter,
+        faster, or more elegant than the version shown here. This solution intentionally uses
+        a very basic approach: separate vertex array objects describe the three triangles,
+        each with the same coordinates but different colors. Alternatives include using a
+        single buffer with different offsets for each draw call, or using instancing.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="constexpr static float sqrt3" data-end="public:">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Buffers and Vertex Arrays</h3>
+
+    <p>
+        Two buffers are created: one for positions and one for colors. The three vertex array
+        objects describe how to read these buffers for the top, right, and left triangle. The
+        color attribute offset changes for each VAO, which gives each triangle its own color
+        triplet while reusing the same triangle positions.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void setupGeometry" data-end="virtual void keyboard">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Transformations and Animation</h3>
+
+    <p>
+        The animation angle is computed from elapsed time at 45 degrees per second. Each
+        triangle uses a different model-view matrix: the top triangle rotates around the
+        x-axis, the right triangle around the y-axis, and the left triangle around the
+        z-axis. Extra translations move the local origin to the requested pivot before
+        rotation and move it back afterward.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void animate" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Keyboard Interaction</h3>
+
+    <p>
+        The starter code already handles <code>Escape</code> to close the application. The
+        solution keeps that behavior and adds the exercise controls: the space bar toggles
+        animation, and <code>R</code> resets the animation time so the triangles return to the
+        initial state.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void keyboard" data-end="};">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

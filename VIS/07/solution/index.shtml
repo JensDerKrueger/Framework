@@ -1,0 +1,113 @@
+<!--#set var="pagetitle" value="Exercise 7 Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 7: Line Integral Convolution Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed LIC implementation. To compare them with
+        your own work, replace the exercise version of <code>main.cpp</code> with the
+        provided file and rebuild the project. The included <code>dots.bmp</code> is used by
+        one of the interactive noise modes.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="dots.bmp">Open <code>dots.bmp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Setup</h3>
+
+    <p>
+        The solution keeps a copy of the original noise image, stores the current LIC result
+        in <code>licImage</code>, and uses <code>steps = 50</code> as the default kernel
+        length in both streamline directions. Initialization computes the first LIC result
+        from the noise image.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="Flowfield flow" data-end="std::vector&lt;Vec2&gt; computeCurve">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Streamline Tracing</h3>
+
+    <p>
+        LIC needs the streamline through each output pixel. The solution fixes the
+        three-dimensional flow field at <code>z = 0.5</code>, converts the vector to its
+        <code>x</code>/<code>y</code> direction, and traces forward and backward with an
+        Euler step. Tracing stops when the curve leaves the unit square.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="std::vector&lt;Vec2&gt; computeCurve" data-end="void licStep">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">LIC Averaging</h3>
+
+    <p>
+        For every output pixel, <code>licStep</code> computes the streamline through the
+        pixel and samples the input noise along that curve. The average sampled value becomes
+        the output intensity and is written to all three RGB channels.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void licStep" data-end="void equalizeStep">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Histogram Equalization</h3>
+
+    <p>
+        After each LIC pass, the result is contrast-enhanced with histogram equalization. The
+        solution builds a histogram, converts it to a cumulative distribution, creates a
+        remapping table, and applies the remapped grayscale value to all color channels.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void equalizeStep" data-end="void computeLIC">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Repeated LIC Passes</h3>
+
+    <p>
+        The assignment asks for LIC followed by histogram equalization, repeated three times.
+        <code>computeLIC</code> implements exactly that loop, feeding each equalized result
+        back as the input for the next pass.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void computeLIC" data-end="virtual void draw">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Interactive Variants</h3>
+
+    <p>
+        The keyboard controls recompute the image with different flow fields, noise textures,
+        and kernel lengths. <code>H</code> applies another set of LIC/equalization passes to
+        the current image, while <code>8</code> and <code>9</code> change the number of
+        streamline steps before recomputing.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void keyboard" data-end="#ifdef _WIN32">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

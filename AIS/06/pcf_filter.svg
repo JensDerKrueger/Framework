@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="420" viewBox="0 0 920 420" role="img" aria-labelledby="title desc">
+  <title id="title">Percentage closer filtering</title>
+  <desc id="desc">A 3 by 3 shadow map neighborhood is sampled. Each texel performs a depth comparison and the nine results are averaged into one visibility value.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#9a6a00"/>
+    </marker>
+    <style>
+      .label { fill: #202426; font: 22px Arial, sans-serif; }
+      .small { fill: #5f696d; font: 17px Arial, sans-serif; }
+      .math { fill: #202426; font: 20px Arial, sans-serif; }
+      .grid { fill: #ffffff; stroke: #b9b1a5; stroke-width: 2; }
+      .lit { fill: #007fa3; }
+      .shadow { fill: #d8d2c6; }
+      .mixed { fill: #7fb6c8; }
+      .center { stroke: #9a6a00; stroke-width: 5; }
+      .accent { fill: #9a6a00; }
+    </style>
+  </defs>
+
+  <rect width="920" height="420" fill="#f4f1eb"/>
+
+  <text x="64" y="48" class="label">single shadow lookup</text>
+  <text x="382" y="48" class="label">3 x 3 PCF neighborhood</text>
+  <text x="687" y="48" class="label">average visibility</text>
+
+  <g transform="translate(85 95)">
+    <rect class="grid shadow center" x="0" y="0" width="118" height="118" rx="6"/>
+    <text x="59" y="70" text-anchor="middle" class="math">0</text>
+    <text x="59" y="145" text-anchor="middle" class="small">one comparison: hard edge</text>
+  </g>
+
+  <line x1="250" y1="152" x2="335" y2="152" stroke="#9a6a00" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g transform="translate(382 82)">
+    <rect class="grid lit" x="0" y="0" width="74" height="74"/>
+    <rect class="grid lit" x="74" y="0" width="74" height="74"/>
+    <rect class="grid mixed" x="148" y="0" width="74" height="74"/>
+    <rect class="grid lit" x="0" y="74" width="74" height="74"/>
+    <rect class="grid mixed center" x="74" y="74" width="74" height="74"/>
+    <rect class="grid shadow" x="148" y="74" width="74" height="74"/>
+    <rect class="grid mixed" x="0" y="148" width="74" height="74"/>
+    <rect class="grid shadow" x="74" y="148" width="74" height="74"/>
+    <rect class="grid shadow" x="148" y="148" width="74" height="74"/>
+
+    <text x="37" y="45" text-anchor="middle" class="math">1</text>
+    <text x="111" y="45" text-anchor="middle" class="math">1</text>
+    <text x="185" y="45" text-anchor="middle" class="math">1</text>
+    <text x="37" y="119" text-anchor="middle" class="math">1</text>
+    <text x="111" y="119" text-anchor="middle" class="math">0</text>
+    <text x="185" y="119" text-anchor="middle" class="math">0</text>
+    <text x="37" y="193" text-anchor="middle" class="math">1</text>
+    <text x="111" y="193" text-anchor="middle" class="math">0</text>
+    <text x="185" y="193" text-anchor="middle" class="math">0</text>
+
+    <text x="111" y="246" text-anchor="middle" class="small">sample center texel and 8 neighbors</text>
+  </g>
+
+  <line x1="635" y1="152" x2="720" y2="152" stroke="#9a6a00" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <g transform="translate(710 106)">
+    <rect x="0" y="0" width="155" height="80" rx="8" fill="#ffffff" stroke="#b9b1a5" stroke-width="2"/>
+    <text x="77.5" y="34" text-anchor="middle" class="math">(5 lit) / 9</text>
+    <text x="77.5" y="62" text-anchor="middle" class="accent" font-family="Arial, sans-serif" font-size="24">= 0.56</text>
+    <rect x="0" y="124" width="155" height="42" rx="6" fill="#7fb6c8"/>
+    <rect x="87" y="124" width="68" height="42" rx="6" fill="#d8d2c6"/>
+    <text x="77.5" y="197" text-anchor="middle" class="small">partial shadow</text>
+  </g>
+
+  <text x="65" y="358" class="small">PCF filters the boolean shadow test. It does not blur the depth map itself.</text>
+  <text x="65" y="386" class="small">Averaging mixed lit and shadowed comparisons gives a smoother edge.</text>
+</svg>

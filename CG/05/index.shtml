@@ -1,0 +1,75 @@
+<!--#set var="pagetitle" value="Exercise 05 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 5: Shading & Interpolation</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Hello Triangles (10 points)</h3>
+    <p>
+        The provided <code>main.cpp</code> renders two triangles into an image, one for each exercise on this sheet.
+        Familiarize yourself with the provided classes. Some of them are only skeletons with missing implementations and <code>TODO</code> markers.
+        Read the comments in these classes carefully so you understand the expected interfaces and behavior.
+    </p>
+    <p>
+        Implement barycentric interpolation for <code>Triangle</code>, a simple pass-through shading algorithm in <code>AmbientShader</code> that returns the ambient color of a surface point, and all required helper functions.
+        Make sure all vertex attributes are interpolated across the whole triangle.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <img src="SimpleTriangle.png" alt="Ambient shaded triangle" style="width: 45%;">
+    </div>
+    
+    <p style="text-align: center;">
+        <em>AmbientShader-Exercise</em>
+    </p>
+    
+    <p>
+        Any triangle defined in the x-y plane should then be able to draw itself through a call to <code>draw</code>.
+        If everything is implemented correctly, the output should look like the image below.
+    </p>
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+        <p style="text-align:center;">
+            <em>Solution.</em>
+        </p>
+    </div>            
+
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Diffuse Lighting (10 points)</h3>
+    <p>
+        Implement <code>DiffuseShader</code> by computing local diffuse lighting.
+        Include all material and light-source coefficients relevant to diffuse illumination.
+        As highlighted in the starter code, the test scene defines a point light at the midpoint of the left edge of the upper-left triangle.
+        This light source is located above the x-y plane.
+    </p>
+    <p>
+        Compute the lighting <strong>per pixel</strong> to obtain accurate results.
+        As shown in the reference image, the scene should contain a diffusely shaded triangle in the upper-left area.
+    </p>
+    
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../04" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../06" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

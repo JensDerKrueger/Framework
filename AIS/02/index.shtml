@@ -1,0 +1,107 @@
+<!--#set var="pagetitle" value="Exercise 02 – Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 02: Interpolation & Transformation</h1>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Colored Triangles (10 points)</h3>
+            <p>
+                The provided code for this exercise already contains parts from the previous task:
+                <code>GLFW</code> and <code>GLEW</code> initialization are encapsulated in classes inside the <code>Utils</code> folder.
+                That folder also contains matrix and vector classes, which will be used in this and upcoming exercises.
+            </p>
+            <p>
+                You do not need to modify the code in <code>Utils</code>.
+                For this assignment, it is sufficient to edit only the classes in the <code>Hello_Triangles</code> directory.
+                Your shader source files are located in the <code>res</code> subfolder.
+                The <code>GLHelper</code> files assist in compiling these shaders.
+            </p>
+            
+            <p>
+                The example program <code>main.cpp</code> renders a simple white triangle
+                (see the left image in Figure <strong>triangles</strong>).
+                Extend the program so that it matches <strong>exactly</strong> the right image:
+                Three equilateral triangles with color-interpolated corners (red, magenta, yellow, blue, cyan, green).
+            </p>
+            
+            <p>
+                Use the vector and matrix classes in the <code>Utils</code> folder,
+                as transformations will be essential for the following tasks.
+            </p>
+        </div>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Transformations & Animations (10 points)</h3>
+            <p>
+                Extend your solution from the <strong>Colored Triangles</strong> task
+                so that each of the three equilateral triangles rotates at 45 degrees per second —
+                each around one of the primary axes:
+            </p>
+            
+            <ul>
+                <li>
+                    The top triangle (red-magenta-yellow) rotates around the <strong>x-axis</strong>,
+                    centered at half its height.
+                </li>
+                <li>
+                    The bottom right triangle (yellow-cyan-green) rotates around the <strong>y-axis</strong>,
+                    centered at half its width.
+                </li>
+                <li>
+                    The bottom left triangle (magenta-blue-cyan) rotates around the <strong>z-axis</strong>,
+                    centered at its geometric centroid.
+                </li>
+            </ul>
+            
+            <p>
+                Continue to use an orthographic projection as in the previous exercise.
+                You can refer to the example below for visual verification.
+            </p>
+            
+            <p>
+                Additionally, the program must support the following user input:
+            </p>
+            
+            <ul>
+                <li><code>Spacebar</code>: Toggles animation on/off</li>
+                <li><code>R</code> key: Resets the animation to its initial state</li>
+            </ul>
+            
+            <p>
+                When the application starts, the animation must be <strong>paused in the reset state</strong>.
+            </p>
+            
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <img src="SimpleTriangle.png" alt="White Triangle" style="width: 45%;">
+            </div>
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div class="loading-text" id="loading">Loading</div>
+            </div>
+            <p style="text-align:center;">
+                <em>Top – initial state. Bottom – color-interpolated <a href="http://en.wikipedia.org/wiki/Triforce" target="_blank">Triforce</a>.<br>
+                Press <strong>Spacebar</strong> to toggle the animation. Press <strong>R</strong> to reset the animation.
+                </em>
+            </p>
+
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="../01" class="nav-link nav-arrow">⬅</a>
+            <a href=".." class="nav-link">Back to Overview</a>
+            <a href="../03" class="nav-link nav-arrow">➡</a>
+        </div>
+  </div>
+</section>
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

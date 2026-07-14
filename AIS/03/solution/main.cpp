@@ -1,0 +1,399 @@
+#include <fstream>
+
+#include <GLApp.h>
+#include <Vec2.h>
+#include "Teapot.h"
+#include "UnitPlane.h"
+#include "UnitCube.h"
+
+class LightProperties {
+public:
+  GLint modelViewProjectionMatrixUniform{-1};
+  bool animateLight{false};
+  float degreesPerSecond{45.0f};
+  float angle{0};
+  GLuint program{};
+};
+
+class MyGLApp : public GLApp {
+public:
+  double time{};
+
+  LightProperties light;
+
+  GLuint pFlat{};
+  GLuint pGouraud{};
+  GLuint pPhong{};
+  Mat4 projectionMatrix{};
+  Mat4 viewMatrix{};
+  bool leftMouseDown{false};
+  bool rightMouseDown{false};
+  bool controlDown{false};
+
+  GLint modelViewProjectionMatrixUniform[3]{-1,-1,-1};
+  GLint modelViewMatrixUniform[3]{-1,-1,-1};
+  GLint modelViewInverseTransposeMatrixUniform[3]{-1,-1,-1};
+  GLint lightPositionUniform[3]{-1,-1,-1};
+  GLint kdUniform[3]{-1,-1,-1};
+
+  enum class Shading {
+    FLAT=0, GOURAUD=1, PHONG=2
+  };
+
+  Shading shading{Shading::FLAT};
+  Vec3 kd = { 1, 1, 1 }; // material diffuse color
+
+  GLuint vbos[5]{ };
+  GLuint vaos[3]{ };
+  GLuint ebos[2]{};
+  GLuint eboTeapot{};
+
+  // camera
+  bool cameraActive{false};
+  bool firstCameraUpdate{true};
+  Vec3 viewPosition = { 0, 0, -100 }; // view translation position
+  Vec3 viewRotation = { -45, 0, 0 }; // view rotation angles
+  Vec2 mouse = { 0, 0 }; // last mouse position
+  constexpr static float mouseSensitivity{0.15f}; // system specific factor
+  constexpr static float mousewheelFactor{10.0f}; // system specific factor
+
+  MyGLApp() : GLApp(800,600,1,"Solution 03 - Hello Shading") {}
+
+  virtual void init() override {
+    time = glfwGetTime();
+    setupShaders();
+    setupGeometry();
+
+    GL(glEnable(GL_CULL_FACE));
+    GL(glCullFace(GL_BACK));
+    GL(glEnable(GL_DEPTH_TEST));
+    GL(glDepthFunc(GL_LESS));
+  }
+
+  void selectShading() {
+    switch (shading) {
+      case Shading::FLAT:
+        GL(glUseProgram(pFlat));
+        kd = { 0.8f, 0.0f, 0.0f };
+        break;
+      case Shading::GOURAUD:
+        GL(glUseProgram(pGouraud));
+        kd = { 0.0f, 0.8f, 0.0f };
+        break;
+      case Shading::PHONG:
+        GL(glUseProgram(pPhong));
+        kd = { 0.0f, 0.0f, 0.8f };
+        break;
+    }
+    GL(glUniform3fv(kdUniform[int(shading)], 1, kd));
+  }
+
+  virtual void draw() override {
+    double t = glfwGetTime();
+    double d = t - time;
+    time = t;
+
+    if (light.animateLight) {
+      light.angle += light.degreesPerSecond * float(d);
+    }
+
+    viewMatrix = Mat4::translation(viewPosition[0], viewPosition[1], viewPosition[2]);
+    viewMatrix = viewMatrix * Mat4::rotationX(viewRotation[0]);
+    viewMatrix = viewMatrix * Mat4::rotationY(viewRotation[1]);
+    viewMatrix = viewMatrix * Mat4::rotationZ(viewRotation[2]);
+
+    // render light
+    GL(glUseProgram(light.program));
+    Mat4 modelMatrix = Mat4::rotationY(light.angle) *  Mat4::translation(-35, 35, 35);
+    const Vec4 lightPosition =  viewMatrix * modelMatrix * Vec4(0, 0, 0, 1);
+
+    Mat4 modelViewProjection = projectionMatrix * viewMatrix * modelMatrix;
+    GL(glUniformMatrix4fv(light.modelViewProjectionMatrixUniform, 1, GL_TRUE, modelViewProjection));
+
+    GL(glBindVertexArray(vaos[2]));
+    GL(glDrawElements(GL_TRIANGLES, sizeof(UnitCube::indices) / sizeof(UnitCube::indices[0]), GL_UNSIGNED_INT, (void*)0));
+
+    selectShading();
+
+    GL(glUniform4fv(lightPositionUniform[int(shading)], 1, lightPosition));
+
+    modelMatrix = Mat4::scaling(100, 100, 100);
+
+    Mat4 modelView = viewMatrix * modelMatrix;
+    modelViewProjection = projectionMatrix * modelView;
+    Mat4 modelViewIT = Mat4::transpose(Mat4::inverse(modelView));
+
+    GL(glUniformMatrix4fv(modelViewProjectionMatrixUniform[int(shading)], 1, GL_TRUE, modelViewProjection));
+    GL(glUniformMatrix4fv(modelViewMatrixUniform[int(shading)], 1, GL_TRUE, modelView));
+    GL(glUniformMatrix4fv(modelViewInverseTransposeMatrixUniform[int(shading)], 1, GL_TRUE, modelViewIT));
+
+    GL(glBindVertexArray(vaos[0]));
+    GL(glDrawArrays(GL_TRIANGLES, 0, sizeof(UnitPlane::vertices) / (3*sizeof(UnitPlane::vertices[0]))));
+
+    modelMatrix = {};
+    modelView = viewMatrix * modelMatrix;
+    modelViewProjection = projectionMatrix * modelView;
+    modelViewIT = Mat4::transpose(Mat4::inverse(modelView));
+
+    GL(glUniformMatrix4fv(modelViewProjectionMatrixUniform[int(shading)], 1,
+                          GL_TRUE, modelViewProjection));
+    GL(glUniformMatrix4fv(modelViewMatrixUniform[int(shading)], 1, GL_TRUE,
+                          modelView));
+    GL(glUniformMatrix4fv(modelViewInverseTransposeMatrixUniform[int(shading)],
+                          1, GL_TRUE, modelViewIT));
+
+    GL(glBindVertexArray(vaos[1]));
+    GL(glDrawElements(GL_TRIANGLES, sizeof(Teapot::indices) / sizeof(Teapot::indices[0]), GL_UNSIGNED_INT, (void*)0));
+    GL(glBindVertexArray(0));
+  }
+
+  virtual void resize(const Dimensions winDim, const Dimensions fbDim) override {
+    GLApp::resize(winDim, fbDim);
+    projectionMatrix = Mat4::perspective(60.0f, fbDim.aspect(), 0.1f, 10000.0f);
+  }
+
+  std::string loadFile(const std::string& filename) {
+    std::ifstream shaderFile{ filename };
+    if (!shaderFile) {
+      std::cout << "loadFile: Unable to open file " << filename << std::endl;
+      throw GLException{ std::string("Unable to open file ") + filename };
+    }
+    std::string str;
+    std::string fileContents;
+    while (std::getline(shaderFile, str)) {
+      fileContents += str + "\n";
+    }
+    return fileContents;
+  }
+
+  GLuint createShaderFromFile(GLenum type, const std::string& sourcePath) {
+    const std::string shaderCode = loadFile(sourcePath);
+    const GLchar* c_shaderCode = shaderCode.c_str();
+    GLuint s = glCreateShader(type);
+    GL(glShaderSource(s, 1, &c_shaderCode, NULL));
+    GL(glCompileShader(s)); checkAndThrowShader(s);
+    return s;
+  }
+
+  void setupShaders() {
+    std::string shaderNames[] = {
+      "flat.vert",
+      "flat.frag",
+      "gouraud.vert",
+      "gouraud.frag",
+      "phong.vert",
+      "phong.frag",
+      "light.vert",
+      "light.frag"
+    };
+
+    GLuint vertexShader = createShaderFromFile(GL_VERTEX_SHADER, shaderNames[0]);
+    GLuint fragmentShader = createShaderFromFile(GL_FRAGMENT_SHADER, shaderNames[1]);
+    pFlat = glCreateProgram();
+    GL(glAttachShader(pFlat, vertexShader));
+    GL(glAttachShader(pFlat, fragmentShader));
+    GL(glLinkProgram(pFlat));
+    checkAndThrowProgram(pFlat);
+
+    kdUniform[int(Shading::FLAT)] = glGetUniformLocation(pFlat, "kd");
+    modelViewProjectionMatrixUniform[int(Shading::FLAT)] = glGetUniformLocation(pFlat, "MVP");
+    modelViewMatrixUniform[int(Shading::FLAT)] = glGetUniformLocation(pFlat, "MV");
+    modelViewInverseTransposeMatrixUniform[int(Shading::FLAT)] = glGetUniformLocation(pFlat, "MVit");
+    lightPositionUniform[int(Shading::FLAT)] = glGetUniformLocation(pFlat, "lightPosition");
+
+    GL(glDeleteShader(vertexShader));
+    GL(glDeleteShader(fragmentShader));
+
+    vertexShader = createShaderFromFile(GL_VERTEX_SHADER, shaderNames[2]);
+    fragmentShader = createShaderFromFile(GL_FRAGMENT_SHADER, shaderNames[3]);
+    pGouraud = glCreateProgram();
+    GL(glAttachShader(pGouraud, vertexShader));
+    GL(glAttachShader(pGouraud, fragmentShader));
+    GL(glLinkProgram(pGouraud));
+    checkAndThrowProgram(pGouraud);
+    GL(glDeleteShader(vertexShader));
+    GL(glDeleteShader(fragmentShader));
+
+    kdUniform[int(Shading::GOURAUD)] = glGetUniformLocation(pGouraud, "kd");
+    modelViewProjectionMatrixUniform[int(Shading::GOURAUD)] = glGetUniformLocation(pGouraud, "MVP");
+    modelViewMatrixUniform[int(Shading::GOURAUD)] = glGetUniformLocation(pGouraud, "MV");
+    modelViewInverseTransposeMatrixUniform[int(Shading::GOURAUD)] = glGetUniformLocation(pGouraud, "MVit");
+    lightPositionUniform[int(Shading::GOURAUD)] = glGetUniformLocation(pGouraud, "lightPosition");
+
+    vertexShader = createShaderFromFile(GL_VERTEX_SHADER, shaderNames[4]);
+    fragmentShader = createShaderFromFile(GL_FRAGMENT_SHADER, shaderNames[5]);
+    pPhong = glCreateProgram();
+    GL(glAttachShader(pPhong, vertexShader));
+    GL(glAttachShader(pPhong, fragmentShader));
+    GL(glLinkProgram(pPhong));
+    checkAndThrowProgram(pPhong);
+    GL(glDeleteShader(vertexShader));
+    GL(glDeleteShader(fragmentShader));
+
+    kdUniform[int(Shading::PHONG)] = glGetUniformLocation(pPhong, "kd");
+    modelViewProjectionMatrixUniform[int(Shading::PHONG)] = glGetUniformLocation(pPhong, "MVP");
+    modelViewMatrixUniform[int(Shading::PHONG)] = glGetUniformLocation(pPhong, "MV");
+    modelViewInverseTransposeMatrixUniform[int(Shading::PHONG)] = glGetUniformLocation(pPhong, "MVit");
+    lightPositionUniform[int(Shading::PHONG)] = glGetUniformLocation(pPhong, "lightPosition");
+
+    vertexShader = createShaderFromFile(GL_VERTEX_SHADER, shaderNames[6]);
+    fragmentShader = createShaderFromFile(GL_FRAGMENT_SHADER, shaderNames[7]);
+    light.program = glCreateProgram();
+    GL(glAttachShader(light.program, vertexShader));
+    GL(glAttachShader(light.program, fragmentShader));
+    GL(glLinkProgram(light.program));
+    checkAndThrowProgram(light.program);
+    GL(glDeleteShader(vertexShader));
+    GL(glDeleteShader(fragmentShader));
+
+    light.modelViewProjectionMatrixUniform = glGetUniformLocation(light.program, "MVP");
+
+    selectShading();
+  }
+
+  void setupGeometry() {
+    const GLuint vertexPositionLocation = GLuint(glGetAttribLocation(pPhong, "vertexPosition"));
+    const GLuint vertexNormalLocation = GLuint(glGetAttribLocation(pPhong, "vertexNormal"));
+
+    GL(glGenVertexArrays(3, vaos));
+    GL(glGenBuffers(5, vbos));
+    GL(glGenBuffers(2, ebos));
+
+    // unit plane in xy-plane
+    GL(glBindVertexArray(vaos[0]));
+    // setup vertices
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vbos[0]));
+    GL(glBufferData(GL_ARRAY_BUFFER, sizeof(UnitPlane::vertices), UnitPlane::vertices, GL_STATIC_DRAW));
+    GL(glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+    GL(glEnableVertexAttribArray(vertexPositionLocation));
+    // setup normals
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vbos[1]));
+    GL(glBufferData(GL_ARRAY_BUFFER, sizeof(UnitPlane::normals), UnitPlane::normals, GL_STATIC_DRAW));
+    GL(glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+    GL(glEnableVertexAttribArray(vertexNormalLocation));
+
+    // teapot
+    GL(glBindVertexArray(vaos[1]));
+    // setup vertices
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vbos[2]));
+    GL(glBufferData(GL_ARRAY_BUFFER, sizeof(Teapot::vertices), Teapot::vertices, GL_STATIC_DRAW));
+    GL(glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+    GL(glEnableVertexAttribArray(vertexPositionLocation));
+    // setup normals
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vbos[3]));
+    GL(glBufferData(GL_ARRAY_BUFFER, sizeof(Teapot::normals), Teapot::normals, GL_STATIC_DRAW));
+    GL(glVertexAttribPointer(vertexNormalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+    GL(glEnableVertexAttribArray(vertexNormalLocation));
+    // setup indices for indexed drawing the teapot
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos[0]));
+    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Teapot::indices), Teapot::indices, GL_STATIC_DRAW));
+
+    // light
+    GL(glBindVertexArray(vaos[2]));
+    // setup vertices
+    GL(glBindBuffer(GL_ARRAY_BUFFER, vbos[4]));
+    GL(glBufferData(GL_ARRAY_BUFFER, sizeof(UnitCube::vertices), UnitCube::vertices, GL_STATIC_DRAW));
+    GL(glEnableVertexAttribArray(vertexPositionLocation));
+    GL(glVertexAttribPointer(vertexPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+
+    // setup indices for indexed drawing the light
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebos[1]));
+    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(UnitCube::indices), UnitCube::indices, GL_STATIC_DRAW));
+
+    GL(glBindVertexArray(0));
+  }
+
+  virtual void keyboard(int key, int scancode, int action, int mods) override {
+    if (key == GLENV_KEY_LEFT_CONTROL) controlDown = action == GLENV_PRESS;
+
+    if (action == GLENV_PRESS) {
+      switch (key) {
+        case GLENV_KEY_ESCAPE:
+          closeWindow();
+          break;
+        case GLENV_KEY_F:
+          shading = Shading::FLAT;
+          std::cout << "switched to FLAT shading" << std::endl;
+          break;
+        case GLENV_KEY_G:
+          shading = Shading::GOURAUD;
+          std::cout << "switched to GOURAUD shading" << std::endl;
+          break;
+        case GLENV_KEY_P:
+          shading = Shading::PHONG;
+          std::cout << "switched to PHONG shading" << std::endl;
+          break;
+        case GLENV_KEY_SPACE:
+          light.animateLight = !light.animateLight;
+          std::cout << "light animation: " << light.animateLight << std::endl;
+          break;
+        case GLENV_KEY_R:
+          std::cout << "reset" << std::endl;
+          light.angle = 0;
+          viewPosition = Vec3{ 0, 0, -100 };
+          viewRotation = Vec3{ -45, 0, 0 };
+          break;
+      }
+    }
+  }
+
+  virtual void mouseMove(double xPosition, double yPosition) override {
+    if (cameraActive) {
+      if (firstCameraUpdate) {
+        mouse[0] = float(xPosition);
+        mouse[1] = float(yPosition);
+        firstCameraUpdate = false;
+      }
+
+      // rotation
+      if (leftMouseDown) {
+        viewRotation[0] += (mouse[1] - float(yPosition)) * mouseSensitivity;
+        viewRotation[1] += (mouse[0] - float(xPosition)) * mouseSensitivity;
+      }
+      // panning
+      else if (rightMouseDown) {
+        float f = 0.6f;
+        if (!controlDown) {
+          viewPosition[0] -= (mouse[0] - float(xPosition)) * mouseSensitivity * f;
+          viewPosition[1] += (mouse[1] - float(yPosition)) * mouseSensitivity * f;
+        }
+        else {
+          viewPosition[2] -= (mouse[1] - float(yPosition)) * mouseSensitivity * f;
+        }
+      }
+      mouse[0] = float(xPosition);
+      mouse[1] = float(yPosition);
+
+    }
+  }
+
+  virtual void mouseButton(int button, int action, int mods, double xPosition, double yPosition) override {
+    if (button == GLENV_MOUSE_BUTTON_RIGHT) rightMouseDown = action == GLENV_MOUSE_PRESS;
+    if (button == GLENV_MOUSE_BUTTON_LEFT) leftMouseDown = action == GLENV_MOUSE_PRESS;
+
+    if ((button == GLENV_MOUSE_BUTTON_LEFT ||
+         button == GLENV_MOUSE_BUTTON_RIGHT) && action == GLENV_MOUSE_PRESS) {
+      mouse[0] = static_cast<float>(xPosition);
+      mouse[1] = static_cast<float>(yPosition);
+      cameraActive = true;
+      firstCameraUpdate = true;
+    } else if ((button == GLENV_MOUSE_BUTTON_LEFT ||
+              button == GLENV_MOUSE_BUTTON_RIGHT) && action == GLENV_MOUSE_RELEASE) {
+      cameraActive = false;
+      firstCameraUpdate = false;
+    }
+  }
+
+  virtual void mouseWheel(double x_offset, double y_offset, double xPosition, double yPosition) override {
+    // panning
+    float f = viewPosition[2] / mousewheelFactor;
+    viewPosition[0] -= float(x_offset) * f;
+    viewPosition[2] -= float(y_offset) * f;
+  }
+};
+
+int main(int argc, char** argv) {
+  MyGLApp myApp;
+  myApp.run();
+  return EXIT_SUCCESS;
+}

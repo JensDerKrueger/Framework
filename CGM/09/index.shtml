@@ -1,0 +1,179 @@
+<!--#set var="pagetitle" value="Exercise 9 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 9: Radiosity</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Diffuse Global Illumination with Radiosity (25 points)</h3>
+
+    <p>
+        In this exercise you will implement the geometric core of a simple radiosity renderer.
+        The application already creates a Cornell-box scene, tessellates the objects, displays
+        the computation progress, solves the linear radiosity system, and renders the result.
+        Your task is to complete the missing code in <code>Scene.cpp</code> and
+        <code>RadiositySolver.cpp</code>.
+    </p>
+
+    <p>
+        Radiosity assumes purely diffuse surfaces. Instead of following individual camera rays
+        as in path tracing, it computes how light energy is exchanged between surface patches.
+        The radiosity equation from the lecture is:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/radiosity_equation.png"
+             alt="B_i equals emitted radiosity B_i^e plus rho_i times the sum over j of B_j F_ij." />
+    </p>
+
+    <p>
+        <code>B_i</code> is the outgoing radiosity of patch <code>i</code>,
+        <code>B_i<sup>e</sup></code> is emitted light, <code>&rho;<sub>i</sub></code>
+        is diffuse reflectance, and <code>F<sub>ij</sub></code> is the form factor
+        describing how strongly patch <code>j</code> contributes to patch <code>i</code>.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Create Surface Patches (7 points)</h3>
+
+    <p>
+        Complete <code>Scene::createPatches</code>. Radiosity works on surface patches, and
+        in this exercise every triangle of the tessellated scene becomes one
+        <code>RadiosityPatch</code>.
+    </p>
+
+    <p>
+        For every object in <code>sceneObjects</code>:
+    </p>
+
+    <ol>
+        <li>Get the unpacked triangle mesh with <code>object-&gt;getMesh().unpack()</code>.</li>
+        <li>Read the triangle vertex coordinates from <code>mesh.getVertices()</code>.</li>
+        <li>Create one <code>RadiosityPatch</code> for each triangle.</li>
+        <li>Store the triangle vertices in <code>patch.a</code>, <code>patch.b</code>, and <code>patch.c</code>.</li>
+        <li>Compute the patch center as the average of the three vertices.</li>
+        <li>Compute the patch normal and area with the provided helper functions.</li>
+        <li>Copy reflectance and emission from the object's material.</li>
+        <li>Initialize <code>patch.radiosity</code> with <code>patch.emission</code>.</li>
+        <li>Store only non-degenerate patches with positive area.</li>
+    </ol>
+
+    <p>
+        If this task is implemented correctly, the progress view should show the scene
+        geometry while the form-factor computation runs.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Estimate Form Factors (10 points)</h3>
+
+    <p>
+        Complete <code>formFactorEstimate</code> in <code>RadiositySolver.cpp</code>.
+        The lecture derives the form factor as an integral over two patch areas:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/form_factor_integral.png"
+             alt="F_ij equals one over A_i times a double integral over A_i and A_j of visibility times the cosine factors divided by pi times squared distance." />
+    </p>
+
+    <p>
+        In the lecture, this integral is approximated using a hemicube. In this exercise we
+        use a simpler center-to-center estimate instead. This is less accurate for large
+        patches, but it is compact, easy to implement, and good enough once the geometry is
+        tessellated into reasonably small patches.
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/form_factor_ray_estimate.png"
+             alt="F_ij is approximately A_j times visibility between centers times cosine theta_i times cosine theta_j divided by pi times squared center distance." />
+    </p>
+
+    <p>
+        Here <code>c<sub>i</sub></code> and <code>c<sub>j</sub></code> are the patch centers.
+        The factor <code>A<sub>j</sub></code> appears because the integral over the emitting
+        patch is replaced by one sample at its center. In our code,
+        <code>receiver</code> is patch <code>i</code> and <code>emitter</code> is patch
+        <code>j</code>.
+    </p>
+
+    <p>
+        Implement the estimate as follows:
+    </p>
+
+    <ol>
+        <li>Compute the vector from <code>receiver.center</code> to <code>emitter.center</code>.</li>
+        <li>Compute the squared distance and return zero if it is zero.</li>
+        <li>Normalize the vector to get the direction from receiver to emitter.</li>
+        <li>Compute <code>cos(theta_i)</code> with the receiver normal.</li>
+        <li>Compute <code>cos(theta_j)</code> with the emitter normal and the opposite direction.</li>
+        <li>Return zero if either patch faces away from the other.</li>
+        <li>Return the center-to-center form-factor estimate.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 3: Visibility Between Patches (8 points)</h3>
+
+    <p>
+        Complete <code>RadiositySolver::visible</code>. The visibility term
+        <code>V</code> tells us whether two patches can exchange light directly:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/visibility_ray.png"
+             alt="Visibility between patch centers is one if no surface is hit before the target center and zero otherwise." />
+    </p>
+
+    <p>
+        We again use a center-to-center approximation. Cast one ray from the center of one
+        patch toward the center of the other patch. Start the ray slightly away from the first
+        patch using <code>visibilityEpsilon</code>, otherwise numerical precision may make the
+        ray immediately hit the patch it starts from.
+    </p>
+
+    <p>
+        The patches are visible if the scene intersection is empty, or if the closest hit is
+        farther away than the target center. If another object is hit before the target center,
+        the two patches are occluded and the form factor should not contribute.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>Left</em> mouse drag rotate, <em>R</em> reset rotation,
+        <em>S</em> toggle flat/smoothed radiosity after the solve finished
+    </p>
+    <p style="text-align:center;">
+        During form-factor computation, green patches have already been processed.
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../08" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../10" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,90 @@
+<!--#set var="pagetitle" value="Exercise 4 Solution - Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 4: Texturing Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+    <p>
+        The provided files contain the completed texture and normal-mapping solution. The
+        ground plane uses diffuse, specular, and normal textures, while the teapot uses its
+        own normal map to engrave the logo into the lighting response.
+    </p>
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="phongBump.vert">Open <code>phongBump.vert</code></a>
+        <a class="source-link" href="phongBumpTex.frag">Open <code>phongBumpTex.frag</code></a>
+        <a class="source-link" href="phongBump.frag">Open <code>phongBump.frag</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Texture Objects and Shader Programs</h3>
+    <p>
+        The solution uses the utility wrapper classes for textures, shader programs, buffers,
+        and vertex arrays. Four textures are loaded: diffuse, specular, and normal maps for
+        the stones, plus the teapot normal map.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="GLTexture2D stonesDiffuse" data-end="bool leftMouseDown">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void setupTextures" data-end="virtual void animate">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Tangent-Space Data</h3>
+    <p>
+        Normal mapping needs a tangent-space basis in addition to positions and normals. The
+        vertex shader transforms normals, tangents, and binormals into view space and passes
+        them to the fragment shader together with the texture coordinates.
+    </p>
+    <pre class="code-snippet" data-src="phongBump.vert">Loading phongBump.vert...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Textured Ground Plane</h3>
+    <p>
+        The ground plane shader samples the diffuse and specular textures for <code>kd</code>
+        and <code>ks</code>. The normal map is remapped from <code>[0, 1]</code> to
+        <code>[-1, 1]</code>, transformed by the TBN matrix, and used in the Phong lighting
+        calculation.
+    </p>
+    <pre class="code-snippet" data-src="phongBumpTex.frag">Loading phongBumpTex.frag...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Teapot Normal Mapping</h3>
+    <p>
+        The teapot uses the same tangent-space normal reconstruction, but keeps a fixed blue
+        diffuse material color. Only the normal map changes the local lighting direction,
+        which makes the logo appear engraved without changing the actual mesh geometry.
+    </p>
+    <pre class="code-snippet" data-src="phongBump.frag">Loading phongBump.frag...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Rendering and Geometry Setup</h3>
+    <p>
+        During rendering, the solution draws the light cube first, then the textured ground
+        plane, and finally the teapot. The geometry setup connects positions, normals,
+        tangents, binormals, and texture coordinates to the matching shader attributes.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="virtual void resize">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void setupGeometry" data-end="virtual void keyboard">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

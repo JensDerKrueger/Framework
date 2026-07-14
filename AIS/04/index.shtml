@@ -1,0 +1,65 @@
+<!--#set var="pagetitle" value="Exercise 04 – Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 04: Texturing</h1>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Lighting details (15 Points)</h3>
+            <p>
+                
+                In the previous assignments, a lot of repetitive code had to be written to create different shader programs, buffers, and arrays. This can be tedious if there are a lot of resources to handle, and it's a good idea to abstract this into classes. Luckily, we have provided you with several classes to handle all kinds of OpenGL resources. Take a look at the assignment code. It re-implements part of the teapot scene from the previous assignment but now uses those classes to simplify resource creation and usage. To demonstrate the texture classes the code loads a single texture and maps it onto the ground plane. 
+                
+                In order to increase detail in our teapot scene add more texture mapping capabilities to your program. In addition to texture for the diffuse <a href="Stones_Diffuse.png">Stones_Diffuse.png</a> part use a second texture <a href="Stones_Specular.png">Stones_Specular.png</a> for the specular illumination components of the ground plane. The textures should span the entire ground plane. Make sure to enable bilinear texture interpolation for mini- and magnification and use the diffuse and specular texture lookups for a proper phong lighting calculation.
+            </p>
+            <p>
+                You do not need to modify the code in <code>Utils</code>.
+                As in the previous assignment: Do not change the initial viewing angle and light source position of the scene for your submission!
+            </p>
+            
+            <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <img src="TeapotDiffuseDetails.png" style="width: 85%;">
+            </div>
+            <p style="text-align:center;">
+                <em>Figure 1: Solution to the first part.</em>
+            </p>
+        </div>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Normal details (15 points)</h3>
+            <p>
+                To further refine your scene's small-scale details, integrate normal mapping. Use the following normal maps for the ground plane <a href="Stones_Normals.png">Stones_Normals.png</a> and the teapot <a href="UDE_Normals.png">UDE_Normals.png</a>. Ensure you enable texture repeat mode for the teapot's texture. With correct implementation, the stones will appear more prominent on the ground plane under steep viewing angles and suitable lighting, and the UDE logo will be visibly engraved on the blue teapot.
+            </p>
+
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div class="loading-text" id="loading">Loading</div>
+            </div>
+            <p style="text-align:center;">
+                <em>Solution.<br>
+                    Use the mouse to interact with the scene.
+                    <code>Spacebar</code>: Toggles animation on/off
+                    <code>R</code> key: Resets the animation and the view
+                </em>
+            </p>
+
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="../03" class="nav-link nav-arrow">⬅</a>
+            <a href=".." class="nav-link">Back to Overview</a>
+            <a href="../05" class="nav-link nav-arrow">➡</a>
+        </div>
+  </div>
+</section>
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

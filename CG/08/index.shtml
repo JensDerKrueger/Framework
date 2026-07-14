@@ -1,0 +1,159 @@
+<!--#set var="pagetitle" value="Exercise 08 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 8: Recursive Ray Tracing</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Recursive ray tracing (20 points)</h3>
+    <p>
+        The ray tracer classes from the previous sheet have been updated and now serve as the basis for this exercise.
+        This sheet extends the system with recursive ray tracing.
+    </p>
+    <p>
+        So far, you have only traced primary rays from the camera to the objects.
+        Now you will add secondary, tertiary, and recursively nested rays for reflection and refraction.
+    </p>
+    <p>
+        The starter code already traces primary rays from the camera, computes intersections with the scene, and evaluates local Phong lighting at the hit point.
+        Your task is to extend this code so additional rays can be generated at a surface point: reflected rays, and, when the material supports it, refracted rays.
+        The returned color is no longer only the local Phong color; it is a combination of local lighting and recursively computed contributions.
+    </p>
+    <p>
+        This implementation intentionally uses several approximations.
+        They keep the code short, make the control flow easier to understand, and avoid some of the complexity of a physically accurate renderer.
+        The tradeoff is that some choices are not fully physically correct. The goal of this exercise is not a perfect light-transport simulation, but a clear and manageable implementation of recursive ray tracing.
+    </p>
+    
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 20px;">
+        <img src="SimpleScene29.png" alt="Recursion depth 2" style="width: 12%;">
+        <img src="SimpleScene39.png" alt="Recursion depth 3" style="width: 12%;">
+        <img src="SimpleScene49.png" alt="Recursion depth 4" style="width: 12%;">
+        <img src="SimpleScene59.png" alt="Recursion depth 5" style="width: 12%;">
+        <img src="SimpleScene69.png" alt="Recursion depth 6" style="width: 12%;">
+        <img src="SimpleScene79.png" alt="Recursion depth 7" style="width: 12%;">
+        <img src="SimpleScene89.png" alt="Recursion depth 8" style="width: 12%;">
+        <img src="SimpleScene99.png" alt="Recursion depth 9" style="width: 12%;">
+    </div>
+    
+    <p style="text-align: center;">
+        <em>Ray-traced images of the test scene for recursion depths 2 through 9.</em>
+    </p>
+    
+    <p>
+        Implement recursive reflection and refraction for all materials that require them.
+        Recursion must stop at a predefined depth so ray tracing always terminates after a finite number of secondary interactions.
+        At the current hit point <code>X</code>, the final color <code>C<sub>X</sub></code> is a combination of local lighting <code>C<sub>X,local</sub></code>, reflected radiance <code>C<sub>X,reflected</sub></code>, and transmitted radiance <code>C<sub>X,transmitted</sub></code>.
+        The factors <code>l</code>, <code>r</code>, and <code>t</code> denote the weights of local lighting, reflection, and transmission:
+    </p>
+    
+    <pre><code>Cₓ = l · Cₓ,local + r · Cₓ,reflected + t · Cₓ,transmitted</code></pre>
+    
+    <p>
+        As a first approximation, we introduce an artificial distinction between three classes of objects in the scene.
+        This simplifies the implementation and makes the system more efficient, but it is not fully physically correct.
+        In reality, reflection and refraction occur together, so this separation is a modeling compromise rather than a physical truth.
+        For this exercise it is useful because it keeps the recursion logic simple and easy to inspect.
+        When making decisions in the code, follow this simplified model instead of trying to interpret every case physically.
+    </p>
+    <p>
+        We distinguish the following three material types:
+    </p>
+    <ul>
+        <li>local lighting only (red sphere)</li>
+        <li>local lighting + reflection + refraction (blue sphere)</li>
+        <li>local lighting + reflection (yellow sphere and floor)</li>
+    </ul>
+    
+    <p>
+        To represent this simplified behavior, each material has an artificial parameter <code>local</code>.
+        It specifies how much of the final color comes from local lighting, meaning the Phong lighting model already implemented in the starter code.
+        The remaining fraction <code>1 - local</code> is available for recursive effects.
+        Depending on the material class, that remainder is assigned entirely to reflection or split between reflection and refraction.
+        Intuitively, <code>local</code> describes how much of the surface appearance stays local, while <code>1 - local</code> describes how much is contributed by secondary rays.
+    </p>
+    <p>
+        Materials with local lighting only do not spawn secondary rays. Therefore <code>l = 1</code>, <code>r = 0</code>, and <code>t = 0</code>.
+    </p>
+    <p>
+        For reflective and refractive materials, the non-local part is split between reflection and refraction, so <code>1 - l = r + t</code>.
+        The ratio between <code>r</code> and <code>t</code> is computed with the Fresnel equations, here using
+        <a href="https://en.wikipedia.org/wiki/Schlick%27s_approximation">Schlick's approximation</a>.
+        <code>R0</code> is the reflectivity at normal incidence, <code>theta</code> is the angle between the incoming ray direction and the surface normal, and <code>n</code> is the relative index of refraction.
+        Under the simplifying assumption that one side of the interface is always air, compute <code>n</code> from the material IOR. Use the correct ratio depending on whether the ray enters or exits the object:
+    </p>
+    
+    <pre><code>R(θ) = R₀ + (1 - R₀)·(1 - cos(θ))⁵
+R₀ = ((n - 1)/(n + 1))²
+T(θ) = 1 - R(θ)
+        
+r = (1 - l) · R(θ)
+t = (1 - l) · T(θ)</code></pre>
+    
+    <p>
+        For reflective but non-refractive materials, such as the yellow sphere, use <code>R0 = 1 - local</code>, <code>r = R(theta)</code>, <code>l = 1 - r</code>, and <code>t = 0</code>.
+        This is also a deliberate simplification. A physically based derivation of a purely reflective material would look different, but for this exercise it is enough to treat the non-local part entirely as reflection.
+    </p>
+    
+    <p>
+        You may assume that:
+    </p>
+    <ul>
+        <li>one side of each material interface is always air</li>
+        <li>objects do not overlap or intersect</li>
+        <li>models are closed (watertight) and all normals point outward</li>
+    </ul>
+    
+    <p>
+        Use <code>Vec3</code> to compute refracted rays.
+        Note that <code>theta</code> is the angle between the incoming direction vector <code>i</code> and the surface normal <code>n</code>. Therefore <code>cos(theta)</code> is given by their dot product: <code>cos(theta) = i * n</code>.
+    </p>
+    <p>
+        Implementation hint: the starter code already computes the local Phong lighting term in <code>Scene::traceRay</code>. Keep that part and extend it with recursive reflection, recursive refraction, and the final combination of local and recursive contributions.
+    </p>
+    <p>
+        In concrete terms, the missing parts are:
+    </p>
+    <ul>
+        <li>add a recursion termination condition at the beginning of <code>Scene::traceRay</code></li>
+        <li>create and trace a reflected secondary ray for reflective materials</li>
+        <li>create and trace a refracted secondary ray for refractive materials</li>
+        <li>choose the weights <code>l</code>, <code>r</code>, and <code>t</code> depending on the material type</li>
+        <li>combine <code>localColor</code>, reflected color, and refracted color into the final result</li>
+        <li>extend <code>Material</code> with a helper function that computes reflectivity using Schlick's approximation</li>
+    </ul>
+    <p>
+        One practical hint: under the assumptions of this exercise, the sign of the dot product between ray direction and surface normal tells you whether a ray is entering or leaving an object. When creating a secondary ray, also offset its origin by a small epsilon so numerical imprecision does not make it immediately hit the same surface again.
+    </p>
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <p style="text-align: center;">
+        <em>Complete scene. Click and drag to interact.</em>
+
+    </p>
+
+
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../07" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../09" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

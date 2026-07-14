@@ -1,0 +1,153 @@
+<!--#set var="pagetitle" value="Exercise 13 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Exercise 13: Line Rasterization</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Topic: DDA and Bresenham Lines (20 points)</h3>
+
+    <p>
+        In the previous software rasterization tasks, triangles were drawn by testing every pixel in the image.
+        That was intentionally simple, but it is not how efficient rasterizers work.
+        This exercise begins the transition to more efficient rasterization with the simplest primitive: a line segment.
+    </p>
+
+    <p>
+        The application already creates an image, draws a background grid, and calls two line drawing functions for a set of test lines.
+        Your task is to implement these functions.
+        The left half of the reference image uses DDA; the right half uses Bresenham.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: DDA Line Rasterization (8 points)</h3>
+
+    <p>
+        Implement <code>drawLineDDA</code> in <code>main.cpp</code>. DDA treats the line as a continuous segment.
+        The number of steps is determined by the dominant axis.
+        The current position is then advanced by a floating-point increment and rounded to the nearest pixel.
+    </p>
+
+    <p>
+        Start with the difference between the endpoints:
+        <code>dx = b.x - a.x</code> and <code>dy = b.y - a.y</code>.
+        The line can then be written as sampled positions:
+        <code>p(i) = a + i * (dx / steps, dy / steps)</code>.
+        The key choice is <code>steps = max(abs(dx), abs(dy))</code>.
+        This advances the dominant axis by exactly one pixel per iteration.
+        For a mostly horizontal line this is a step in <code>x</code>; for a mostly vertical line it is a step in <code>y</code>.
+        The other coordinate changes by a fraction each time.
+    </p>
+
+    <p>
+        Since the sampled position usually does not lie exactly on integer pixel coordinates, DDA rounds the current floating-point position before calling <code>setPixel</code>.
+        This makes the algorithm easy to understand and naturally handles all slopes, but it requires floating-point additions and a rounding operation for every drawn pixel.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="dda_line.svg" alt="DDA line rasterization by stepping and rounding" />
+        <figcaption>
+            DDA follows the continuous line with floating-point steps and rounds each sample to a pixel.
+        </figcaption>
+    </figure>
+
+    <ol>
+        <li>Compute <code>dx</code>, <code>dy</code>, and <code>steps = max(abs(dx), abs(dy))</code>.</li>
+        <li>Handle the case where both endpoints are the same pixel.</li>
+        <li>Compute <code>xStep</code> and <code>yStep</code>.</li>
+        <li>Start at endpoint <code>a</code>.</li>
+        <li>Draw <code>steps + 1</code> rounded positions with <code>setPixel</code>, including both endpoints.</li>
+        <li>After each pixel, add <code>xStep</code> and <code>yStep</code> to the floating-point position.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Bresenham Line Rasterization (10 points)</h3>
+
+    <p>
+        Implement <code>drawLineBresenham</code>. Bresenham avoids floating-point positions and rounding.
+        Instead, it stores an integer error term that decides when the discrete line path must advance in <code>x</code>, in <code>y</code>, or in both directions.
+    </p>
+
+    <p>
+        The variant used here works for all directions and slopes.
+        First compute the positive distances <code>dx = abs(b.x - a.x)</code> and <code>dy = abs(b.y - a.y)</code>.
+        Then determine the signs <code>sx</code> and <code>sy</code>. They indicate whether a step in <code>x</code> or <code>y</code> moves toward the endpoint.
+        With these signs, the same loop can draw lines left-to-right, right-to-left, upward, downward, shallow, steep, and diagonal.
+    </p>
+
+    <p>
+        The error value tracks the accumulated discrete deviation from the ideal mathematical line and decides which neighboring pixel is chosen next.
+        Initialize it with <code>error = dx - dy</code>.
+        In each iteration, draw the current pixel and then compute <code>doubledError = 2 * error</code>.
+        Doubling allows comparisons against half-pixel decision boundaries without using fractions.
+    </p>
+
+    <p>
+        If <code>doubledError &gt; -dy</code>, enough error has accumulated to take a step in <code>x</code>; then subtract <code>dy</code> from the error.
+        If <code>doubledError &lt; dx</code>, take a step in <code>y</code>; then add <code>dx</code> to the error.
+        Sometimes both conditions are true, producing a diagonal step.
+        This compact Bresenham variant can handle all octants with the same loop.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="bresenham_error.svg" alt="Bresenham line rasterization with error decisions" />
+        <figcaption>
+            Bresenham stores an error term and chooses the next pixel with integer comparisons.
+        </figcaption>
+    </figure>
+
+    <ol>
+        <li>Use absolute values for <code>dx</code> and <code>dy</code>.</li>
+        <li>Use the signs <code>sx</code> and <code>sy</code> so the algorithm works in all directions.</li>
+        <li>Initialize the error with <code>dx - dy</code>.</li>
+        <li>Draw the current pixel before changing the current position.</li>
+        <li>Stop the loop when the current point reaches endpoint <code>b</code>.</li>
+        <li>Use <code>2 * error</code> to decide whether to step in <code>x</code>, in <code>y</code>, or in both directions.</li>
+        <li>Update the error on each step so the next iteration knows how far the discrete path has drifted.</li>
+    </ol>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 3: Compare the Algorithms (2 points)</h3>
+
+    <p>
+        Run the program and compare both halves of the image.
+        Both methods should draw visually similar lines, but they use different computations.
+        Briefly explain why DDA is easier to understand and why Bresenham is more attractive for an integer rasterizer.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Preview</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p class="controls-hint">
+        <em>Spacebar</em> animate endpoints, <em>R</em> reset
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../12" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../14" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

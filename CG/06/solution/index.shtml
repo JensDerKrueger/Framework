@@ -1,0 +1,97 @@
+<!--#set var="pagetitle" value="Solution Sheet 6 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 6: Solution for Phong Shading and Bump Mapping</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the complete implementation for this sheet. To compare them with your own solution or with the starter code, replace the assignment versions of <code>PhongShader.h</code>, <code>PhongShader.cpp</code>, <code>BumpPhongShader.h</code>, and <code>BumpPhongShader.cpp</code> with these files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="PhongShader.h">Open <code>PhongShader.h</code></a>
+        <a class="source-link" href="PhongShader.cpp">Open <code>PhongShader.cpp</code></a>
+        <a class="source-link" href="BumpPhongShader.h">Open <code>BumpPhongShader.h</code></a>
+        <a class="source-link" href="BumpPhongShader.cpp">Open <code>BumpPhongShader.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Phong Shader State</h3>
+
+    <p>
+        <code>PhongShader</code> stores all values needed for local per-pixel lighting: the positions of the light and viewer, ambient, diffuse, and specular light color, and the exponent for the specular highlight. The copy constructor copies the same values so <code>BumpPhongShader</code> can reuse the existing Phong shader.
+    </p>
+
+    <pre class="code-snippet" data-src="PhongShader.h" data-start="class PhongShader" data-end="__END_OF_FILE__">Loading PhongShader.h...</pre>
+    <pre class="code-snippet" data-src="PhongShader.cpp" data-start="PhongShader::PhongShader" data-end="Vec3 PhongShader::shade">Loading PhongShader.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Per-Pixel Phong Lighting</h3>
+
+    <p>
+        <code>shade</code> receives the interpolated surface point from triangle rasterization. First, the ambient term is computed from material color and light color. Then the normal and light direction are normalized, and the diffuse term is determined with <code>max(0, dot(N, L))</code>.
+    </p>
+
+    <p>
+        For the specular term, the solution computes the reflected light direction <code>R</code> and the view direction <code>V</code>. The clamped dot product <code>dot(V, R)</code> is raised to the stored exponent and multiplied by the specular material and light colors. The sum of ambient, diffuse, and specular terms is the final color.
+    </p>
+
+    <pre class="code-snippet" data-src="PhongShader.cpp" data-start="Vec3 PhongShader::shade" data-end="__END_OF_FILE__">Loading PhongShader.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Prepare the Bump Shader</h3>
+
+    <p>
+        <code>BumpPhongShader</code> inherits from <code>PhongShader</code>. After modifying the normal, it can therefore use the same Phong lighting code. It additionally stores <code>cellSize</code> for scaling the x-y position and <code>bumpHeight</code> for the height of the procedural bumps.
+    </p>
+
+    <pre class="code-snippet" data-src="BumpPhongShader.h" data-start="class BumpPhongShader" data-end="__END_OF_FILE__">Loading BumpPhongShader.h...</pre>
+    <pre class="code-snippet" data-src="BumpPhongShader.cpp" data-start="BumpPhongShader::BumpPhongShader" data-end="static float f">Loading BumpPhongShader.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Procedural Height Function</h3>
+
+    <p>
+        The helper functions <code>f</code>, <code>fx</code>, and <code>fy</code> implement the sine function from the assignment and its partial derivatives. <code>f</code> returns the bump height, while <code>fx</code> and <code>fy</code> describe the local slope in x- and y-direction.
+    </p>
+
+    <pre class="code-snippet" data-src="BumpPhongShader.cpp" data-start="static float f" data-end="// Inherited via Shader">Loading BumpPhongShader.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Replace the Normal and Apply Phong</h3>
+
+    <p>
+        In the <code>shade</code> call, the pixel position is first divided by <code>cellSize</code> so the bump function repeats at the desired scale. The z-position is set to <code>bumpHeight * f(x, y)</code>.
+    </p>
+
+    <p>
+        For a height field <code>z = f(x, y)</code>, the normal points in the direction <code>(-df/dx, -df/dy, 1)</code>. The solution therefore replaces the interpolated normal with the bump normal computed from the derivatives and then calls <code>PhongShader::shade</code>. The lighting computation itself remains unchanged.
+    </p>
+
+    <pre class="code-snippet" data-src="BumpPhongShader.cpp" data-start="Vec3 BumpPhongShader::shade" data-end="__END_OF_FILE__">Loading BumpPhongShader.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

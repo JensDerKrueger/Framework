@@ -1,0 +1,76 @@
+<!--#set var="pagetitle" value="Exercise 06 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 6: Phong Shading & Bump Mapping</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Phong lighting model (10 points)</h3>
+    <p>
+        Implement <code>PhongShader</code> according to the Phong lighting model.
+        Include all material and light-source coefficients for ambient, diffuse, and specular lighting.
+    </p>
+    <p>
+        As highlighted in the starter code, the test scene defines a new point light in the lower-left corner above the x-y plane, and a viewer centered above the image plane. Both are 500 units away.
+    </p>
+    
+    <p>
+        Perform the full lighting computation <strong>per pixel</strong> to produce a realistic result.
+        For the lower-left triangle, all normals point perpendicular to the x-y plane toward the viewer.
+        For the red triangle in the upper-right, the corner normals differ, which creates the appearance of a curved surface.
+    </p>
+    
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Procedural bump mapping (10 points)</h3>
+    <p>
+        In this exercise you implement <em>bump mapping</em>, a technique that modifies the surface normal so the surface appears <em>uneven</em>. This makes it possible to suggest complex surfaces with very few primitives.
+    </p>
+    <p>
+        Implement <code>BumpPhongShader</code> and apply the function <strong>f(x,y)</strong> to the surface position. Since <code>f(x,y)</code> is continuous, its partial derivatives with respect to <code>x</code> and <code>y</code> can be used to compute a new normal at each position.
+    </p>
+    <pre><code>z  = f(x, y)   = sin²(πx) ⋅ sin²(πy)
+∂z/∂x = fx(x,y) = 2π⋅sin²(πy)⋅cos(πx)⋅sin(πx)
+∂z/∂y = fy(x,y) = 2π⋅sin²(πx)⋅cos(πy)⋅sin(πy)</code></pre>
+    <p>
+        In this simplified version of the method, the original interpolated normals do not need to be adjusted.
+        Instead, replace them with the vector <code>(-∂z/∂x, -∂z/∂y, 1)</code>.
+    </p>
+    
+    <p>
+        <code>BumpPhongShader</code> receives two parameters: <code>cellSize</code> and <code>bumpHeight</code>.
+        <code>cellSize</code> is especially important because it defines the x-y scaling of <code>f(x,y)</code>.
+    </p>
+    
+    
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+        <p style="text-align:center;">
+            <em>Solution.</em>
+        </p>
+    </div>            
+    
+    
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../05" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../07" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

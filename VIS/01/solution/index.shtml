@@ -1,0 +1,90 @@
+<!--#set var="pagetitle" value="Exercise 1 Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 1: Shallow Water Equation Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided file contains the completed implementation for this exercise. To compare
+        it with your own work, replace the exercise version of <code>main.cpp</code> with the
+        provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Simulation Parameters</h3>
+
+    <p>
+        The implementation stores the previous, current, and next height fields in three
+        separate grids. The constants <code>alpha</code> and <code>beta</code> are derived
+        from the wave speed, grid spacing, and timestep and are reused for every grid cell.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="std::shared_ptr&lt;Grid2D&gt; last" data-end="WaterSurface(const std::vector&lt;std::string&gt;&amp; args)">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Water Height Update</h3>
+
+    <p>
+        For each grid position the solution reads the four direct neighbors from the current
+        height field, the current center value, and the matching value from the previous
+        height field. The modulo operations wrap the indices at the image boundaries.
+    </p>
+
+    <p>
+        The missing line is the explicit update
+        <code>v = alpha * (left + right + top + bottom) + beta * center - past</code>.
+        Positive heights are drawn in the red channel, negative heights in the green channel.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="const float left" data-end="std::shared_ptr&lt;Grid2D&gt; t = last;">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Advancing the Time Step</h3>
+
+    <p>
+        After all cells have been computed, the three grids are rotated. The old current grid
+        becomes the previous grid, the newly computed grid becomes current, and the old
+        previous grid is reused as the next output buffer in the following frame.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="std::shared_ptr&lt;Grid2D&gt; t = last;" data-end="virtual void draw">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Mouse Interaction</h3>
+
+    <p>
+        A mouse click writes an alternating positive or negative impulse into the current
+        height field. The following animation frames propagate that impulse through the
+        finite-difference update above.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void mouseButton" data-end="virtual void keyboard">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

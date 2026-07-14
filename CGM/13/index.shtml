@@ -1,0 +1,137 @@
+<!--#set var="pagetitle" value="Exercise 13 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 13: Image Compression</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: A Minimal JPEG Encoder (30 points)</h3>
+
+    <p>
+        In this exercise you implement the central lossy stages of a small baseline JPEG
+        encoder. The project already provides the OpenGL display, JPEG marker writing,
+        Huffman tables, bit packing, run-length coding, and file output. Your code fills in
+        the image-processing steps that make JPEG compression work.
+    </p>
+
+    <p>
+        The application shows the original image on the left and the reconstructed compressed
+        image on the right. Use <code>Up</code> and <code>Down</code> to change the quality
+        factor, <code>C</code> to cycle chroma subsampling, and <code>M</code> to cycle the
+        quantization matrix. In the native application, <code>W</code> writes the current
+        compressed image as a valid JPEG file.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="jpeg_pipeline.svg" alt="JPEG compression pipeline" />
+        <figcaption>
+            The exercise focuses on color conversion, chroma subsampling, DCT, and
+            quantization. The remaining file-format stages are provided.
+        </figcaption>
+    </figure>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: RGB to YCbCr (6 points)</h3>
+
+    <p>
+        Complete <code>convertToYCbCr</code> in <code>JPEGCodec.cpp</code>. JPEG does not
+        directly compress RGB values. It first separates brightness from color differences:
+        <code>Y</code> stores luminance, while <code>Cb</code> and <code>Cr</code> store
+        blue-yellow and red-cyan color differences around the neutral value
+        <code>128</code>.
+    </p>
+
+    <p>
+        Use the formulas given in the source comments. Pixels outside the original image
+        should repeat the closest border pixel so that the padded image dimensions can be
+        encoded in complete JPEG macroblocks.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Chroma Subsampling (7 points)</h3>
+
+    <p>
+        Complete <code>downsampleChroma422</code> and <code>downsampleChroma420</code>.
+        Chroma subsampling reduces the resolution of the color-difference channels while
+        keeping the luminance image unchanged. This is useful because the human visual system
+        is usually more sensitive to luminance detail than to chroma detail.
+    </p>
+
+    <p>
+        In <code>4:2:2</code>, average two horizontal chroma samples. In <code>4:2:0</code>,
+        average a <code>2 x 2</code> chroma block. Use <code>C</code> in the running program
+        to compare <code>4:4:4</code>, <code>4:2:2</code>, and <code>4:2:0</code>.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 3: 8 x 8 DCT (10 points)</h3>
+
+    <p>
+        Complete <code>computeDCTBlock</code>. JPEG transforms each <code>8 x 8</code> image
+        block from spatial samples into frequency coefficients. The first coefficient is the
+        block average. The other coefficients describe horizontal, vertical, and diagonal
+        oscillations of increasing frequency.
+    </p>
+
+    <p>
+        Before the transform, shift each sample by subtracting <code>128</code>. Then compute
+        all <code>64</code> DCT coefficients using the formula in the source comments. The
+        cosine terms are already precomputed in <code>dctBasis()</code>.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 4: Quantization (7 points)</h3>
+
+    <p>
+        Complete <code>quantizeBlock</code>. Divide each DCT coefficient by the corresponding
+        quantization-table entry and round the result to an integer. This is the main lossy
+        step in baseline JPEG: larger table values preserve less detail and produce more
+        zero coefficients.
+    </p>
+
+    <p>
+        Use <code>M</code> to cycle through different quantization matrix presets. Compare
+        how the image quality and compressed byte count react to the quality factor and to the
+        selected matrix. The quality factor scales the quantization matrix: higher quality
+        means smaller quantization values, fewer discarded coefficients, and a larger file.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        Left: original, right: JPEG reconstruction<br/>
+        <em>Up/Down</em> quality factor, <em>C</em> chroma mode,
+        <em>M</em> quantization matrix, <em>R</em> reset
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../12" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

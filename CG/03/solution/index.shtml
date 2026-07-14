@@ -1,0 +1,88 @@
+<!--#set var="pagetitle" value="Solution Sheet 3 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 3: Solution for Splines</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided file contains the complete implementation for this sheet. To compare it with your own solution or with the starter code, replace the assignment version of <code>main.cpp</code> with this file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Evaluate Polynomial Curves</h3>
+
+    <p>
+        Hermite, Bezier, and B-spline segments are described in the starter code by different geometry matrices. The solution wraps their shared evaluation logic in <code>computePoly</code>. For a parameter <code>t</code>, it first builds the power vector <code>(1, t, t^2, t^3)</code>, then evaluates the x- and y-components separately.
+    </p>
+
+    <p>
+        This lets the same function handle all three curve types. The wrapper functions only provide different control points or tangents and a different geometry matrix.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="Vec2 computePoly" data-end="void drawPolySegment">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Generate the Polyline</h3>
+
+    <p>
+        <code>drawPolySegment</code> samples the curve segment uniformly. With <code>maxLineSegments = 100</code>, this produces <code>101</code> points, including the start and end points. Each point is written to the vector in the format expected by <code>drawLines</code>: position <code>x, y, z</code> followed by color <code>r, g, b, a</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void drawPolySegment" data-end="void drawHermiteSegment">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: De Casteljau Algorithm</h3>
+
+    <p>
+        For the second exercise, the solution evaluates the Bezier curve without using a matrix representation. The helper function <code>lerp</code> computes a linear interpolation between two points. <code>computeDeCasteljau</code> repeatedly applies this interpolation to neighboring points until only one point remains.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="Vec2 lerp" data-end="// SOLUTION 2:">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Draw the Bezier Curve with De Casteljau</h3>
+
+    <p>
+        <code>drawBezierSegmentDeCasteljau</code> uses the same sampling and output format as <code>drawPolySegment</code>. The only difference is that the curve point for each <code>t</code> is computed with <code>computeDeCasteljau</code>. In the final image, this curve coincides with the matrix-evaluated Bezier curve, but the program draws it slightly lower so the two variants can be compared.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void drawBezierSegmentDeCasteljau" data-end="void drawBezierSegment">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Curve Types in the Main Program</h3>
+
+    <p>
+        The existing drawing functions for Hermite, Bezier, and B-spline curves keep their structure. Each function sets the appropriate geometry matrix, calls the shared curve evaluation, and also draws the control points. In <code>draw</code>, the curves are only shifted to different y-positions: Hermite at the top, Bezier in the middle, De Casteljau below it, and the B-spline segments at the bottom.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="} myApp">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

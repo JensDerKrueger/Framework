@@ -1,0 +1,63 @@
+<!--#set var="pagetitle" value="Solution Exercise 14 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Solution for Exercise 14: Triangle Rasterization</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The provided file contains the finished triangle rasterizer with edge functions.
+        To compare the solution with your own implementation, replace the assignment version
+        of <code>main.cpp</code> with this file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp"><code>main.cpp</code> Open</a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Edge Function</h3>
+
+    <p>
+        The edge function is a signed area expression. Its sign gives the inside/outside
+        test for an oriented edge, and its value changes linearly across the screen.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="float edgeFunction" data-end="Vec4 interpolateColor">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Triangle Rasterization</h3>
+
+    <p>
+        The triangle rasterizer first restricts the work to the triangle's bounding box.
+        It then evaluates the edge functions at the first pixel center and updates them
+        incrementally while scanning the box. The normalized edge values become barycentric
+        interpolation weights. Because the cube is projected with perspective, color and
+        depth are interpolated with the projected vertices' <code>inverseZ</code> values.
+        This avoids affine screen-space interpolation artifacts that would otherwise be
+        visible on the rotating cube.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void drawTriangle" data-end="Vec3 rotateCubeVertex">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

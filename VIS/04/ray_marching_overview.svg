@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 680" role="img" aria-labelledby="title desc">
+  <title id="title">Top-down ray marching overview</title>
+  <desc id="desc">A camera ray enters a volume cube at entryPoint, travels rayLength through the cube, and advances by delta between samples.</desc>
+  <defs>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d4ed8"/>
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#dc2626"/>
+    </marker>
+    <style>
+      .title { font: 21px sans-serif; fill: #111827; font-weight: 700; }
+      .label { font: 16px sans-serif; fill: #1f2937; font-weight: 600; }
+      .small { font: 13px sans-serif; fill: #475569; }
+      .tiny { font: 12px sans-serif; fill: #475569; }
+      .code { font: 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #111827; }
+      .codeSmall { font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #334155; }
+      .entryText { font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #16a34a; font-weight: 700; }
+      .exitText { font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #dc2626; font-weight: 700; }
+      .rayText { font: 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #1d4ed8; font-weight: 700; }
+      .panel { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.5; }
+      .volume { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 3; }
+      .clip { fill: none; stroke: #0f766e; stroke-width: 2; stroke-dasharray: 8 7; }
+      .ray { fill: none; stroke: #1d4ed8; stroke-width: 5; marker-end: url(#arrowBlue); }
+      .outsideRay { fill: none; stroke: #94a3b8; stroke-width: 3; stroke-dasharray: 7 7; marker-end: url(#arrowGray); }
+      .delta { fill: none; stroke: #dc2626; stroke-width: 3; marker-end: url(#arrowRed); }
+      .sample { fill: #facc15; stroke: #ffffff; stroke-width: 2; }
+      .entry { fill: #16a34a; stroke: #ffffff; stroke-width: 2; }
+      .exit { fill: #dc2626; stroke: #ffffff; stroke-width: 2; }
+      .camera { fill: #475569; stroke: #ffffff; stroke-width: 2; }
+      .measure { fill: none; stroke: #64748b; stroke-width: 1.4; stroke-dasharray: 5 5; marker-start: url(#arrowGray); marker-end: url(#arrowGray); }
+    </style>
+  </defs>
+
+  <rect width="1180" height="680" fill="#ffffff"/>
+  <text x="42" y="48" class="title">Ray marching setup in <tspan class="code">cubeFS.glsl</tspan></text>
+
+  <rect x="52" y="82" width="610" height="548" rx="8" class="panel"/>
+  <text x="78" y="122" class="label">Top view of the texture-space volume</text>
+  <text x="78" y="148" class="small">One fragment ray is sampled from the entry point to the volume exit.</text>
+
+  <rect x="120" y="188" width="390" height="390" class="volume"/>
+  <rect x="172" y="235" width="286" height="299" class="clip"/>
+
+  <text x="120" y="174" class="tiny">volume domain [0, 1]^3</text>
+  <text x="178" y="229" class="tiny">clipped bounds: minBounds / maxBounds</text>
+
+  <circle cx="83" cy="389" r="8" class="camera"/>
+  <text x="0" y="420" class="codeSmall">cameraPosInTextureSpace</text>
+
+  <path d="M 91 389 L 174 352" class="outsideRay"/>
+
+  <path d="M 174 352 L 454 473" class="ray"/>
+  <circle cx="454" cy="473" r="8" class="exit"/>
+  <text x="410" y="500" class="exitText">volume exit</text>
+
+  <circle cx="174" cy="352" r="8" class="entry"/>
+  <text x="180" y="340" class="entryText">entryPoint</text>
+
+  <circle cx="218" cy="371" r="6" class="sample"/>
+  <circle cx="262" cy="390" r="6" class="sample"/>
+  <circle cx="306" cy="409" r="6" class="sample"/>
+  <circle cx="350" cy="428" r="6" class="sample"/>
+  <circle cx="394" cy="447" r="6" class="sample"/>
+  <text x="252" y="462" class="tiny">currentPoint samples</text>
+
+  <path d="M 218 371 L 262 390" class="delta"/>
+  <text x="196" y="400" class="exitText">delta</text>
+
+  <path d="M 174 320 C 250 270 382 277 454 441" class="measure"/>
+  <text x="285" y="280" class="codeSmall">rayLength</text>
+  <text x="296" y="380" class="rayText">rayDirection</text>
+
+  <rect x="710" y="82" width="420" height="548" rx="8" class="panel"/>
+  <text x="738" y="122" class="label">Shader values</text>
+
+  <text x="738" y="166" class="small">Provided by the vertex shader / uniforms</text>
+  <text x="760" y="194" class="code">entryPoint</text>
+  <text x="760" y="222" class="code">cameraPosInTextureSpace</text>
+  <text x="760" y="250" class="code">minBounds, maxBounds</text>
+  <text x="760" y="278" class="code">voxelCount</text>
+  <text x="760" y="306" class="code">oversampling</text>
+
+  <line x1="738" y1="334" x2="1102" y2="334" stroke="#cbd5e1" stroke-width="1.5"/>
+
+  <text x="738" y="370" class="small">Derived before the loop</text>
+  <text x="760" y="398" class="code">rayDirection = normalize(...)</text>
+  <text x="760" y="426" class="code">rayLength = distanceToVolumeExit(...)</text>
+  <text x="760" y="454" class="code">sampleEstimate = dot(abs(rayDirection</text>
+  <text x="790" y="476" class="code">* rayLength), voxelCount)</text>
+  <text x="760" y="504" class="code">sampleCount = ceil(sampleEstimate</text>
+  <text x="790" y="526" class="code">* oversampling)</text>
+  <text x="760" y="554" class="code">stepLength = rayLength / sampleCount</text>
+  <text x="760" y="582" class="code">delta = rayDirection * stepLength</text>
+</svg>

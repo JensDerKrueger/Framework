@@ -1,0 +1,40 @@
+<!--#set var="pagetitle" value="Scientific Visualization Exercises" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+    <h1>Welcome to the Exercises for the Lecture</h1>
+    <h1>"Scientific Visualization"</h1>
+    
+<div class="button-container">
+<ul>
+  <li><a class="exercise-link" href="00">Sheet 0</a></li>
+  <li><a class="exercise-link" href="01">Sheet 1</a></li>
+  <li><a class="exercise-link" href="02">Sheet 2</a></li>
+  <li><a class="exercise-link" href="03">Sheet 3</a></li>
+  <li><a class="exercise-link" href="04">Sheet 4</a></li>
+  <li><a class="exercise-link" href="05">Sheet 5</a></li>
+  <li><a class="exercise-link" href="06">Sheet 6</a></li>
+  <li><a class="exercise-link" href="07">Sheet 7</a></li>
+</ul>
+</div>
+
+    <div class="description">
+      On this website, you’ll find the exercises for the lecture 
+      <strong>"Scientific Visualization"</strong>. Alongside the tasks, you can also see the solutions running live in your browser. Our platform allows you to run the programs directly 
+      in your browser – no additional installation or setup required.
+      <br><br>
+      The solutions were compiled from the original C++ exercise programs and translated into WebAssembly using the  
+      <a href="https://emscripten.org" target="_blank" rel="noopener">Emscripten</a> framework. 
+      WebAssembly (<a href="https://webassembly.org" target="_blank" rel="noopener">WebAssembly.org</a>) is a modern 
+      technology that allows high-performance code to run directly in the browser. This enables you to experience practical computer graphics in real time, regardless of your operating system.
+    </div>
+  </div>
+</section>
+
+<!--#include virtual="/_bottom.shtml" -->

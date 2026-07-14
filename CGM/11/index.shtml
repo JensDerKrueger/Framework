@@ -1,0 +1,168 @@
+<!--#set var="pagetitle" value="Exercise 11 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 11: Screen Space Ambient Occlusion</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: SSAO in a Deferred Renderer (25 points)</h3>
+
+    <p>
+        In the previous deferred shading exercises the renderer first filled a G-buffer and
+        then computed lighting in a full-screen image-space pass. This exercise adds screen
+        space ambient occlusion, usually abbreviated as SSAO. SSAO estimates how much of the
+        local hemisphere around a visible surface point is blocked by nearby visible geometry.
+        The result is not a physically complete global illumination solution, but it gives
+        useful contact darkening in creases, intersections, and dense object arrangements.
+    </p>
+
+    <p>
+        The scene, G-buffer pass, deferred lighting pass, and debug views are already present.
+        Your task is to add two additional full-screen passes. The first pass writes a raw
+        ambient occlusion texture. This raw estimate is intentionally somewhat noisy because it
+        uses only a small number of samples. The next two passes smooth this texture with a
+        separable blur: one horizontal pass and one vertical pass. The final deferred shader
+        then reads the smoothed result and uses it to darken the ambient term and local contact
+        regions.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="ssao_hemisphere.svg" alt="SSAO hemisphere samples projected back into the G-buffer" />
+        <figcaption>
+            SSAO samples positions in the hemisphere above the visible point, projects those
+            samples back to screen space, and compares them with the positions stored in the
+            G-buffer.
+        </figcaption>
+    </figure>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Raw Ambient Occlusion Pass (6 points)</h3>
+
+    <p>
+        Complete <code>renderScreenSpaceAmbientOcclusion</code> in <code>main.cpp</code> and
+        call it from the raw AO pass in <code>draw</code>. This pass is very similar to the
+        final deferred lighting pass: it disables depth testing, activates a full-screen
+        shader, binds G-buffer textures, and draws one full-screen triangle into
+        <code>rawAmbientOcclusionBuffer</code>.
+    </p>
+
+    <ol>
+        <li>Pass <code>projectionMatrix</code> to the SSAO shader.</li>
+        <li>Pass the parameters <code>radius</code>, <code>bias</code>,
+            <code>intensity</code>, <code>sampleCount</code>, and
+            <code>maxMipLevel</code>.</li>
+        <li>Bind <code>normalBuffer</code> and <code>positionBuffer</code>.</li>
+        <li>Draw the full-screen triangle into <code>ambientOcclusionBuffer</code>.</li>
+    </ol>
+
+    <p>
+        Good starting values are <code>radius = 16.0</code>, <code>bias = 0.60</code>,
+        <code>intensity = 2.10</code>, <code>sampleCount = 24</code>, and
+        <code>maxMipLevel = 5.0</code>. The AO texture is cleared to white before this pass.
+        White means no occlusion, so the program should still render normally while the pass is
+        incomplete.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Estimate SSAO in the Shader (10 points)</h3>
+
+    <p>
+        Complete <code>estimateAmbientOcclusion</code> in <code>Shader/ssao.frag</code>. For
+        each visible pixel, read its view-space position and normal from the G-buffer. Use the
+        provided sample directions as a small set of points in the hemisphere above the surface.
+    </p>
+
+    <p>
+        Each sample direction is transformed into view space, scaled by the SSAO radius, and
+        added to the current position. The resulting sample position is projected back to screen
+        coordinates with <code>projectionMatrix</code>. At that projected screen location, read
+        the position buffer. If the stored position is closer to the camera than the projected
+        sample position, nearby geometry blocks that sample direction and contributes to
+        occlusion.
+    </p>
+
+    <p>
+        Use <code>textureLod</code> for the position lookup and choose coarser mip levels for
+        larger sample radii. This approximates a larger support area without requiring many more
+        samples. At the end, convert the average occlusion into an accessibility value:
+        <code>1</code> means open and <code>0</code> means strongly occluded.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 3: Smooth the AO Texture (5 points)</h3>
+
+    <p>
+        Complete <code>renderAmbientOcclusionBlurPass</code> in <code>main.cpp</code> and
+        <code>Shader/ssaoBlur.frag</code>. The raw SSAO image is useful as an intermediate
+        result, but it is noisy. Separate smoothing passes are the main reason we keep SSAO as
+        its own image-space texture instead of computing it directly inside the final lighting
+        shader.
+    </p>
+
+    <p>
+        Use a separable blur. First blur horizontally from
+        <code>rawAmbientOcclusionBuffer</code> into a temporary texture. Then blur vertically
+        from the temporary texture into <code>ambientOcclusionBuffer</code>. Each pass uses only
+        five samples, so the two-pass version needs <code>10</code> samples per pixel instead
+        of <code>25</code> for a direct <code>5 x 5</code> blur. Make the blur edge-aware by
+        also reading <code>positionBuffer</code>: samples with very different view-space depth
+        should receive less weight.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 4: Use SSAO in Deferred Lighting (4 points)</h3>
+
+    <p>
+        Complete the SSAO-related code in <code>Shader/deferred.frag</code>. Read the ambient
+        occlusion texture at the current screen coordinate. This texture now contains the
+        smoothed AO result, not the raw noisy estimate. The value should darken the ambient term
+        because locally hidden regions receive less environment light.
+    </p>
+
+    <p>
+        In this teaching example we also use the SSAO value as a soft contact term for direct
+        Phong light. This is not a full physical lighting model, but it makes the screen-space
+        occlusion visible in the final image. Press <code>A</code> to inspect the raw AO buffer
+        and <code>D</code> to inspect the G-buffer.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>A</em> toggle SSAO buffer, <em>D</em> toggle G-buffer view,
+        <em>Space</em> animate light, <em>R</em> reset<br/>
+        <em>Left</em> mouse drag rotate, <em>Right</em> mouse drag pan, mouse wheel zoom
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../10" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../12" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

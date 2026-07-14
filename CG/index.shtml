@@ -1,0 +1,46 @@
+<!--#set var="pagetitle" value="Computer Graphics Exercises" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Exercises for the Lecture</h1>
+<h1>"Introduction to Computer Graphics"</h1>
+
+<div class="button-container">
+<ul>
+    <li><a class="exercise-link" href="01">Sheet 1</a></li>
+    <li><a class="exercise-link" href="02">Sheet 2</a></li>
+    <li><a class="exercise-link" href="03">Sheet 3</a></li>
+    <li><a class="exercise-link" href="04">Sheet 4</a></li>
+    <li><a class="exercise-link" href="05">Sheet 5</a></li>
+    <li><a class="exercise-link" href="06">Sheet 6</a></li>
+    <li><a class="exercise-link" href="07">Sheet 7</a></li>
+    <li><a class="exercise-link" href="08">Sheet 8</a></li>
+    <li><a class="exercise-link" href="09">Sheet 9</a></li>
+    <li><a class="exercise-link" href="10">Sheet 10</a></li>
+    <li><a class="exercise-link" href="11">Sheet 11</a></li>
+    <li><a class="exercise-link" href="12">Sheet 12</a></li>
+    <li><a class="exercise-link" href="13">Sheet 13</a></li>
+    <li><a class="exercise-link" href="14">Sheet 14</a></li>
+    <li><a class="exercise-link" href="15">Sheet 15</a></li>
+    <li><a class="exercise-link" href="16">Sheet 16</a></li>
+</ul>
+</div>
+
+<div class="description">
+This page contains the exercise sheets for the lecture
+<strong>"Introduction to Computer Graphics"</strong>. Alongside the assignments, you can run the reference solutions directly in your browser.
+<br><br>
+The solutions were built from the original C++ exercise programs and compiled to WebAssembly with
+<a href="https://emscripten.org" target="_blank" rel="noopener">Emscripten</a>.
+WebAssembly (<a href="https://webassembly.org" target="_blank" rel="noopener">WebAssembly.org</a>) makes it possible to run high-performance code directly in the browser, so you can explore the computer graphics examples interactively on any operating system.
+</div>
+  </div>
+</section>
+
+<!--#include virtual="/_bottom.shtml" -->

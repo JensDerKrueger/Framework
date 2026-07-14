@@ -1,0 +1,79 @@
+<!--#set var="pagetitle" value="Solution Sheet 1 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 1: Solution for Hello OBJ</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain a complete implementation for this sheet. To compare it with your own solution or with the starter code, replace the assignment version of <code>main.cpp</code> and add <code>cube.obj</code> to the dataset directory.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="cube.obj">Open <code>cube.obj</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Load OBJ Data</h3>
+
+    <p>
+        The starter code initially renders a manually specified sample triangle. The solution replaces that block in <code>init</code> with two calls to a shared helper function: one loads <code>bunny.obj</code>, the other loads the newly created <code>cube.obj</code>. Both resulting vectors are stored so the program can switch between the models later.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void init" data-end="virtual void animate">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Convert Shared Vertices to Explicit Triangles</h3>
+
+    <p>
+        <code>OBJFile</code> stores the geometry in shared vertex arrays: positions and normals are stored once, while the triangles refer to them by index. For <code>drawTriangles</code>, the solution creates an explicit representation by iterating over all triangles and their indices, then writing the data to a new vector in the required order.
+    </p>
+
+    <p>
+        Each vertex stores position, color, and normal. As a simple color, the solution uses the vertex position plus <code>0.5</code> and an alpha value of <code>1.0</code>. This follows the reference idea from the assignment, where the color depends on the position.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="std::vector&lt;float&gt; loadOBJ" data-end="} myApp">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Cube in OBJ Format</h3>
+
+    <p>
+        <code>cube.obj</code> describes a simple cube with eight shared vertices. The faces are given as twelve triangles, two triangles for each side of the cube. This satisfies the assignment requirement to use a shared-vertex representation.
+    </p>
+
+    <pre class="code-snippet" data-src="cube.obj">Loading cube.obj...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Rendering and Switching</h3>
+
+    <p>
+        In <code>draw</code>, the camera, projection, and rotation from the starter code remain unchanged. The only difference is which data vector is drawn: if <code>bCube</code> is set, the cube is rendered; otherwise the bunny is rendered. The Spacebar toggles this state in <code>keyboardChar</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="private:">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

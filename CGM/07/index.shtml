@@ -1,0 +1,96 @@
+<!--#set var="pagetitle" value="Exercise 7 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 7: Volume Rendering 2</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Volumetric Shadows (20 points)</h3>
+    <p>
+        In this exercise you will extend the direct volume renderer from the previous sheet
+        with simple single-scattering style illumination. The primary raycaster is already
+        implemented and still uses the analytic sphere, wave pattern, and shell volumes.
+    </p>
+    <p>
+        Your task is to complete the function <code>traceShadowRay</code> in
+        <code>Shader/cubeFS.glsl</code>. The surrounding code already sends the light direction,
+        ambient and direct light colors, shadow density scale, shadow alpha threshold, and
+        shadow step count to the shader.
+    </p>
+
+    <p>
+        Implement shadow-ray transmittance:
+    </p>
+
+    <ul>
+        <li>Start at <code>rayStart</code> and march toward the light using <code>rayDirection</code>.</li>
+        <li>Use <code>distanceToVolumeExit</code> to limit the ray to the clipped volume.</li>
+        <li>Sample the volume and apply the transfer function at each shadow sample.</li>
+        <li>Use the transfer-function alpha as the local shadow density.</li>
+        <li>Accumulate optical depth with the geometric <code>stepLength</code>.</li>
+        <li>Convert optical depth to transmittance with <code>exp(-shadowDensityScale * opticalDepth)</code>.</li>
+    </ul>
+
+    <p>
+        The primary ray only traces a shadow ray for samples whose alpha is above
+        <code>shadowAlphaThreshold</code>. This avoids unnecessary work in transparent regions
+        and makes the transfer function control both visible opacity and shadow casting.
+    </p>
+
+    <p>
+        The most relevant shader functions are:
+    </p>
+
+    <ul>
+        <li><code>traceShadowRay</code>: computes light transmittance through the volume.</li>
+        <li><code>estimateLighting</code>: combines ambient light and shadowed direct light.</li>
+        <li><code>distanceToVolumeExit</code>: computes the remaining ray length inside the clipped volume.</li>
+    </ul>
+
+    <p>
+        Test the result with the sphere first: with the light initially coming from above,
+        the top should be brighter and the lower parts should darken. Then rotate the volume
+        and adjust the light direction to check that the shadow follows the light, not the camera.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>V</em> toggle volume, <em>R</em> reset, <em>T</em> toggle transfer-function editor<br/>
+        <em>1</em> clip in X, <em>2</em> clip in Y, <em>3</em> clip in Z<br/>
+        <em>4</em> move clip in X, <em>5</em> move clip in Y, <em>6</em> move clip in Z<br/>
+        <em>Q</em> increase oversampling, <em>W</em> decrease oversampling<br/>
+        <em>J/L</em> move light in X, <em>I/K</em> move light in Y, <em>U/O</em> move light in Z<br/>
+        <em>Up</em> zoom in, <em>Down</em> zoom out<br/>
+        <em>Left</em> mouse drag rotate, <em>Right</em> mouse drag quick edit transfer function
+    </p>
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../06" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../08" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

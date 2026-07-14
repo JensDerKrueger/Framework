@@ -1,0 +1,62 @@
+<!--#set var="pagetitle" value="Exercise 03 – Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 3: Splines</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Spline Drawing (10 points)</h3>
+    <p>
+        Complete the function <code>drawPolySegment</code>.
+        The function receives the geometry matrix of the curve method and the curve parameters, then draws the resulting curve as a polyline.
+    </p>
+    <p>
+        The curve methods in this program are Hermite, Bezier, and B-spline curves.
+        Each curve is described by five parameters: four control values and one color.
+        For a Hermite curve, these values are two points, two tangent vectors, and a color.
+    </p>
+    <p>
+        Write the result to the vector <code>curve</code>. Each point along the polyline must use this format:
+    </p>
+    <pre><code>[x, y, z, r, g, b, a]</code></pre>
+    <p>
+        With a correct implementation, the program draws three curves: a Hermite curve at the top, a Bezier curve in the middle, and a B-spline at the bottom.
+    </p>
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+        <p style="text-align:center;">
+            <em>Rendering of the three spline segments: Hermite at the top, Bezier in the middle, and B-spline at the bottom. The Bezier curve is drawn twice; the second version uses the De Casteljau algorithm.</em>
+        </p>
+    </div>
+
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: De-Casteljau Spline Drawing (5 points)</h3>
+    <p>
+        Complete <code>drawBezierSegmentDeCasteljau</code>.
+        This function is specifically intended for Bezier curves.
+        Use the method discussed in the lecture to evaluate the Bezier curve using only linear interpolation.
+    </p>
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../02" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../04" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

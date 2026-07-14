@@ -1,0 +1,36 @@
+<!--#set var="pagetitle" value="Exercise 06a – Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<div class="task-container">
+    <h1>Particles</h1>
+<div class="canvas-container">
+    <canvas id="canvas"></canvas>
+</div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <div class="description">
+        <strong>I</strong> Reset Particles<br>
+        <strong>Left Mouse drag</strong> Rotate
+    </div>
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+<a href="../../06" class="nav-link nav-arrow">⬅</a>
+<a href="../.." class="nav-link">Back to Overview</a>
+<a href="../../07" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,98 @@
+<!--#set var="pagetitle" value="Exercise 16: Local Lighting - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 16: Local Lighting</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Topic: Local Phong Lighting</h3>
+
+    <p>
+        In this exercise you complete a small OpenGL scene for local lighting.
+        The program shows a cube and an ellipsoid side by side.
+        Both objects can be rotated around their own centers with the mouse.
+        Alternatively, the point light can be moved around the scene so the influence of light position becomes directly visible.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Starter Program</h3>
+
+    <p>
+        The starter code already creates the geometry for the cube and ellipsoid with the <code>Tessellation</code> class and draws both objects with separate model matrices.
+        The sphere is scaled non-uniformly so the difference between position and normal transformation becomes visible.
+        The light position is computed from a fixed initial position and its own ArcBall matrix, then passed to the shader in world space.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Normal Display (15 points)</h3>
+
+    <p>
+        Complete the normal display in <code>main.cpp</code>. For each vertex, draw a short line that starts at the vertex position and points in the direction of the corresponding vertex normal. Store the data as position and color so it can be drawn with <code>drawLines</code> from the GLApp framework. The length of the displayed normals is controlled by <code>normalLineLength</code>.
+    </p>
+
+    <p>
+        When drawing, make sure points and directions are transformed differently.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Phong Shader (15 points)</h3>
+
+    <p>
+        Complete direct local Phong lighting in <code>Shader/fragmentShader.frag</code>. The shader already receives the fragment's world position, transformed normal, material color, point light position, and camera position.
+    </p>
+
+    <p>
+        The result should consist of three terms:
+    </p>
+
+    <ul>
+        <li>Ambient: a constant base contribution.</li>
+        <li>Diffuse: a Lambert term.</li>
+        <li>Specular: a Phong highlight with reflection vector and exponent.</li>
+    </ul>
+
+    <p>
+        Make sure all direction vectors are normalized and avoid negative diffuse or specular contributions.
+    </p>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+        <p style="text-align:center;">
+            <em>Solution Preview</em>
+        </p>
+    </div>
+
+    <h3 class="assignment">Controls</h3>
+
+    <ul>
+        <li>Drag with the left mouse button: perform the current interaction.</li>
+        <li><code>L</code>: switch between object rotation and light rotation.</li>
+        <li><code>N</code>: toggle the normal display.</li>
+        <li><code>↑</code> / <code>↓</code>: zoom in and out.</li>
+        <li><code>←</code> / <code>→</code>: move the scene horizontally.</li>
+        <li><code>Q</code> / <code>W</code>: shorten or lengthen the normal lines.</li>
+        <li><code>R</code>: reset rotation, zoom, scene shift, and normal length.</li>
+    </ul>
+</div>
+
+<div class="navigation">
+    <a href="../15" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

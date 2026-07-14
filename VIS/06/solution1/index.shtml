@@ -1,0 +1,104 @@
+<!--#set var="pagetitle" value="Exercise 6a Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 6a: Particle Tracing Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided file contains the completed particle-tracing implementation. To compare
+        it with your own work, replace the exercise version of <code>main.cpp</code> with
+        the provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Initialization</h3>
+
+    <p>
+        The app initializes OpenGL state, sets a transparent black background, and creates a
+        random set of particles in the unit cube. The render buffer stores seven floats per
+        particle: three position values followed by four color values.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void init" data-end="void advect(double deltaT)">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Particle Advection</h3>
+
+    <p>
+        The exercise asks for particle advection with the Euler method. Each animation step
+        replaces every particle position with the result of the single-particle advection
+        function.
+    </p>
+
+    <p>
+        Particles that have left the unit cube, meaning any component is smaller than
+        <code>0</code> or larger than <code>1</code>, are respawned at a random position.
+        Valid particles move by the interpolated flow vector scaled by the elapsed time, so
+        the particle cloud follows the flow field and makes its structure visible.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void advect(double deltaT)" data-end="void particlePositionsToRenderData">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Render Data</h3>
+
+    <p>
+        Particle positions live in the flow-field coordinate range <code>[0, 1]</code>. For
+        rendering, they are converted to OpenGL coordinates in <code>[-1, 1]</code>. The
+        original position is reused as the RGB color, giving the particle cloud a spatial
+        color gradient.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void particlePositionsToRenderData" data-end="virtual void animate">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Animation and Drawing</h3>
+
+    <p>
+        The animation callback computes the time since the previous frame, advances the
+        particles by that amount, and updates the render buffer. The draw function then
+        applies the camera and arcball rotation before drawing the particle buffer as points.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void animate" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Interaction</h3>
+
+    <p>
+        Mouse dragging updates the arcball rotation used during drawing. Pressing
+        <code>I</code> calls <code>initParticles</code> again, which resets the particle
+        positions to a new random distribution.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void mouseMove" data-end="#ifdef _WIN32">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

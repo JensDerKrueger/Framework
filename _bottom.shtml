@@ -1,0 +1,13 @@
+  </main>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>Computer Graphics and Visualization Group</p>
+      <p>
+        University of Duisburg-Essen
+        <a href="https://www.uni-due.de/de/impressum.shtml">Imprint / Impressum</a>
+      </p>
+    </div>
+  </footer>
+  <script src="/assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!--#set var="pagetitle" value="Exercise 6b Solution - Scientific Visualization" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 6b: Flow-Aligned Lines Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided file contains the completed line-based flow visualization. To compare it
+        with your own work, replace the exercise version of <code>main.cpp</code> with the
+        provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task Overview</h3>
+
+    <p>
+        This exercise extends the previous particle-based solution to produce static
+        flow-aligned lines. The missing work is in <code>initLines()</code>, where seed
+        points are advanced through the vector field to form integral curves that reveal the
+        directional structure of the flow.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void init" data-end="void advect(std::vector&lt;Vec3&gt;&amp; linePoints">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Building Integral Curves</h3>
+
+    <p>
+        The vector version of <code>advect</code> creates one line at a time. Each line
+        starts at a random seed position, and every following point is generated from the
+        previous point using the same Euler-style advection idea from the particle exercise.
+        If a line terminates early, the solution stores the previous point again as a
+        duplicate endpoint. When a new point is identical to the previous one, the line has
+        reached the boundary condition and generation for that line stops.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void advect(std::vector&lt;Vec3&gt;&amp; linePoints" data-end="void linePointsToRenderData">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Boundary Handling</h3>
+
+    <p>
+        The single-point advection function checks whether the current point is still inside
+        the unit cube. Unlike the particle tracer, it does not reset invalid points to a new
+        random position. Instead, it returns the unchanged point, which lets the line builder
+        create the duplicate endpoint used as the stop condition.
+    </p>
+
+    <p>
+        Valid points are advanced with one explicit Euler step:
+        <code>position + flow.interpolate(position) * deltaT</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="Vec3 advect" data-end="void linePointsToRenderData">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Line Render Data</h3>
+
+    <p>
+        The computed line points are converted into a line-list buffer. Every segment needs
+        two endpoints, and each endpoint stores three OpenGL-space coordinates plus RGBA
+        color. As in the particle exercise, the original <code>[0, 1]</code> position is
+        reused as color.
+    </p>
+
+    <p>
+        Before a segment is emitted, the render conversion checks whether two consecutive
+        points are equal. This is why an early-terminated line needs the duplicate point: it
+        marks the end of the line without drawing an extra segment.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void linePointsToRenderData" data-end="virtual void draw">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Drawing and Interaction</h3>
+
+    <p>
+        The draw function renders the static integral curves as a line list using the current
+        arcball rotation. Mouse dragging updates that rotation, so the generated 3D flow
+        structure can be inspected interactively.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="#ifdef _WIN32">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

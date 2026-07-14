@@ -1,0 +1,106 @@
+<!--#set var="pagetitle" value="Exercise 11 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 11: Screen Space Ambient Occlusion Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed SSAO pass, the smoothing pass, and the
+        modified deferred lighting shader. To compare them with your own work, replace the
+        exercise versions of <code>main.cpp</code>, <code>Shader/ssao.frag</code>,
+        <code>Shader/ssaoBlur.frag</code>, and <code>Shader/deferred.frag</code> with these
+        files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="ssao.frag">Open <code>ssao.frag</code></a>
+        <a class="source-link" href="ssaoBlur.frag">Open <code>ssaoBlur.frag</code></a>
+        <a class="source-link" href="deferred.frag">Open <code>deferred.frag</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">AO Pass Setup</h3>
+
+    <p>
+        The first SSAO pass is an additional image-space pass after G-buffer creation. It
+        renders into <code>rawAmbientOcclusionBuffer</code>. The shader only needs the position
+        and normal buffers, because it estimates local occlusion from nearby screen-space
+        geometry.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void ensureGBufferSize" data-end="void setGBufferMatrices">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void generateDeferredBufferMipmaps" data-end="void renderAmbientOcclusionBlurPass">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">SSAO Shader</h3>
+
+    <p>
+        The shader builds a local hemisphere around the current normal. It places more samples
+        near the visible point than far away, projects the sample positions back into the
+        G-buffer, and counts how many sample directions are blocked by closer geometry.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="../ssao_hemisphere.svg" alt="SSAO hemisphere samples projected back into the G-buffer" />
+        <figcaption>
+            The key operation is moving from view-space samples to texture coordinates so the
+            position buffer can be used as a cheap local scene representation.
+        </figcaption>
+    </figure>
+
+    <pre class="code-snippet" data-src="ssao.frag" data-start="mat3 hemisphereBasis" data-end="float estimateAmbientOcclusion">Loading ssao.frag...</pre>
+    <pre class="code-snippet" data-src="ssao.frag" data-start="float estimateAmbientOcclusion" data-end="void main">Loading ssao.frag...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Smoothing Pass</h3>
+
+    <p>
+        The raw SSAO estimate is noisy because only a limited number of hemisphere samples are
+        used per pixel. The solution therefore writes the raw result first and then smooths it
+        with two full-screen passes. The blur is separable: first horizontal, then vertical.
+        This gives a <code>5 x 5</code>-like smoothing effect with <code>10</code> samples
+        instead of <code>25</code>. The blur is also depth-aware: nearby pixels with similar
+        view-space depth are averaged strongly, while pixels across depth discontinuities have
+        little influence.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="void renderAmbientOcclusionBlurPass" data-end="void renderDeferredImage">Loading main.cpp...</pre>
+    <pre class="code-snippet" data-src="ssaoBlur.frag">Loading ssaoBlur.frag...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Deferred Lighting</h3>
+
+    <p>
+        The final shader reads the AO texture and uses it to reduce ambient light in locally
+        hidden regions. The solution also applies it as a contact term for direct light to make
+        the effect easier to see in this compact example.
+    </p>
+
+    <pre class="code-snippet" data-src="deferred.frag" data-start="vec3 shadePixel" data-end="vec3 showBuffer">Loading deferred.frag...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,106 @@
+<!--#set var="pagetitle" value="Exercise 1 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 1: Recursive Ray Tracing Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain the completed implementation for this exercise. To compare
+        them with your own work, replace the exercise versions of <code>Scene.cpp</code> and
+        <code>Material.cpp</code> with these files and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="Scene.cpp">Open <code>Scene.cpp</code></a>
+        <a class="source-link" href="Material.cpp">Open <code>Material.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Recursion and Ray Setup</h3>
+
+    <p>
+        Recursive ray tracing needs a termination condition before any secondary rays are
+        spawned. If the recursion depth reaches zero, the ray returns the background color.
+        Otherwise the ray is intersected with the scene. A miss also returns the background
+        color.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="Vec3 Scene::traceLocalRay" data-end="Vec3 reflColor">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reflection and Refraction</h3>
+
+    <p>
+        Reflective materials spawn a reflected secondary ray. The new ray origin is shifted
+        slightly along the surface normal so the ray does not immediately hit the same
+        surface again due to numerical precision.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="Vec3 reflColor" data-end="Vec3 refractionColor">Loading Scene.cpp...</pre>
+
+    <p>
+        Refractive materials try to compute a transmitted direction with
+        <code>Vec3::refract</code>. If refraction succeeds, the sign of the dot product between
+        refracted direction and normal tells whether the ray leaves the material or enters it.
+        The recursive call then uses the corresponding index of refraction.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="Vec3 refractionColor" data-end="Vec3 localColor">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Local Illumination and Composition</h3>
+
+    <p>
+        The local Phong illumination from the starter code stays mostly unchanged. It still
+        computes ambient, diffuse, and specular light, and still uses shadow rays to decide
+        whether direct light reaches the hit point.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="Vec3 localColor" data-end="// compose final color">Loading Scene.cpp...</pre>
+
+    <p>
+        The final color is a weighted sum of local illumination, reflected color, and
+        refracted color. Purely local materials use only the local term. Reflective materials
+        use Schlick reflectivity for the reflection weight. Refractive materials use the
+        material's local fraction first and split the remaining contribution between
+        reflection and transmission.
+    </p>
+
+    <pre class="code-snippet" data-src="Scene.cpp" data-start="// compose final color" data-end="Scene Scene::genSimpleScene">Loading Scene.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Schlick Reflectivity</h3>
+
+    <p>
+        <code>Material::getReflectivity</code> implements Schlick's approximation. For
+        refractive materials, <code>R0</code> is computed from the index of refraction. For
+        reflective but non-refractive materials, the simplified exercise model uses
+        <code>1 - local</code> as the base reflectivity.
+    </p>
+
+    <pre class="code-snippet" data-src="Material.cpp" data-start="float Material::getReflectivity" data-end="__END_OF_FILE__">Loading Material.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

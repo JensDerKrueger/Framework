@@ -1,0 +1,66 @@
+<!--#set var="pagetitle" value="Exercise 01 – Shallow Water Equation" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<div class="task-container">
+    
+    <h1>Simulation</h1>
+    
+    <p>
+        All assignments must be uploaded to Moodle. Submissions not uploaded before the deadline will not be graded and will receive 0 points. Assignments that fail to compile will also receive 0 points. Example inputs and outputs are often provided for testing; assignments that do not handle these correctly will be awarded very few points. Please ensure your program produces only the requested output, without any additional messages. Submit your solution as a single zip archive named <strong>FirstName_LastName.zip</strong>, including all modified files. For assignments that also include theoretical tasks, you must additionally provide a text file or a scan/photo containing your written answers within the same archive.
+    </p>
+    
+    <h3 class="assignment">Exercsise: Shallow Water Equation (15 points)</h3>
+    
+    <p>
+        Familiarize yourself with both the <code>animate</code> and <code>mouseButton</code> methods. 
+        The <code>animate</code> method executes one step of the explicit shallow water simulation and 
+        <code>mouseButton</code> adds a splash to the surface.
+    </p>
+
+    <p>
+        The update rule from the lecture is shown below. In the code, the current value
+        <code>u_{ij}^t</code>, its four direct neighbors, and the previous value
+        <code>u_{ij}^{t-\Delta t}</code> are already available inside the loop.
+    </p>
+
+    <p style="text-align: center; overflow-x: auto;">
+        <img src="shallow_water_formula_light.png" alt="Explicit shallow water update formula" style="max-width: 100%; height: auto;">
+    </p>
+    
+    
+    <p>
+        Your task is to add a single line of code to the <code>animate</code> method to compute the next iteration of the simulation. 
+        The existing code already fetches all necessary values from the past and current height fields and also updates the image with the new value.
+    </p>
+    
+    <p>
+        Your solution should behave like the embedded program below.
+    </p>
+<div class="canvas-container">
+    <canvas id="canvas"></canvas>
+</div>
+    <div class="description">
+        Click with the mouse to modify the water surface.
+    </div>
+
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../00" class="nav-link nav-arrow">⬅</a>            
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../02" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

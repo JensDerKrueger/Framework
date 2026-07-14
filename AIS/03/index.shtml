@@ -1,0 +1,114 @@
+<!--#set var="pagetitle" value="Exercise 03 – Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 03: Rasterization</h1>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Hello third dimension (5 Points)</h3>
+            <p>
+                Familiarize yourself with the third dimension and the provided source code. While running
+                the program you can interactively rotate the view by dragging with the left mouse button
+                and pan the view by dragging with the right mouse button. Pressing the CTRL key while
+                dragging allows you to control the other degrees of freedom.
+                The rendered image itself should look colorful and a little bit broken. It might look for
+                instance as shown in Figure 1. It could also look slightly different. It visualizes the geometry’s
+                normals. Pressing the keys: F, G or P changes the overall color.
+                Do not change the initial viewing angle of the scene for your submission!
+                It is your task to render the geometry with correct occlusion.
+                
+                The provided code for this exercise already contains parts from the previous task:
+                <code>GLFW</code> and <code>GLEW</code> initialization are encapsulated in classes inside the <code>Utils</code> folder.
+                That folder also contains matrix and vector classes, which will be used in this and upcoming exercises.
+                
+                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                    <img src="DebugShadingFlat.png" style="width: 45%;">
+                    <img src="DebugShadingGouraud.png" style="width: 45%;">
+                    <img src="DebugShadingPhong.png" style="width: 45%;">
+                </div>
+                <p style="text-align:center;">
+                    <em>Figure 1: Initial State</em>
+                </p>
+
+                
+                
+                
+            </p>
+            <p>
+                You do not need to modify the code in <code>Utils</code>.
+                For this assignment, it is sufficient to edit only the classes in the <code>Hello_Triangles</code> directory.
+                Your shader source files are located in the <code>res</code> subfolder.
+                The <code>GLHelper</code> files assist in compiling these shaders.
+            </p>
+        </div>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Hello light source position (10 points)</h3>
+            <p>
+                Before we do the actual shading below we want to
+                visualize the point light source's position by rendering a white cube with side length of 2.
+                Its default position should be at (-35, 35, 35) and by pressing the space bar it should start rotating around the y-axis in the origin at 45 degrees per second. Pressing the space bar again should pause/resume the rotation at its current position.
+                Additionally, the character <code>R</code>-key should reset the animation and all user interactions to the initial state. When the application starts the animation should be paused in the reset state.
+            </p>
+        </div>
+        
+        <div class="task-container">
+            <h3 class="assignment">Exercise: Hello shading (20 points)</h3>
+                        <p>
+                Implement \textit{Flat}, \textit{Gouraud} and \textit{Phong} shading with the \textit{Phong} illumination model as shown in Figure~\ref{fig:shading}. The keys: \texttt{F}, \texttt{G} and \texttt{P} switch to the corresponding technique and use the predefined diffuse colors.
+                The point light source's cube should have a pure white emission color. No other objects emit light.
+                The material's ambient color should be (0.05, 0.05, 0.05), its specular color (1, 1, 1) and the shininess value should be set to 50.
+                The point light source's coefficients should be set to (0.9, 0.9, 0.9) for all three light components.
+            </p>
+            
+            <p>
+                Additionally, the program must support the following user input:
+            </p>
+            
+            <ul>
+                <li><code>Spacebar</code>: Toggles animation on/off</li>
+                <li><code>F</code>: Switch to Flat Shading</li>
+                <li><code>G</code>: Switch to Gouraud Shading</li>
+                <li><code>P</code>: Switch to Phong Shading</li>
+                <li><code>R</code> key: Resets the animation and the view</li>
+            </ul>
+            
+            <p>
+                When the application starts, the animation must be <strong>paused in the reset state</strong>.
+            </p>
+            
+            <div class="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div class="loading-text" id="loading">Loading</div>
+            </div>
+            <p style="text-align:center;">
+                <em>Solution.<br>
+                    Use the mouse to interact with the scene.
+                    <code>Spacebar</code>: Toggles animation on/off
+                    <code>F</code>: Switch to Flat Shading
+                    <code>G</code>: Switch to Gouraud Shading
+                    <code>P</code>: Switch to Phong Shading
+                    <code>R</code> key: Resets the animation and the view
+                </em>
+            </p>
+
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <a href="../02" class="nav-link nav-arrow">⬅</a>
+            <a href=".." class="nav-link">Back to Overview</a>
+            <a href="../04" class="nav-link nav-arrow">➡</a>
+        </div>
+  </div>
+</section>
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

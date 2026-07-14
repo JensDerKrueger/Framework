@@ -1,0 +1,75 @@
+<!--#set var="pagetitle" value="Exercise 6 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 6: Volume Rendering 1 Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The provided shader contains the completed ray-marching loop for this exercise. To
+        compare it with your own work, replace <code>Shader/cubeFS.glsl</code> in the exercise
+        folder with the provided file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="cubeFS.glsl">Open <code>cubeFS.glsl</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Front-To-Back Compositing</h3>
+
+    <p>
+        The helper function <code>under</code> adds one newly sampled color to the accumulated
+        result. The new sample contributes only through the opacity that is still missing in
+        the current result. This is why the factor <code>1.0 - last.a</code> appears in both
+        the RGB and alpha update.
+    </p>
+
+    <pre class="code-snippet" data-src="cubeFS.glsl" data-start="vec4 under" data-end="float distanceToVolumeExit">Loading cubeFS.glsl...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Ray Setup</h3>
+
+    <p>
+        The shader first computes how far the ray travels through the clipped volume. The
+        sample count is estimated from the number of voxels crossed by the ray and scaled by
+        the interactive oversampling value. The step length and <code>delta</code> vector then
+        describe one movement from sample to sample.
+    </p>
+
+    <pre class="code-snippet" data-src="cubeFS.glsl" data-start="vec4 tracePrimaryRay" data-end="vec4 accumulated">Loading cubeFS.glsl...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Ray-Marching Loop</h3>
+
+    <p>
+        Each iteration samples the scalar volume texture, maps the scalar through the transfer
+        function, corrects the opacity for the current step length, and composites the sample
+        into the accumulated color. Once the accumulated opacity is high enough, the remaining
+        samples would barely change the result, so the loop can stop early.
+    </p>
+
+    <pre class="code-snippet" data-src="cubeFS.glsl" data-start="vec4 accumulated" data-end="void main">Loading cubeFS.glsl...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,176 @@
+<!--#set var="pagetitle" value="Solution Sheet 2 - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 2: Solution for Intersections</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+
+    <p>
+        The provided files contain a complete implementation for this sheet. The theoretical exercise is worked out directly on this page; for the programming exercise, <code>main.cpp</code> replaces the assignment version from the starter code.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Barycentric Coordinates</h3>
+
+    <p>
+        Barycentric coordinates describe a point as a weighted sum of the three triangle vertices. For the given points:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/barycentric_points.png"
+             alt="P0 equals minus three comma four with color one comma zero point one five comma zero point one five; P1 equals five comma two with green color; P2 equals one comma zero with blue color." />
+    </p>
+
+    <p>
+        A point lies inside the triangle exactly when all three weights are in the range <code>[0, 1]</code> and their sum is <code>1</code>. The weights can be computed from the subareas of the triangle. Using signed areas also handles points outside the triangle correctly.
+    </p>
+
+    <div class="barycentric-layout">
+        <svg class="barycentric-figure" viewBox="0 0 640 400" role="img" aria-label="Triangle with points Q0 and Q1">
+            <defs>
+                <pattern id="grid" width="55" height="55" patternUnits="userSpaceOnUse">
+                    <path d="M 55 0 L 0 0 0 55" fill="none" stroke="currentColor" stroke-opacity="0.14" stroke-width="1" />
+                </pattern>
+            </defs>
+            <rect width="640" height="400" fill="url(#grid)" />
+            <line x1="40" y1="300" x2="600" y2="300" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.5" />
+            <line x1="260" y1="355" x2="260" y2="30" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.5" />
+            <polygon points="95,80 535,190 315,300" fill="#5ba7ff" fill-opacity="0.16" stroke="#7db7ff" stroke-width="3" />
+            <line x1="370" y1="245" x2="95" y2="80" stroke="#7db7ff" stroke-opacity="0.7" stroke-width="1.5" stroke-dasharray="6 5" />
+            <line x1="370" y1="245" x2="535" y2="190" stroke="#7db7ff" stroke-opacity="0.7" stroke-width="1.5" stroke-dasharray="6 5" />
+            <line x1="370" y1="245" x2="315" y2="300" stroke="#7db7ff" stroke-opacity="0.7" stroke-width="1.5" stroke-dasharray="6 5" />
+            <circle cx="95" cy="80" r="7" fill="rgb(255, 38, 38)" />
+            <circle cx="535" cy="190" r="7" fill="rgb(38, 255, 38)" />
+            <circle cx="315" cy="300" r="7" fill="rgb(38, 38, 255)" />
+            <circle cx="260" cy="300" r="7" fill="currentColor" />
+            <circle cx="370" cy="245" r="8" fill="rgb(56, 110, 165)" stroke="currentColor" stroke-width="2" />
+            <text x="76" y="72" font-size="18" fill="currentColor">P0</text>
+            <text x="545" y="190" font-size="18" fill="currentColor">P1</text>
+            <text x="322" y="322" font-size="18" fill="currentColor">P2</text>
+            <text x="220" y="322" font-size="18" fill="currentColor">Q0</text>
+            <text x="380" y="240" font-size="18" fill="currentColor">Q1</text>
+            <text x="586" y="292" font-size="16" fill="currentColor" opacity="0.7">x</text>
+            <text x="270" y="42" font-size="16" fill="currentColor" opacity="0.7">y</text>
+        </svg>
+
+        <div>
+            <p>
+                The total area of the triangle is <code>A = 12</code>. The barycentric weights are obtained from the opposite subtriangle areas:
+            </p>
+
+            <p class="formula">
+                <img src="formulas_black/barycentric_areas.png"
+                     alt="Alpha zero, alpha one, and alpha two are the opposite signed subtriangle areas divided by the full triangle area." />
+            </p>
+        </div>
+    </div>
+
+    <p class="formula">
+        <img src="formulas_black/q0_weights.png"
+             alt="For Q0 equals zero comma zero the barycentric weights are one twelfth, minus two twelfths, and thirteen twelfths, approximately zero point zero eight, minus zero point one seven, and one point zero eight." />
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/q1_weights.png"
+             alt="For Q1 equals two comma one the barycentric weights are one twelfth, four twelfths, and seven twelfths, approximately zero point zero eight, zero point three three, and zero point five eight." />
+    </p>
+
+    <table class="barycentric-table">
+        <thead>
+            <tr>
+                <th>Point</th>
+                <th>Subareas</th>
+                <th>Barycentric Coordinates</th>
+                <th>Classification</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>Q0 = (0, 0)</code></td>
+                <td><code>A0 = 1</code>, <code>A1 = -2</code>, <code>A2 = 13</code></td>
+                <td><code>(0.08, -0.17, 1.08)</code></td>
+                <td>outside, because one weight is negative</td>
+            </tr>
+            <tr>
+                <td><code>Q1 = (2, 1)</code></td>
+                <td><code>A0 = 1</code>, <code>A1 = 4</code>, <code>A2 = 7</code></td>
+                <td><code>(0.08, 0.33, 0.58)</code></td>
+                <td>inside, because all weights lie in <code>[0, 1]</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        For point <code>Q1</code>, the color is interpolated with the same weights:
+    </p>
+
+    <p class="formula">
+        <img src="formulas_black/q1_color.png"
+             alt="The interpolated color at Q1 is one twelfth C0 plus four twelfths C1 plus seven twelfths C2, approximately zero point two two, zero point four three, zero point six five." />
+    </p>
+
+    <div class="barycentric-color">
+        <div class="barycentric-swatch" aria-hidden="true"></div>
+        <p>
+            The resulting color is a slightly turquoise blue.
+        </p>
+    </div>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Ray Through the Pixel</h3>
+
+    <p>
+        <code>raySphereIntersect</code> receives the ray origin and a point on the image plane. From those two points, the solution first computes a normalized ray direction. It then combines the sphere equation with the ray equation, producing a quadratic equation in the ray distance <code>t</code>.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="std::optional&lt;Vec3&gt; raySphereIntersect" data-end="const float sqD">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Discriminant and Intersection Point</h3>
+
+    <p>
+        The discriminant determines whether the ray hits the sphere. If it is negative, there is no real intersection and the function returns an empty <code>std::optional</code>. Otherwise, the two possible hit distances are computed and the frontmost hit is chosen.
+    </p>
+
+    <p>
+        A small <code>epsilon</code> prevents intersections behind the viewer, or exactly at the ray origin, from being accepted as valid hits. For a valid hit, the actual intersection point is computed as <code>rayOrigin + rayDirection * t</code> and returned.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="const float sqD" data-end="Vec3 computeLighting">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Rendering with the Existing Lighting</h3>
+
+    <p>
+        The rest of the starter code can remain unchanged: one ray is tested for each pixel. If it hits, the sphere normal is computed from the hit point and the existing Phong lighting code is evaluated. If it misses, the pixel remains black.
+    </p>
+
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void init" data-end="virtual void draw">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

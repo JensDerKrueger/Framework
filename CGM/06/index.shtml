@@ -1,0 +1,125 @@
+<!--#set var="pagetitle" value="Exercise 6 - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 6: Volume Rendering 1</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise: Basic Volume Raycasting (20 points)</h3>
+    <p>
+        In this exercise you will implement the core loop of a direct volume renderer.
+        The provided application already creates a 3D texture from simple analytic scalar fields,
+        renders the clipped front faces of the volume cube, and passes all required information
+        to the fragment shader.
+    </p>
+    <p>
+        Your task is to complete the function <code>tracePrimaryRay</code> in
+        <code>Shader/cubeFS.glsl</code>. The surrounding code already computes the ray direction,
+        the distance to the volume boundary, the number of samples, the step size, and the
+        opacity correction factor.
+    </p>
+
+    <p>
+        Implement front-to-back emission-absorption raycasting.
+    </p>
+
+    <p>
+        The shader already provides the geometric setup for one ray per fragment. The
+        varying <code>entryPoint</code> is the position where the viewing ray enters the
+        volume in texture coordinates. The uniform <code>cameraPosInTextureSpace</code>
+        gives the camera position in the same coordinate system, so the ray direction is
+        computed as <code>normalize(entryPoint - cameraPosInTextureSpace)</code>.
+    </p>
+
+    <p>
+        The helper <code>distanceToVolumeExit</code> computes <code>rayLength</code>, the
+        distance from the entry point to the point where the ray leaves the clipped volume
+        bounds. From this length and the volume resolution <code>voxelCount</code>, the
+        shader estimates how many voxels the ray crosses. Multiplying that estimate by
+        <code>oversampling</code> gives <code>sampleCount</code>. The values
+        <code>stepLength = rayLength / sampleCount</code> and
+        <code>delta = rayDirection * stepLength</code> then define the spacing and direction
+        of the ray-marching samples.
+    </p>
+
+    <figure class="concept-figure">
+        <img src="ray_marching_overview.svg" alt="Top-down diagram of volume ray marching variables" />
+        <figcaption>
+            Top view of a fragment ray through the volume. The shader starts at
+            <code>entryPoint</code>, advances by <code>delta</code>, and stops at the volume
+            exit or after early ray termination.
+        </figcaption>
+    </figure>
+
+    <p>
+        Inside the ray-marching loop, start with <code>currentPoint = rayStart</code> and an
+        accumulated color of <code>vec4(0.0)</code>. At each sample, read the scalar value
+        from <code>volume</code>, map it through <code>transferFunction</code>, correct its
+        opacity for the current step length, composite it front-to-back with
+        <code>under</code>, and then advance <code>currentPoint</code> by <code>delta</code>.
+    </p>
+
+    <p>
+        Implement <strong>early ray termination</strong> and stop the raycasting when the
+        accumulated alpha exceeds <code>0.95</code>.
+    </p>
+
+    <p>
+        The opacity correction keeps the rendered volume visually stable when the sampling
+        rate changes. Without it, increasing <code>oversampling</code> would add more samples
+        with the same opacity, making the same volume appear too opaque. The shader uses
+        <code>opacityCorrection = 100.0 * stepLength</code> and corrects the transfer-function
+        alpha with
+        <code>correctedAlpha = 1.0 - pow(1.0 - transferAlpha, opacityCorrection)</code>.
+        Equivalently, the remaining transparency is raised to the step-size-dependent
+        exponent:
+        <code>1.0 - correctedAlpha = pow(1.0 - transferAlpha, opacityCorrection)</code>.
+        In this exercise, the factor <code>100.0</code> means that the transfer-function
+        opacity is treated as being defined for a reference step length of about
+        <code>0.01</code> in texture space.
+    </p>
+
+    <p>
+        The final program should resemble the example shown below.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Reference Solution</h3>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+    <script>
+        canvas.oncontextmenu = e => e.preventDefault();
+    </script>
+    <p style="text-align:center;">
+        <em>V</em> toggle volume, <em>R</em> reset, <em>T</em> toggle transfer-function editor<br/>
+        <em>1</em> clip in X, <em>2</em> clip in Y, <em>3</em> clip in Z<br/>
+        <em>4</em> move clip in X, <em>5</em> move clip in Y, <em>6</em> move clip in Z<br/>
+        <em>Q</em> increase oversampling, <em>W</em> decrease oversampling<br/>
+        <em>Up</em> zoom in, <em>Down</em> zoom out<br/>
+        <em>Left</em> mouse drag rotate, <em>Right</em> mouse drag quick edit transfer function
+    </p>
+</div>
+
+<!-- Navigation -->
+<div class="navigation">
+    <a href="../05" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../07" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,89 @@
+<!--#set var="pagetitle" value="Exercise 7 Solution - Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 7: Environment Mapping Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+    <p>
+        The provided files extend the shadow-mapping solution with a cubemap, a skybox, and
+        environment reflections on the teapot. The ground plane still uses the textured and
+        shadowed lighting path from the previous exercise.
+    </p>
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="skypbox.vert">Open <code>skypbox.vert</code></a>
+        <a class="source-link" href="skypbox.frag">Open <code>skypbox.frag</code></a>
+        <a class="source-link" href="phongBump.frag">Open <code>phongBump.frag</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Cubemap and Programs</h3>
+    <p>
+        The solution adds a <code>GLTextureCube</code> for the environment and a dedicated
+        skybox shader program. The shadow-map resources remain in place so reflections and
+        shadows can be combined in the final rendering pass.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="GLTexture2D stonesDiffuse" data-end="bool leftMouseDown">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Loading the Environment Map</h3>
+    <p>
+        The six cubemap faces are loaded from image files and uploaded to the corresponding
+        cube faces. The face order matches the positive and negative x, y, and z directions.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void setupTextures" data-end="virtual void animate">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Skybox Rendering</h3>
+    <p>
+        The skybox shader uses the cube's vertex position as the cubemap lookup direction.
+        During rendering, the cube is scaled far beyond the scene and sampled with
+        <code>samplerCube</code>.
+    </p>
+    <pre class="code-snippet" data-src="skypbox.vert">Loading skypbox.vert...</pre>
+    <pre class="code-snippet" data-src="skypbox.frag">Loading skypbox.frag...</pre>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void renderSkyBox" data-end="void renderScene">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">World-Space Reflection</h3>
+    <p>
+        The teapot shader switches to world-space positions and normals so the reflection
+        vector can be used directly for the environment lookup. The diffuse term blends the
+        blue material color with the reflected cubemap color as requested by the exercise.
+    </p>
+    <pre class="code-snippet" data-src="phongBump.vert">Loading phongBump.vert...</pre>
+    <pre class="code-snippet" data-src="phongBump.frag">Loading phongBump.frag...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Rendering Order</h3>
+    <p>
+        Rendering still starts with the depth pass for the shadow map. The camera pass then
+        draws the light source, the textured and shadowed scene, and finally the skybox from
+        inside the same cube geometry.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="virtual void draw" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

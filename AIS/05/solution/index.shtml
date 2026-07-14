@@ -1,0 +1,89 @@
+<!--#set var="pagetitle" value="Exercise 5 Solution - Advanced Image Synthesis" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 5: Shadows Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution Files</h3>
+    <p>
+        The provided files extend the texturing solution with shadow mapping. A depth texture
+        is rendered from the light's point of view and then sampled during the normal-mapped
+        lighting pass for the ground plane and teapot.
+    </p>
+    <p class="solution-note">
+        <a class="source-link" href="main.cpp">Open <code>main.cpp</code></a>
+        <a class="source-link" href="phongBump.vert">Open <code>phongBump.vert</code></a>
+        <a class="source-link" href="phongBumpTex.frag">Open <code>phongBumpTex.frag</code></a>
+        <a class="source-link" href="phongBump.frag">Open <code>phongBump.frag</code></a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Shadow Map Resources</h3>
+    <p>
+        Shadow rendering uses a small depth-only shader program, a framebuffer, and a
+        <code>GLDepthTexture</code>. The clip-to-texture matrix maps homogeneous clip-space
+        coordinates into texture lookup coordinates for the later shadow test.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="static const std::string shadowVertexShader" data-end="bool leftMouseDown">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Light-Space Matrices</h3>
+    <p>
+        Each frame builds the camera view matrix, the animated light transform, the light
+        projection, and a light view matrix that looks from the light position toward the
+        origin. Their product is stored as <code>worldToShadowMatrix</code>.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void updateState" data-end="void renderLightSource">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Two-Pass Rendering</h3>
+    <p>
+        The same scene function is used twice. In the first pass it writes only depth values
+        into the shadow map from the light's perspective. In the second pass it renders the
+        real scene from the camera and binds the completed shadow map as a texture.
+    </p>
+    <pre class="code-snippet" data-src="main.cpp" data-start="void renderScene" data-end="virtual void resize">Loading main.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Passing Shadow Coordinates</h3>
+    <p>
+        The vertex shader computes <code>shadowPos</code> by transforming each model-space
+        vertex into light texture space. The fragment shader can then compare the current
+        fragment against the stored depth value.
+    </p>
+    <pre class="code-snippet" data-src="phongBump.vert">Loading phongBump.vert...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Applying the Shadow</h3>
+    <p>
+        The fragment shaders use <code>sampler2DShadow</code> and
+        <code>textureProj</code> for the depth comparison. A small bias reduces self-shadow
+        artifacts. Lit fragments receive the full Phong result, while shadowed fragments keep
+        only the ambient contribution.
+    </p>
+    <pre class="code-snippet" data-src="phongBumpTex.frag">Loading phongBumpTex.frag...</pre>
+    <pre class="code-snippet" data-src="phongBump.frag">Loading phongBump.frag...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

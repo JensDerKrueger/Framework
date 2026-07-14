@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="250" viewBox="0 0 960 250">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#1f2937"/>
+    </marker>
+    <style>
+      .box { fill: #ffffff; stroke: #1f2937; stroke-width: 2; rx: 8; }
+      .provided { fill: #eef2ff; }
+      .task { fill: #ecfdf5; }
+      .text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; font-size: 20px; font-weight: 650; text-anchor: middle; }
+      .small { font-size: 14px; font-weight: 450; fill: #374151; }
+      .arrow { stroke: #1f2937; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="960" height="250" fill="#f8fafc"/>
+
+  <rect class="box provided" x="24" y="72" width="116" height="84" rx="8"/>
+  <text class="text" x="82" y="108">RGB</text>
+  <text class="text small" x="82" y="132">source image</text>
+
+  <path class="arrow" d="M150 114 H202"/>
+  <rect class="box task" x="212" y="72" width="116" height="84" rx="8"/>
+  <text class="text" x="270" y="103">YCbCr</text>
+  <text class="text small" x="270" y="129">Task 1</text>
+
+  <path class="arrow" d="M338 114 H390"/>
+  <rect class="box task" x="400" y="72" width="126" height="84" rx="8"/>
+  <text class="text" x="463" y="103">Chroma</text>
+  <text class="text small" x="463" y="129">subsample, Task 2</text>
+
+  <path class="arrow" d="M536 114 H588"/>
+  <rect class="box task" x="598" y="72" width="116" height="84" rx="8"/>
+  <text class="text" x="656" y="103">8 x 8 DCT</text>
+  <text class="text small" x="656" y="129">Task 3</text>
+
+  <path class="arrow" d="M724 114 H776"/>
+  <rect class="box task" x="786" y="72" width="126" height="84" rx="8"/>
+  <text class="text" x="849" y="103">Quantize</text>
+  <text class="text small" x="849" y="129">Task 4</text>
+
+  <text class="text small" x="468" y="226">provided: zig-zag order, run-length coding, Huffman coding, JPEG markers, bitstream writing</text>
+</svg>

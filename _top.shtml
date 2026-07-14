@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Computer Graphics and Visualization Group: <!--#echo var="pagetitle" --></title>
+  <meta name="description" content="Computer Graphics and Visualization Group at the University of Duisburg-Essen">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico?0">
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="nav-shell">
+      <a class="brand" href="/" aria-label="CGVIS home">
+        <img src="/assets/logo-dark.png" alt="" width="56" height="56">
+        <span>
+          <strong>CGVIS</strong>
+          <small>Computer Graphics and Visualization</small>
+        </span>
+      </a>
+    </div>
+  </header>
+  <main id="content">

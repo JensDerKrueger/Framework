@@ -1,0 +1,103 @@
+<!--#set var="pagetitle" value="Exercise 12: Transformations - Computer Graphics" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout">
+<h1>Sheet 12: Transformations</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Topic: Matrices and Transformations</h3>
+
+    <p>
+        In this exercise you work with geometric transformations in two- and three-dimensional space.
+        An object should be translated and rotated around different axes.
+        The important part is not only which transformations are used, but especially the order in which they are multiplied.
+    </p>
+
+    <p>
+        The starter code already contains three equilateral triangles with the correct vertex colors.
+        Initially, all triangles lie on top of each other at the origin of their local coordinate system.
+        Use suitable matrices to build an animated Triforce from these three local triangles: one triangle at the top, two below it, and each triangle rotating around its own axis.
+    </p>
+
+    <p>
+        In particular, pay attention to the difference between local coordinates and world coordinates.
+        A rotation around the local origin behaves differently from a rotation around the origin of the whole scene.
+        It also matters whether an object is rotated first and translated afterward, or whether these two operations are swapped.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 1: Arrange the Triforce (10 points)</h3>
+
+    <p>
+        Compute a separate model matrix for each triangle that moves it to the correct position.
+        The top triangle should move upward, and the other two triangles should move down-left and down-right.
+        Together, the three triangles should form a Triforce.
+    </p>
+
+    <p>
+        Use <code>Mat4::translation</code> for this.
+        Before each draw call, use <code>setDrawTransform</code> to set the matrix of the triangle that will then be drawn with <code>drawTriangles</code>.
+    </p>
+
+    <p>
+        Make sure each triangle keeps its own local coordinates.
+        Do not modify the vertex data itself; use the matrix to describe where this local triangle should appear in the scene.
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Exercise 2: Animate Rotation (10 points)</h3>
+
+    <p>
+        Extend the program so each triangle rotates by 45 degrees per second around a different major axis:
+    </p>
+
+    <ul>
+        <li>The top triangle rotates around the x-axis.</li>
+        <li>The lower-right triangle rotates around the y-axis.</li>
+        <li>The lower-left triangle rotates around the z-axis.</li>
+    </ul>
+
+    <p>
+        Compute the angle in <code>animate</code> from the elapsed time. For the rotation, you can use <code>Mat4::rotationX</code>, <code>Mat4::rotationY</code>, and <code>Mat4::rotationZ</code>.
+    </p>
+
+    <p>
+        Then combine translation and rotation by matrix multiplication.
+        Each triangle should rotate around its own center while still staying in its Triforce position.
+        Think carefully about whether the rotation must appear before or after the translation in the model matrix.
+    </p>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div class="loading-text" id="loading">Loading</div>
+    </div>
+
+    <p style="text-align:center;">
+        <em>
+            Solution preview: three colored triangles rotate around their local axes.
+            Press the Spacebar to pause and resume the animation;
+            <code>R</code> resets it.
+        </em>
+    </p>
+</div>
+
+<div class="navigation">
+    <a href="../11" class="nav-link nav-arrow">⬅</a>
+    <a href=".." class="nav-link">Back to Overview</a>
+    <a href="../13" class="nav-link nav-arrow">➡</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/exercise.js"></script>
+<script src="Solution.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

@@ -1,0 +1,65 @@
+<!--#set var="pagetitle" value="Exercise 5 Solution - Computer Graphics Master" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+  @import url("/assets/solution.css");
+</style>
+
+<section class="exercise-page-section">
+  <div class="section-inner exercise-page-layout solution-page-layout">
+<h1>Sheet 5: Photon Mapping Solution</h1>
+
+<div class="task-container">
+    <h3 class="assignment">Solution File</h3>
+
+    <p>
+        The provided <code>PhotonMapper.cpp</code> contains the completed implementation for
+        this exercise. To compare it with your own work, replace the exercise version of
+        <code>PhotonMapper.cpp</code> with this file and rebuild the project.
+    </p>
+
+    <p class="solution-note">
+        <a class="source-link" href="PhotonMapper.cpp">Open the complete <code>PhotonMapper.cpp</code> solution</a>
+    </p>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 1: Photon Paths</h3>
+
+    <p>
+        The solution follows photons from the light source through the scene. Diffuse
+        surfaces store photons and continue with a random diffuse bounce. Glass and mirror
+        materials redirect photons without storing them.
+    </p>
+
+    <pre class="code-snippet" data-src="PhotonMapper.cpp" data-start="void PhotonMapper::tracePhotonPath" data-end="void PhotonMapper::storePhoton">Loading PhotonMapper.cpp...</pre>
+</div>
+
+<div class="task-container">
+    <h3 class="assignment">Task 2: Photon Gathering</h3>
+
+    <p>
+        The gather step estimates radiance at the visible surface point. The hash grid limits
+        the search to nearby photons, and the radius, direction, and normal tests decide
+        which candidates contribute to the density estimate.
+    </p>
+
+    <p class="formula">
+        <img src="../formulas_black/photon_density.png"
+             alt="Photon density estimate." />
+    </p>
+
+    <pre class="code-snippet" data-src="PhotonMapper.cpp" data-start="Vec3 PhotonMapper::estimatePhotonRadiance" data-end="void PhotonMapper::buildPhotonGrid">Loading PhotonMapper.cpp...</pre>
+</div>
+
+<div class="navigation">
+    <a href="../" class="nav-link">Back to Assignment</a>
+</div>
+  </div>
+</section>
+
+<script src="/assets/snippet.js"></script>
+
+<!--#include virtual="/_bottom.shtml" -->

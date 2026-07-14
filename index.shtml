@@ -1,0 +1,40 @@
+<!--#set var="pagetitle" value="Teaching" -->
+<!--#set var="location" value="teaching" -->
+<!--#include virtual="/_top.shtml" -->
+
+<style>
+  @import url("/assets/exercise.css");
+
+  .course-index-links ul {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .course-index-links .exercise-button {
+    width: 100%;
+    min-height: 58px;
+    text-align: center;
+  }
+</style>
+
+<section class="exercise-course-section">
+  <div class="section-inner exercise-page-layout">
+    <h1>Teaching Materials</h1>
+
+    <div class="task-container">
+      <p>
+        Select one of the available course pages.
+      </p>
+
+      <div class="button-container course-index-links">
+        <ul>
+          <li><a class="exercise-button" href="/AIS/">Advanced Image Synthesis</a></li>
+          <li><a class="exercise-button" href="/CG/">Computer Graphics</a></li>
+          <li><a class="exercise-button" href="/CGM/">Computer Graphics Methods</a></li>
+          <li><a class="exercise-button" href="/VIS/">Visualization</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--#include virtual="/_bottom.shtml" -->
