@@ -3,7 +3,17 @@
 This repository contains the example webpages accompanying the paper
 **“From PDF to Playable: Publishing Interactive Reference Solutions for C++ Graphics Labs with WebAssembly.”**
 
-The pages show how C++ graphics exercises can be published as lightweight web pages with embedded, playable WebAssembly reference solutions. The goal is to make lab material easier to inspect, compare, and reuse than a static PDF handout: students can read the task description, start the reference solution, interact with it, and compare the intended behavior directly in the browser.
+The pages show how C++ graphics exercises can be published as lightweight web pages with embedded, playable WebAssembly reference solutions. The goal is to move beyond static PDF-style reference material such as screenshots, plots, and videos: students can read the task description, start the instructor reference implementation, interact with it, and compare the intended behavior directly in the browser.
+
+The examples in this repository are the web-facing artifacts from the paper. They demonstrate how existing C++/OpenGL teaching code can be compiled to WebAssembly with Emscripten and embedded into exercise pages with little to no source-level changes to the reference solution.
+
+## Paper Context
+
+The paper argues that static reference material is useful but incomplete for graphics programming labs. Screenshots and videos show only selected viewpoints and parameter settings, while many graphics bugs appear only during interaction, unusual camera configurations, or edge cases.
+
+The workflow demonstrated here publishes full instructor reference solutions as browser-executable programs. A small framework layer hides the main differences between native desktop execution and WebAssembly/WebGL deployment, including windowing, input, timing, asset handling, build configuration, and WebGL restrictions compared to desktop OpenGL. Students still work with native C++ scaffolding, while instructors can publish the corresponding reference behavior as an interactive webpage.
+
+The paper reports an in-course comparison between static reference pages and interactive browser-executable references. Students preferred the interactive references and rated them as more useful for debugging and comparison, which is the central motivation behind this repository.
 
 ## What Is In This Repository?
 
@@ -30,14 +40,14 @@ This means you can preview the repository locally in the same structure that a w
 
 ## Related Repositories
 
-This repository contains the **example webpages** from the paper. The corresponding exercise code lives in the following repositories:
+This repository contains the **example webpages** from the paper. The corresponding exercise source code lives in the following repositories:
 
 - [JensDerKrueger/Vis](https://github.com/JensDerKrueger/Vis)
 - [JensDerKrueger/AIS](https://github.com/JensDerKrueger/AIS)
 - [JensDerKrueger/CG](https://github.com/JensDerKrueger/CG)
 - [JensDerKrueger/CGM](https://github.com/JensDerKrueger/CGM)
 
-The utility framework discussed in the paper is available here:
+The utility framework layer discussed in the paper is available here:
 
 - [JensDerKrueger/Utils](https://github.com/JensDerKrueger/Utils)
 
