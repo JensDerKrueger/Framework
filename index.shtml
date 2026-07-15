@@ -28,7 +28,7 @@
       <div class="button-container course-index-links">
         <ul>
           <li><a class="exercise-button" href="/AIS/">Advanced Image Synthesis</a></li>
-          <li><a class="exercise-button" href="/CG/">Computer Graphics</a></li>
+          <li><a class="exercise-button" href="/CG/">Introduction to Computer Graphics</a></li>
           <li><a class="exercise-button" href="/CGM/">Computer Graphics Master</a></li>
           <li><a class="exercise-button" href="/VIS/">Visualization</a></li>
         </ul>
