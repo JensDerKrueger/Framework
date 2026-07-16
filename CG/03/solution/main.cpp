@@ -10,7 +10,7 @@ public:
   double ca = 0;
   const size_t maxLineSegments = 100;
   
-  MyGLApp() : GLApp{600,600,1,"Spline Demo"} {}
+  MyGLApp() : GLApp{800,800,1,"Spline Demo"} {}
 
   virtual void init() override {
     GL(glDisable(GL_CULL_FACE));
@@ -19,11 +19,25 @@ public:
     GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     GL(glBlendEquation(GL_FUNC_ADD));
     setBackground(1,1,1,1);
+    setAnimation(true);
   }
   
   virtual void animate(double animationTime) override {
     sa = sin(animationTime);
     ca = cos(animationTime);
+  }
+
+  virtual void keyboard(int key, int scancode, int action, int mods) override {
+    if (action != GLENV_PRESS) return;
+
+    switch (key) {
+      case GLENV_KEY_SPACE:
+        setAnimation(!getAnimation());
+        break;
+      case GLENV_KEY_ESCAPE:
+        closeWindow();
+        break;
+    }
   }
 
   // SOLUTION:
@@ -58,7 +72,7 @@ public:
       curve[i*7+5] = color.b;
       curve[i*7+6] = color.a;
     }
-    drawLines(curve, LineDrawType::STRIP, 3);
+    drawLines(curve, LineDrawType::STRIP, 5);
   }
  
   void drawHermiteSegment(const Vec2& p0, const Vec2& p1,
@@ -115,7 +129,7 @@ public:
       curve[i * 7 + 5] = color.b;
       curve[i * 7 + 6] = color.a;
     }
-    drawLines(curve, LineDrawType::STRIP, 3);
+    drawLines(curve, LineDrawType::STRIP, 5);
   }
 
   void drawBezierSegment(const Vec2& p0, const Vec2& p1,
@@ -223,4 +237,3 @@ INT WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLine, INT nC
     }
     return EXIT_SUCCESS;
   }
-

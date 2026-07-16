@@ -266,13 +266,11 @@
   display: block;
   width: auto;
   max-width: min(100%, 860px);
-  height: auto;
-  max-height: min(62vh, 520px);
+  height: auto !important;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: #182124;
   box-shadow: 0 8px 24px rgba(26, 28, 30, 0.08);
-  object-fit: contain;
 }
 
 .loading-text {
@@ -298,7 +296,4 @@
     padding: 18px;
   }
 
-  .canvas-container canvas {
-    max-height: 52vh;
-  }
 }

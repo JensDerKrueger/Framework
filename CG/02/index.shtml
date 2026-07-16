@@ -48,9 +48,10 @@ P₂ = (1, 0)   C₂ = (0.15, 0.15, 1.0)</code></pre>
         </p>
         <div class="canvas-container">
             <canvas id="canvas"></canvas>
-            <div class="loading-text" id="loading">Loading</div>
+            <div class="loading-text" id="loading">Lade</div>
         </div>
-    </div>
+        <p class="controls-hint"> Hold down the left mouse button to rotate the light source around the sphere. Press <code>R</code> to reset the light rotation. </p>
+</div>
     
     
         <!-- Navigation -->

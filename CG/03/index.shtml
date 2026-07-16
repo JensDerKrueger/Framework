@@ -32,7 +32,7 @@
         <canvas id="canvas"></canvas>
         <div class="loading-text" id="loading">Loading</div>
         <p style="text-align:center;">
-            <em>Rendering of the three spline segments: Hermite at the top, Bezier in the middle, and B-spline at the bottom. The Bezier curve is drawn twice; the second version uses the De Casteljau algorithm.</em>
+            <em>Rendering of the three spline segments: Hermite at the top, Bezier in the middle, and B-spline at the bottom. The Bezier curve is drawn twice; the second version uses the De Casteljau algorithm. Use the <code>Space</code>-key to start/stop the animation.</em>
         </p>
     </div>
 
