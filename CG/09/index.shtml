@@ -1,6 +1,6 @@
 <!--#set var="pagetitle" value="Exercise 09 - Computer Graphics" -->
 <!--#set var="location" value="teaching" -->
-<!--#include virtual="/_top.shtml" -->
+<!--#include virtual="/assets/_top.shtml" -->
 
 <style>
   @import url("/assets/exercise.css");
@@ -226,4 +226,4 @@
   </div>
 </section>
 
-<!--#include virtual="/_bottom.shtml" -->
+<!--#include virtual="/assets/_bottom.shtml" -->

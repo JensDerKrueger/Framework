@@ -1,6 +1,6 @@
 <!--#set var="pagetitle" value="Exercise 6 Solution - Computer Graphics Master" -->
 <!--#set var="location" value="teaching" -->
-<!--#include virtual="/_top.shtml" -->
+<!--#include virtual="/assets/_top.shtml" -->
 
 <style>
   @import url("/assets/exercise.css");
@@ -72,4 +72,4 @@
 
 <script src="/assets/snippet.js"></script>
 
-<!--#include virtual="/_bottom.shtml" -->
+<!--#include virtual="/assets/_bottom.shtml" -->

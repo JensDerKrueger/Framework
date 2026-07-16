@@ -30,17 +30,15 @@ The repository is a self-contained static/SSI website with four course areas:
 - `CGM/` — Computer Graphics Methods
 - `VIS/` — Visualization
 
-The shared page frame lives in:
+The shared page frame and visual assets live in:
 
-- `_top.shtml`
-- `_bottom.shtml`
 - `assets/`
 
 The included `serve_ssi.py` helper can be used to preview the pages locally with server-side includes enabled.
 
 ## What `serve_ssi.py` Does
 
-The file `serve_ssi.py` is a small local development server for this repository. It serves the website over HTTP and expands the server-side include directives used by the `.shtml` files, for example the shared `_top.shtml` and `_bottom.shtml` page fragments.
+The file `serve_ssi.py` is a small local development server for this repository. It serves the website over HTTP and expands the server-side include directives used by the `.shtml` files, for example the shared `assets/_top.shtml` and `assets/_bottom.shtml` page fragments.
 
 This means you can preview the repository locally in the same structure that a web server with SSI support would provide. It is only a convenience tool for local testing and demonstration; the exercise pages themselves are static files plus WebAssembly/JavaScript assets.
 
@@ -81,8 +79,8 @@ python3 serve_ssi.py --host 127.0.0.1 --port 8001
 
 The site is intentionally simple to adapt. To change the theme, page chrome, or institutional branding, edit:
 
-- `_top.shtml`
-- `_bottom.shtml`
+- `assets/_top.shtml`
+- `assets/_bottom.shtml`
 - `assets/styles.css`
 - `assets/exercise.css`
 - `assets/solution.css`

@@ -1,5 +1,5 @@
 <!--#set var="pagetitle" value="Teaching" -->
-<!--#include virtual="/_top.shtml" -->
+<!--#include virtual="/assets/_top.shtml" -->
 
 <style>
   @import url("/assets/exercise.css");
@@ -36,4 +36,4 @@
   </div>
 </section>
 
-<!--#include virtual="/_bottom.shtml" -->
+<!--#include virtual="/assets/_bottom.shtml" -->

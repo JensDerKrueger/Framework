@@ -1,6 +1,6 @@
 <!--#set var="pagetitle" value="Exercise 00 – Scientific Visualization" -->
 <!--#set var="location" value="teaching" -->
-<!--#include virtual="/_top.shtml" -->
+<!--#include virtual="/assets/_top.shtml" -->
 
 <style>
   @import url("/assets/exercise.css");
@@ -66,4 +66,4 @@
 
 <script src="Solution.js"></script>
 
-<!--#include virtual="/_bottom.shtml" -->
+<!--#include virtual="/assets/_bottom.shtml" -->

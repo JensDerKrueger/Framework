@@ -1,6 +1,6 @@
 <!--#set var="pagetitle" value="Exercise 05 – Advanced Image Synthesis" -->
 <!--#set var="location" value="teaching" -->
-<!--#include virtual="/_top.shtml" -->
+<!--#include virtual="/assets/_top.shtml" -->
 
 <style>
   @import url("/assets/exercise.css");
@@ -58,4 +58,4 @@
 <script src="/assets/exercise.js"></script>
 <script src="solution.js"></script>
 
-<!--#include virtual="/_bottom.shtml" -->
+<!--#include virtual="/assets/_bottom.shtml" -->

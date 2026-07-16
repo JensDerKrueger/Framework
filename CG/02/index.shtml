@@ -1,6 +1,6 @@
 <!--#set var="pagetitle" value="Exercise 02 – Computer Graphics" -->
 <!--#set var="location" value="teaching" -->
-<!--#include virtual="/_top.shtml" -->
+<!--#include virtual="/assets/_top.shtml" -->
 
 <style>
     @import url("/assets/exercise.css");
@@ -63,4 +63,4 @@ P₂ = (1, 0)   C₂ = (0.15, 0.15, 1.0)</code></pre>
             <script src="/assets/exercise.js"></script>
 <script src="Solution.js"></script>
             
-            <!--#include virtual="/_bottom.shtml" -->
+            <!--#include virtual="/assets/_bottom.shtml" -->

@@ -1,6 +1,6 @@
 <!--#set var="pagetitle" value="Computer Graphics Exercises" -->
 <!--#set var="location" value="teaching" -->
-<!--#include virtual="/_top.shtml" -->
+<!--#include virtual="/assets/_top.shtml" -->
 
 <style>
   @import url("/assets/exercise.css");
@@ -43,4 +43,4 @@ WebAssembly (<a href="https://webassembly.org" target="_blank" rel="noopener">We
   </div>
 </section>
 
-<!--#include virtual="/_bottom.shtml" -->
+<!--#include virtual="/assets/_bottom.shtml" -->
